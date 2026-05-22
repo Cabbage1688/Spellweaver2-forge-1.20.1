@@ -1,0 +1,13 @@
+{
+  "name": "丢弃",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:stack_options",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "丢弃",
+      "images": ["spellweaver:textures/guidebook/discord.png"],
+      "text": "object->丢弃。<br>丢弃法术栈顶部的参数"
+    }
+  ]
+}

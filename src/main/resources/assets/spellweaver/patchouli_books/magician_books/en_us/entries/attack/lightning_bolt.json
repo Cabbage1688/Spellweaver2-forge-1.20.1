@@ -1,0 +1,16 @@
+{
+  "name": "闪电",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:attack",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "闪电",
+      "images": ["spellweaver:textures/guidebook/lightning_bolt.png"],
+      "text": "坐标（Vec3），强度（double） -> 闪电 -><br>顺序任意。"
+    },{
+      "type": "patchouli:text",
+      "text": "在目标位置召唤闪电，造成 40×强度 点基础伤害，并额外附加 基础伤害10%的真实伤害（无视任何防御手段）。<br>同时施加雷元素附着，可触发感电反应。<br>魔力消耗 = 4 × (23 + 强度)^(1 + 强度/10)"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "spellweaver:item/mana_bow",
+  "textures": {
+    "layer0": "spellweaver:item/mana_bow_pulling_0"
+  }
+}

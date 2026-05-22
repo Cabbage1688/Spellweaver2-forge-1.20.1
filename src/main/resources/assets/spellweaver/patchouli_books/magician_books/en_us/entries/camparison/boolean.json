@@ -1,0 +1,19 @@
+{
+  "name": "布尔值",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:comparison",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "是",
+      "images": ["spellweaver:textures/guidebook/true.png"],
+      "text": "是->true。<br>向法术栈顶压入布尔值true"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "非",
+      "images": ["spellweaver:textures/guidebook/false.png"],
+      "text": "非->false。<br>向法术栈顶压入布尔值false"
+    }
+  ]
+}

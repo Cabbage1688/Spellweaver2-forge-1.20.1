@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "spellweaver:block/spell_machine" }
+  }
+}

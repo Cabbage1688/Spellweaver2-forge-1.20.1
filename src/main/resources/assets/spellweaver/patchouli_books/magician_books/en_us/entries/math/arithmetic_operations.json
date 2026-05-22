@@ -1,0 +1,35 @@
+{
+  "name": "四则运算",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:math",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "加",
+      "images": ["spellweaver:textures/guidebook/add.png"],
+      "text": "弹出栈顶两个同为 Vec3 或同为 double 的参数，压入它们的和"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "减",
+      "images": ["spellweaver:textures/guidebook/sub.png"],
+      "text": "弹出栈顶两个同为 Vec3 或同为 double 的参数，压入它们的差。<br>先弹出的为减数，后弹出的为被减数"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "乘",
+      "images": ["spellweaver:textures/guidebook/multiply.png"],
+      "text": "弹出法术栈顶的一个double类型参数和一个Vec3类型参数，或两个double类型参数，并压入乘积"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "除",
+      "images": ["spellweaver:textures/guidebook/division.png"],
+      "text": "弹出栈顶两个参数，支持以下情况："
+    },
+    {
+      "type": "patchouli:text",
+      "text": "两个 double：压入它们的商（先弹出的为除数，后弹出的为被除数）<br>一个 Vec3 和一个 double：向量除以标量，即向量的每个分量除以该标量。如果你使用这个不规范的用法，会收到一条来自模组的温馨提示。"
+    }
+  ]
+}

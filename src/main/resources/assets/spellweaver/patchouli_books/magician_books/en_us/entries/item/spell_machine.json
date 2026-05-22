@@ -1,0 +1,17 @@
+{
+  "name": "施法机",
+  "icon": "spellweaver:spell_machine",
+  "category": "spellweaver:item",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "spellweaver:spell_machine",
+      "title": "施法机",
+      "text": "能存储一道法术，以魔力瓶作为魔源，最多放置三个魔力瓶。<br><br>$(l)使用方法：$()<br><br>$(l)空手右键$()：无魔力瓶时，打开法术编辑界面。<br>$(l)手持魔力瓶右键$()：将魔力瓶放入施法机。<br>$(l)空手潜行右键$()：取出施法机内的魔力瓶。<br>$(l)有魔力瓶时空手右键$()：执行已存储的法术。"
+    },{
+      "type": "crafting",
+      "title": "施法机",
+      "recipe": "spellweaver:spell_machine"
+    }
+  ]
+}

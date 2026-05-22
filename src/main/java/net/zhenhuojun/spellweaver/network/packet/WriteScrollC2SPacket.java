@@ -1,0 +1,93 @@
+package net.zhenhuojun.spellweaver.network.packet;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.network.NetworkEvent;
+import net.zhenhuojun.spellweaver.Spellweaver;
+import net.zhenhuojun.spellweaver.capability.impl.scroll.ScrollSpellHelper;
+import net.zhenhuojun.spellweaver.capability.provider.mana.PlayerSpellStorageProvider;
+import net.zhenhuojun.spellweaver.capability.provider.mana.ScrollSpellProvider;
+import net.zhenhuojun.spellweaver.item.ModItems;
+import net.zhenhuojun.spellweaver.network.ModMessage;
+import net.zhenhuojun.spellweaver.spell.node.SequenceNode;
+
+import java.util.function.Supplier;
+
+public class WriteScrollC2SPacket {
+    private String spellName;
+    private CompoundTag spellTag;
+
+    public WriteScrollC2SPacket(String spellName, CompoundTag spellTag){
+        this.spellName=spellName;
+        this.spellTag=spellTag;
+    }
+
+    public WriteScrollC2SPacket(FriendlyByteBuf buf){
+        this.spellName=buf.readUtf();
+        this.spellTag=buf.readNbt();
+    }
+    public void toByte(FriendlyByteBuf buf){
+        buf.writeUtf(spellName);
+        buf.writeNbt(spellTag);
+    }
+    public boolean handle(Supplier<NetworkEvent.Context> supplier) {
+        NetworkEvent.Context context = supplier.get();
+        context.enqueueWork(() -> {
+            ServerPlayer player = context.getSender();
+            if (player != null) {
+                ItemStack heldItem = player.getMainHandItem();
+                if (!heldItem.isEmpty() && heldItem.is(ModItems.SCROLL.get())) {
+                    // 消耗原版卷轴
+                    /*if (heldItem.getCount() > 1) {
+                        heldItem.shrink(1);
+                    } else {
+                        player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+                    }
+                    // 创建已写入卷轴
+                    ItemStack usedScroll = new ItemStack(ModItems.USED_SCROLL.get(), 1);
+                    Spellweaver.getLOGGER().debug("[Spellweaver: WriteScrollC2SPacket/handle方法]检查法术tag{}",spellTag);
+                    SequenceNode sequenceNode=new SequenceNode();
+                    sequenceNode.deserializeNBT(spellTag);
+                    // 使用工具类设置法术
+                    ScrollSpellHelper.setSpell(usedScroll, sequenceNode, spellName);
+                    // 给予玩家卷轴
+                    if (!player.addItem(usedScroll)) {
+                        player.drop(usedScroll, false);
+                    }
+
+                     */
+                    heldItem.shrink(1);
+                    ItemStack usedScroll=new ItemStack(ModItems.USED_SCROLL.get(),1);
+                    CompoundTag tag = new CompoundTag();
+                    tag.putString("name", spellName);
+                    tag.put("sequence",spellTag);
+                    tag.putDouble("mana",256);
+                    CompoundTag scrollTag = usedScroll.getOrCreateTag();
+                    scrollTag.put("scrollSpell", tag);
+                    // 给予玩家卷轴
+                    if (!player.addItem(usedScroll)) {
+                        player.drop(usedScroll, false);
+                    }
+                    ///青金石卷轴的处理
+                } else if (!heldItem.isEmpty() && heldItem.is(ModItems.LAZULI_SCROLL.get())) {
+                    heldItem.shrink(1);
+                    ItemStack usedScroll=new ItemStack(ModItems.USED_LAZULI_SCROLL.get(),1);
+                    CompoundTag tag = new CompoundTag();
+                    tag.putString("name", spellName);
+                    tag.put("sequence",spellTag);
+                    tag.putDouble("mana",512);
+                    CompoundTag scrollTag = usedScroll.getOrCreateTag();
+                    scrollTag.put("scrollSpell", tag);
+                    // 给予玩家卷轴
+                    if (!player.addItem(usedScroll)) {
+                        player.drop(usedScroll, false);
+                    }
+                }
+            }
+        });
+        return true;
+    }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:stick"
+    },
+    "b": {
+      "item": "spellweaver:mana_paper"
+    }
+  },
+  "pattern": [
+    "aba"
+  ],
+  "result": {
+    "item": "spellweaver:scroll"
+  }
+}

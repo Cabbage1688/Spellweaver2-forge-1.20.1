@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:gold_ingot"
+    },
+    "b": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "pattern": [
+    "b",
+    "a",
+    "a"
+  ],
+  "result": {
+    "item": "spellweaver:spell_stick"
+  }
+}

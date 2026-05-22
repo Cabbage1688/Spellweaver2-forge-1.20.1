@@ -1,0 +1,16 @@
+{
+  "name": "魔法光源",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:tool",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "魔法光源",
+      "images": ["spellweaver:textures/guidebook/magic_light.png"],
+      "text": "vec3 -> 魔法光源 ->生成光源<br>弹出坐标，在该位置生成一个永久发光的魔法光源(左键可以摧毁)。"
+    },{
+      "type": "patchouli:text",
+      "text": "魔力消耗：5"
+    }
+  ]
+}

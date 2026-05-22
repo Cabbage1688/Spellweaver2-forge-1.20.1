@@ -1,0 +1,19 @@
+{
+  "name": "符文寄存器",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:rune_option",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "[",
+      "images": ["spellweaver:textures/guidebook/open_bracket.png"],
+      "text": ""
+    },
+    {
+      "type": "patchouli:image",
+      "title": "]",
+      "images": ["spellweaver:textures/guidebook/close_bracket.png"],
+      "text": "被[]包裹的符文会被打包成一个符文寄存器（RuneRegister）压入栈"
+    }
+  ]
+}

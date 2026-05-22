@@ -1,0 +1,17 @@
+{
+  "name": "掉落物判断器",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:query",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "掉落物判断器",
+      "images": ["spellweaver:textures/guidebook/is_item.png"],
+      "text": "? -> 掉落物判断器 -> boolean"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "检查栈顶参数是否为 ItemEntity（掉落物），压入 true/false，不消耗原元素。。"
+    }
+  ]
+}

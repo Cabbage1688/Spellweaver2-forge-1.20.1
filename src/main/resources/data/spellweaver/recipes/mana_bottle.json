@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:glass"
+    },
+    "b": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "pattern": [
+    "aba",
+    " a "
+  ],
+  "result": {
+    "item": "spellweaver:mana_bottle"
+  }
+}

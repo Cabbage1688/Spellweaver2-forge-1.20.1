@@ -1,0 +1,13 @@
+{
+  "name": "自我判断器",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:query",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "自我判断器",
+      "images": ["spellweaver:textures/guidebook/is_myself.png"],
+      "text": "player -> 自我判断器 -> player, boolean<br>判断是否是施法者本人，是则压入true,反之false，不消耗玩家参数。"
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+package net.zhenhuojun.spellweaver.spell;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import net.zhenhuojun.spellweaver.Spellweaver;
+import net.zhenhuojun.spellweaver.capability.impl.mana.ManaSource;
+import net.zhenhuojun.spellweaver.spell.node.NodeResult;
+import net.zhenhuojun.spellweaver.spell.node.SequenceNode;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+import java.util.function.Consumer;
+
+public class SpellContext {
+    public final Deque<Object> stack = new ArrayDeque<>();//法术栈,存储法术运行时产生的数据
+    public final Level level;
+    public final Player player;
+    public ManaSource manaSource=ManaSource.PLAYER;
+
+    public Map<String, Object> variables = new HashMap<>();//用于“存储变量”符文创建键值对
+
+    private BlockPos machinePos;
+
+    public int jumpTarget=-1;//用于跳转
+
+    @Nullable
+    private Consumer<NodeResult> onComplete;
+
+    public SpellContext(Level level,Player player){
+        this.level=level;
+        this.player=player;
+    }
+
+    public SpellContext(Level level,Player player,ManaSource manaSource){
+        this.level=level;
+        this.player=player;
+        this.manaSource=manaSource;
+    }
+   //这个专用于机器
+    public SpellContext(Level level,Player player,ManaSource manaSource,BlockPos machinePos){
+        this.level=level;
+        this.player=player;
+        this.manaSource=manaSource;
+        this.machinePos=machinePos;
+    }
+
+    public BlockPos getMachinePos() {
+        return machinePos;
+    }
+
+    public void setOnComplete(@Nullable Consumer<NodeResult> callback) {
+        this.onComplete = callback;
+    }
+
+    public void notifyComplete(NodeResult state) {
+        if (onComplete != null) {
+            onComplete.accept(state);
+        }
+    }
+
+    //弹出栈顶元素
+    public <T> T pop(Class<T> type) throws SpellExecutionException {
+        if (stack.isEmpty()) {
+            throw new SpellExecutionException("栈为空，无法弹出元素");
+        }
+
+        Object obj = stack.pop();
+        if (type.isInstance(obj)) {
+            return type.cast(obj);
+        }
+
+        throw new SpellExecutionException("类型不匹配。期望 " +
+                type.getSimpleName() + " 但得到 " + obj.getClass().getSimpleName());
+    }
+    //查看栈顶元素
+    public <T> T peek(Class<T> type) throws SpellExecutionException {
+        if (stack.isEmpty()) {
+            throw new SpellExecutionException("栈为空，无法查看元素");
+        }
+
+        Object obj = stack.peek();
+        if (type.isInstance(obj)) {
+            return type.cast(obj);
+        }
+
+        throw new SpellExecutionException("类型不匹配。期望 " +
+                type.getSimpleName() + " 但得到 " + obj.getClass().getSimpleName());
+    }
+    //向栈压入元素
+    public void push(Object value) {
+        if (stack == null) {
+            Spellweaver.getLOGGER().error("[Spellweaver_SpellContext]Stack is null in SpellContext.push! This should not happen.");
+            return;
+        }
+        // 添加空值检查
+        if (value == null) {
+            Spellweaver.getLOGGER().warn("[Spellweaver_SpellContext]Attempted to push null value onto the stack. This may indicate a problem in spell execution.");
+            return; // 不压入null值，避免崩溃
+        }
+        stack.push(value);
+    }
+    // 辅助方法：检查栈顶类型
+    public boolean isTop(Class<?> type) {
+        return !stack.isEmpty() && type.isInstance(stack.peek());
+    }
+
+    public void setManaSource(ManaSource manaSource) {
+        this.manaSource = manaSource;
+    }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "方块放置",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:tool",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "水",
+      "images": ["spellweaver:textures/guidebook/water.png"],
+      "text": "vec3 -> 水 -><br>弹出坐标，在该位置放置水源方块。<br><br>魔力消耗：15<br>只能替换空气或可替换方块。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "泥土",
+      "images": ["spellweaver:textures/guidebook/dirt.png"],
+      "text": "vec3 -> 泥土 -><br>弹出坐标，在该位置放置泥土方块。<br><br>魔力消耗：10<br>只能替换空气或可替换方块。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "细雪",
+      "images": ["spellweaver:textures/guidebook/snow.png"],
+      "text": "vec3 -> 细雪 -><br>弹出坐标，在该位置放置细雪方块。<br><br>魔力消耗：20<br>只能替换空气或可替换方块。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "沙",
+      "images": ["spellweaver:textures/guidebook/sand.png"],
+      "text": "vec3 -> 沙 -><br>弹出坐标，在该位置放置沙子方块。<br><br>魔力消耗：10<br>只能替换空气或可替换方块。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "岩浆",
+      "images": ["spellweaver:textures/guidebook/magma.png"],
+      "text": "vec3 -> 岩浆 -><br>弹出坐标，在该位置放置岩浆源方块。<br><br>魔力消耗：10<br>只能替换空气或可替换方块。"
+    }
+  ]
+}

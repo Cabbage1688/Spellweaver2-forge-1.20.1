@@ -1,0 +1,16 @@
+{
+  "name": "弹出",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:variable_and_list",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "弹出",
+      "images": ["spellweaver:textures/guidebook/pop.png"],
+      "text": "list -> 弹出 -> entity,parm<br>从栈顶弹出一个列表，随机移除其中一个参数，然后将修改后的列表和移除的参数依次压入栈。"
+    },{
+      "type": "patchouli:text",
+      "text": "可理解为从栈顶列表随机弹出一个参数并压入栈"
+    }
+  ]
+}

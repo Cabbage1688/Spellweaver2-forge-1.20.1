@@ -1,0 +1,17 @@
+{
+  "name": "槽位引用",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:query",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "槽位引用",
+      "images": ["spellweaver:textures/guidebook/slot.png"],
+      "text": "容器（Entity 或 Vec3），槽位号（double） -> 槽位引用 -> SlotReference<br>顺序任意，弹出容器和槽位号，生成一个指向该物品槽的引用对象。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "<br>容器可以是实体（Entity）或坐标点（Vec3）。<br>槽位号从 0 开始。<br>魔力消耗：无<br>返回的 SlotReference 可用于后续的充能、存取物品(后续更新)等操作。"
+    }
+  ]
+}

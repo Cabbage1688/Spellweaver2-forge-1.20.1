@@ -1,0 +1,17 @@
+{
+  "name": "生物判断器",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:query",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "生物判断器",
+      "images": ["spellweaver:textures/guidebook/is_living.png"],
+      "text": "? -> 生物判断器 -> boolean"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "检查栈顶参数是否为 LivingEntity（生物或玩家），压入 true 或 false，不消耗原参数。"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "实体列表",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:variable_and_list",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "实体列表",
+      "images": ["spellweaver:textures/guidebook/entity_list.png"],
+      "text": "获取一定范围内的实体，作为实体列表压入栈。"
+    },{
+      "type": "patchouli:text",
+      "text": "支持两种用法：<br><br>• vec3 a,vec3 b->实体列表-> List<Entity><br>获取两个坐标确定的轴对齐包围盒内所有实体<br><br>•vec3 a,vec3 b,EntityType c->实体列表->List<Entity><br>仅获取两个坐标确定的轴对齐包围盒内c类型的实体"
+    }
+  ]
+}

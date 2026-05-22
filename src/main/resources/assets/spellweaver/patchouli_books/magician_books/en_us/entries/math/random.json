@@ -1,0 +1,13 @@
+{
+  "name": "随机数",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:math",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "随机数",
+      "images": ["spellweaver:textures/guidebook/random.png"],
+      "text": "弹出栈顶两个double参数或vec3参数，并将一个介于两个参数之间的随机数/随机向量压入法术栈"
+    }
+  ]
+}

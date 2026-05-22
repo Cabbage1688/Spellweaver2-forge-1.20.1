@@ -1,0 +1,13 @@
+{
+  "name": "实体类型",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:query",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "实体类型",
+      "images": ["spellweaver:textures/guidebook/entity_type.png"],
+      "text": "entity -> 实体类型 -> 类型<br>弹出实体，压入其类型标识（如 \"minecraft:zombie\"）。"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "复制",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:stack_options",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "复制",
+      "images": ["spellweaver:textures/guidebook/copy.png"],
+      "text": "object->复制->object,object。<br>复制法术栈顶部的参数"
+    }
+  ]
+}

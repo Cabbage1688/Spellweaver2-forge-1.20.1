@@ -1,0 +1,22 @@
+{
+  "name": "射线",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:query",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "方块射线",
+      "images": ["spellweaver:textures/guidebook/block_ray.png"],
+      "text": "长度（double） -> 射线（方块版） -> 坐标<br>弹出射线长度，沿视线发射射线，击中方块则压入其中心坐标（Vec3）。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "实体射线",
+      "images": ["spellweaver:textures/guidebook/entity_ray.png"],
+      "text": "长度（double） -> 射线（实体版） -> 实体列表List<Entity><br>弹出射线长度，沿视线发射射线，压入包含路径上所有命中实体的列表。"
+    },{
+      "type": "patchouli:text",
+      "text": "魔力消耗= 长度的1.5次方"
+    }
+  ]
+}

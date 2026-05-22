@@ -1,0 +1,17 @@
+{
+  "name": "符文解析器",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:rune_option",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "[",
+      "images": ["spellweaver:textures/guidebook/rune_loader.png"],
+      "text": "RuneRegister->符文解析器->用掉其中的符文"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "消耗栈顶的符文寄存器，执行其中的符文"
+    }
+  ]
+}

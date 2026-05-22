@@ -1,0 +1,17 @@
+{
+  "name": "充能",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:tool",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "充能",
+      "images": ["spellweaver:textures/guidebook/charge.png"],
+      "text": "槽位引用（SlotReference），充能数值（double），目标玩家（Player） -> 充能 -><br>依次弹出三个参数，消耗一个对应物品为玩家补充魔力。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "<br>有效消耗品：紫水晶碎片/青金石（上限25魔力），紫水晶块（上限100），青金石块（上限225）。<br>实际充能值为 min(amount, 上限)。<br>魔力消耗：无"
+    }
+  ]
+}

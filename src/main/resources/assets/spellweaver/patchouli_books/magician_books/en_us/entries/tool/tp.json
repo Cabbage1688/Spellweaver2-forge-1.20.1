@@ -1,0 +1,16 @@
+{
+  "name": "传送",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:tool",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "传送",
+      "images": ["spellweaver:textures/guidebook/tp.png"],
+      "text": "支持多种用法：<br>• entity, vec3 -> 传送 -> entity"
+    },{
+      "type": "patchouli:text",
+      "text": "• entity, 距离（double）-> 传送 -> entity（沿实体视线方向移动距离）<br><br>魔力消耗 = min(3 × 传送距离, 600)。传送后原实体压回栈。"
+    }
+  ]
+}
