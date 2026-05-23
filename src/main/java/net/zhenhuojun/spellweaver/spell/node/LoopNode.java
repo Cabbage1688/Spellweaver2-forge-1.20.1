@@ -14,6 +14,8 @@ public class LoopNode implements Node{
     private  int index=0;
     private NodeResult state;
     private int currentTime;
+
+    private int originalCurrentTime;
     private SpellContext context;
     //默认-2，即无限循环
     public LoopNode(){
@@ -39,6 +41,9 @@ public class LoopNode implements Node{
 
     public void setCurrentTime(int currentTime) {
         this.currentTime = currentTime;
+        /// 2026.5.23存储原始次数，用于重置
+        this.originalCurrentTime=currentTime;
+
     }
     public void currentTimeSub(){
         currentTime--;
@@ -180,10 +185,14 @@ public class LoopNode implements Node{
                 return NodeResult.RUNNING;
                 //循环次数为0，即loop节点运行完成，返回SUCCESS;
             } else if (getCurrentTime()==1) {
+                /// 2026.5.23修复，现在成功后依然回退索引，以便下次使用
+                recoverIndex();
+                this.currentTime=this.originalCurrentTime;
                 return NodeResult.SUCCESS;
             }
         }
         Spellweaver.getLOGGER().debug("[Spellweaver:LoopNode/executeChildrenNodeList方法]loop节点运行结果为FAULT是因为其他原因");
+        Spellweaver.getLOGGER().debug("[Spellweaver:LoopNode/executeChildrenNodeList方法]原因可能是currentTime异常为0，我们看看currentTime的值吧:{}",currentTime);
         Spellweaver.getLOGGER().debug("[Spellweaver:LoopNode/executeChildrenNodeList方法]childrenNodeList:{}",getChildrenNodeList());
         Spellweaver.getLOGGER().debug("[Spellweaver:LoopNode/executeChildrenNodeList方法]index:{}",getIndex());
         return NodeResult.FAULT;
@@ -194,6 +203,7 @@ public class LoopNode implements Node{
         CompoundTag tag = new CompoundTag();
         tag.putString("type",getType());
         tag.putInt("currentTime", currentTime);
+        //tag.putInt("originalCurrentTime",originalCurrentTime);
 
         //序列化子节点列表
         ListTag childrenTag = new ListTag();
@@ -208,7 +218,9 @@ public class LoopNode implements Node{
     public void deserializeNBT(CompoundTag tag) {
         childrenNodeList.clear();
         ListTag childrenTag = tag.getList("childrenNodeList", Tag.TAG_COMPOUND);
-        currentTime = tag.getInt("currentTime");
+        //currentTime = tag.getInt("currentTime");
+        //2026.5.23
+        setCurrentTime(tag.getInt("currentTime"));
         for (int i = 0; i < childrenTag.size(); i++) {
             CompoundTag childTag = childrenTag.getCompound(i);
             Node node = NodeRegistry.deserialize(childTag);
