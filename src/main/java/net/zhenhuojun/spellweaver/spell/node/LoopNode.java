@@ -218,7 +218,6 @@ public class LoopNode implements Node{
     public void deserializeNBT(CompoundTag tag) {
         childrenNodeList.clear();
         ListTag childrenTag = tag.getList("childrenNodeList", Tag.TAG_COMPOUND);
-        //currentTime = tag.getInt("currentTime");
         //2026.5.23
         setCurrentTime(tag.getInt("currentTime"));
         for (int i = 0; i < childrenTag.size(); i++) {
