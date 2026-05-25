@@ -55,6 +55,19 @@ public class ModLanguageProvider extends LanguageProvider {
 
         this.add("gui.unbind","Unbind Slot %d");
 
+        this.add("gui.spellweaver.export", "Export");
+        this.add("gui.spellweaver.import", "Import");
+        this.add("gui.spellweaver.author_sign", "Sign Spell");
+        this.add("gui.spellweaver.export.success", "Spell '%s' copied to clipboard, signed by: %s");
+        this.add("gui.author", "Author");
+        this.add("gui.paste_here", "Paste spell data");
+        this.add("gui.export", "Export");
+        this.add("gui.import", "Import");
+        this.add("gui.spellweaver.edit_note", "Edit Note");
+        this.add("gui.spellweaver.no_note", "No Note");
+        this.add("gui.note", "Note");
+
+        this.add("gui.spellweaver.all_authors","All The Authors");
 
 
 

@@ -32,6 +32,7 @@ public class DeleteSpellC2SPacket {
                 player.getCapability(PlayerSpellStorageProvider.PLAYER_SPELL_STORAGE).ifPresent(playerSpellStorage -> {
                     if(playerSpellStorage.getSpell(uuid).isPresent())
                         playerSpellStorage.removeSpell(uuid);
+
                 });
             }
 

@@ -11,7 +11,7 @@ import net.zhenhuojun.spellweaver.spell.node.SequenceNode;
 import java.util.*;
 //大部分代码直接继承一代即可
 public class PlayerSpellStorage {
-    private static final int MAX_STORED_SPELLS = 27; //最大存储法术数
+    public static final int MAX_STORED_SPELLS = 27; //最大存储法术数
     private Map<UUID, StoredSpell> spells = new LinkedHashMap<>();//一个LinkedHashMap，按插入顺序存储法术（UUID到StoredSpell的映射）
     private  Player player;
 
@@ -57,7 +57,18 @@ public class PlayerSpellStorage {
         spells.put(newSpell.getId(), newSpell);
         return true;
     }
-    //这个方法专门用于保存法术后的同步，或者说用于单个法术的同步存储,暂时没用上
+
+    // 2026.5.24导入导出更新新增，存储带作者列表的法术，用于导入
+    public boolean storeSpell(String name, SequenceNode sequenceNode, List<String> authors, UUID id) {
+        if (spells.size() >= MAX_STORED_SPELLS) {
+            return false;
+        }
+        StoredSpell newSpell = new StoredSpell(id, name, sequenceNode, authors,"");
+        spells.put(id, newSpell);
+        return true;
+    }
+
+    //这个方法专门用于保存法术后的同步，或者说用于单个法术的同步存储,被SpellStorageRespondS2CPacket使用，但那个包暂时没有被完善并使用
     public boolean storeSpell(String name,SequenceNode sequenceNode,UUID id){
         if (spells.size() >= MAX_STORED_SPELLS) {
             //player.sendSystemMessage(Component.literal("§c法术存储已满!"));
@@ -87,7 +98,10 @@ public class PlayerSpellStorage {
 
         StoredSpell removed = spells.remove(id);
         if (removed != null) {
-            player.sendSystemMessage(Component.literal("§c法术'" + removed.getName() + "'已移除"));
+            if(!player.level().isClientSide){
+                //2026.5.24修复移除消息有两条的bug
+                player.sendSystemMessage(Component.literal("§c法术'" + removed.getName() + "'已移除"));
+            }
             return true;
         }
         return false;

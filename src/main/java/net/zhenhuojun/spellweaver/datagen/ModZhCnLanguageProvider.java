@@ -55,5 +55,19 @@ public class ModZhCnLanguageProvider extends LanguageProvider {
 
         this.add("gui.unbind","解绑槽位 %d");
 
+        this.add("gui.spellweaver.export", "导出");
+        this.add("gui.spellweaver.import", "导入");
+        this.add("gui.spellweaver.author_sign", "为法术署名");
+        this.add("gui.spellweaver.export.success", "法术 '%s' 已复制到剪贴板，署名：%s");
+        this.add("gui.author", "署名");
+        this.add("gui.paste_here", "粘贴法术数据");
+        this.add("gui.export", "导出");
+        this.add("gui.import", "导入");
+        this.add("gui.spellweaver.edit_note", "编辑备注");
+        this.add("gui.spellweaver.no_note", "暂无备注");
+        this.add("gui.note", "备注");
+
+        this.add("gui.spellweaver.all_authors","所有作者");
+
     }
 }

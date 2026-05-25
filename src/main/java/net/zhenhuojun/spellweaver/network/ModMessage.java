@@ -198,6 +198,24 @@ public class ModMessage {
                 .consumerMainThread(UnbindSpellC2SPacket::handle)
                 .add();
 
+        net.messageBuilder(UpdateSpellAuthorsC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(UpdateSpellAuthorsC2SPacket::new)
+                .encoder(UpdateSpellAuthorsC2SPacket::toByte)
+                .consumerMainThread(UpdateSpellAuthorsC2SPacket::handle)
+                .add();
+
+        net.messageBuilder(ImportSpellC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(ImportSpellC2SPacket::new)
+                .encoder(ImportSpellC2SPacket::toByte)
+                .consumerMainThread(ImportSpellC2SPacket::handle)
+                .add();
+
+        net.messageBuilder(UpdateSpellNoteC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(UpdateSpellNoteC2SPacket::new)
+                .encoder(UpdateSpellNoteC2SPacket::toByte)
+                .consumerMainThread(UpdateSpellNoteC2SPacket::handle)
+                .add();
+
     }
 
     public static <MSG> void sendToServer(MSG message) {

@@ -6,9 +6,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Player;
 import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.capability.impl.spell_storage.PlayerSpellStorage;
@@ -19,10 +22,10 @@ import net.zhenhuojun.spellweaver.network.ModMessage;
 import net.zhenhuojun.spellweaver.network.packet.*;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class SpellStorageScreen extends Screen {
@@ -41,6 +44,10 @@ public class SpellStorageScreen extends Screen {
     private Button Up,Down;
     private Button backButton;
     private Button editButton;
+    //2025.5.24
+    private Button exportButton;
+    private Button importButton;
+    private Button editNoteButton;
 
     private Button WriteScroll;
     private StoredSpell selectedSpell;
@@ -151,39 +158,68 @@ public class SpellStorageScreen extends Screen {
                         .size(50, 20)
                         .build()
         );
+
+
+        // 导出按钮
+        this.exportButton = this.addRenderableWidget(
+                Button.builder(Component.translatable("gui.spellweaver.export"), button -> {
+                            if (selectedSpell != null) {
+                                openAuthorSignScreen();
+                            }
+                        })
+                        .pos(leftPos +145+30+30, topPos + GUI_HEIGHT + 2)
+                        .size(50, 20)
+                        .build()
+        );
+
+        // 导入按钮
+        this.importButton = this.addRenderableWidget(
+                Button.builder(Component.translatable("gui.spellweaver.import"), button -> {
+                            openImportScreen();
+                        })
+                        .pos(leftPos - 47-35, topPos + GUI_HEIGHT + 2)
+                        .size(50, 20)
+                        .build()
+        );
+
+        this.editNoteButton = this.addRenderableWidget(
+                Button.builder(Component.translatable("gui.spellweaver.edit_note"), button -> {
+                            if (selectedSpell != null) {
+                                openNoteEditScreen();
+                            }
+                        })
+                        .pos(leftPos + 63, topPos + GUI_HEIGHT - 28+60-5)  // 根据实际界面调整
+                        .size(60, 20)
+                        .build()
+        );
+
         preSpellList.clear();
         preSpellList.addAll(ClientPlayerStorageData.getPlayerSpellStorage().getAllSpells());
         refreshSpells();
     }
     //根据搜索框内容过滤并显示法术列表。
-    public void refreshSpells() {
+    /*public void refreshSpells() {
         displayedSpells.clear(); //清空当前显示列表`displayedSpells`。
         // String searchText = searchBox.getValue().toLowerCase();// 获取搜索文本（转换为小写）
 
-
-
-        for (StoredSpell spell : ClientPlayerStorageData.getPlayerSpellStorage().getAllSpells()) {//遍历玩家存储的所有法术，将名称匹配（或搜索框为空）的法术加入显示列表
+        for (StoredSpell spell : ClientPlayerStorageData.getPlayerSpellStorage().getAllSpells()) {//遍历玩家存储的所有法术，将名称匹配的法术加入显示列表
             //if (searchText.isEmpty() || spell.getName().toLowerCase().contains(searchText)) {
-            Spellweaver.getLOGGER().debug("[Spellweaver:SpellStorageScreen/refreshSpells()]展示前检查" +
-                    "ClientPlayerStorageData.getPlayerSpellStorage(){}",ClientPlayerStorageData.getPlayerSpellStorage().serialize());
+            //Spellweaver.getLOGGER().debug("[Spellweaver:SpellStorageScreen/refreshSpells()]展示前检查" +
+                   // "ClientPlayerStorageData.getPlayerSpellStorage(){}",ClientPlayerStorageData.getPlayerSpellStorage().serialize());
+            //内容太多了刷屏，就不展示前检查了
             displayedSpells.add(spell);
             // }
         }
-        //Magic.getLOGGER().debug("[MAGIC_DEBUG]预处理法术列表中的法术数量为{}", preSpellList.size());
         if (preSpellList.size() > 6) {
-            //Magic.getLOGGER().debug("[MAGIC_DEBUG]法术数量大于6，需要裁剪展示列表");
 
             int pageSize = 6; // 每页显示6个
             int startIndex = (this.page - 1) * pageSize;
             int endIndex = Math.min(preSpellList.size(), startIndex + pageSize);
 
-           // Magic.getLOGGER().debug("[MAGIC_DEBUG]展示法术存储中的{}到{}", startIndex, endIndex);
             displayedSpells = new ArrayList<>(preSpellList.subList(startIndex, endIndex));
-            //Magic.getLOGGER().debug("[MAGIC_DEBUG]展示法术列表中法术数量为{}", displayedSpells.size());
         } else {
             // 如果法术数量不超过6个，直接显示全部
             displayedSpells = new ArrayList<>(preSpellList);
-            //Magic.getLOGGER().debug("[MAGIC_DEBUG]法术数量不超过6，直接显示全部，数量为{}", displayedSpells.size());
         }
 
         // 重置选择状态,调整选中索引（如果超出范围则重置为-1）
@@ -191,6 +227,31 @@ public class SpellStorageScreen extends Screen {
             selectedIndex = -1;
         }
         updateButtonStates();//更新按钮状态（根据是否有选中项启用/禁用按钮）
+    }
+     */
+    // 现在始终从 ClientPlayerStorageData 获取最新数据源，避免数据混乱
+    public void refreshSpells() {
+        //从缓存取出所有法术
+        PlayerSpellStorage storage = ClientPlayerStorageData.getPlayerSpellStorage();
+        List<StoredSpell> allSpells = new ArrayList<>(storage.getAllSpells());
+        //是否裁剪列表
+        if (allSpells.size() > 6) {
+            int pageSize = 6;
+            int startIndex = (this.page - 1) * pageSize;
+            int endIndex = Math.min(allSpells.size(), startIndex + pageSize);
+            displayedSpells = new ArrayList<>(allSpells.subList(startIndex, endIndex));
+        } else {
+            displayedSpells = new ArrayList<>(allSpells);
+        }
+        //我觉得当前版本可以踢掉预处理列表了，但我懒得改，凑合用吧
+        this.preSpellList = allSpells;
+        if (selectedIndex >= displayedSpells.size()) {
+            selectedIndex = -1;
+            selectedSpell = null;
+        } else if (selectedIndex >= 0 && displayedSpells.size() > 0) {
+            selectedSpell = displayedSpells.get(selectedIndex);
+        }
+        updateButtonStates();
     }
     private void upPage(){
         if((this.page+1)*6-7<preSpellList.size())
@@ -237,17 +298,6 @@ public class SpellStorageScreen extends Screen {
 
         }
 
-        //在底部区域绘制选中法术的详情（目前仅显示名称）
-        /*if (selectedIndex >= 0 && selectedIndex < displayedSpells.size()) {
-            StoredSpell selectedSpell = displayedSpells.get(selectedIndex);
-            int detailY = topPos + GUI_HEIGHT - 60;
-
-            guiGraphics.drawString(font, Component.literal(selectedSpell.getName()),
-                    leftPos + 8, detailY, 0xFFFFFF, false);
-        }
-
-         */
-
 
         // 在法术旁显示绑定键位(新增功能）
         for (int i = 0; i < displayedSpells.size(); i++) {
@@ -270,6 +320,77 @@ public class SpellStorageScreen extends Screen {
         MutableComponent text2=net.minecraft.network.chat.Component.literal("右键法术条目以打开法术绑定界面");
         guiGraphics.drawString(font,text,leftPos + 63, topPos + GUI_HEIGHT - 28+25,color);
         guiGraphics.drawString(font,text2,leftPos + 63-40, topPos + GUI_HEIGHT - 28+25-100-80,color);
+
+
+        // 右侧详情区域
+        if (selectedIndex >= 0 && selectedIndex < displayedSpells.size()) {
+            StoredSpell spell = displayedSpells.get(selectedIndex);
+            int detailX = leftPos + GUI_WIDTH + 10-15;  // 右侧起始X
+            int detailY = topPos + 20;
+
+            // 绘制详情背景
+            guiGraphics.fill(detailX - 2, detailY - 2, detailX + 150, detailY + 80, 0x20FFFFFF);
+
+            //作者信息区域
+            List<String> authors = spell.getAuthors();
+            int authorAreaWidth = 120; // 可用宽度
+            int authorX = detailX;
+            int authorY = detailY;
+            boolean showTooltip = false;
+
+            if(!authors.isEmpty()){
+
+                String displayText;
+                if (authors.size() <= 3) {
+                    displayText = "作者: " + String.join(", ", "§6"+authors);
+                } else {
+                    // 取前三个作者，其余缩略
+                    String firstThree = String.join(", ", authors.subList(0, 3));
+                    displayText = "作者: " + firstThree + "... 等" + authors.size() + "人";
+                    showTooltip = true; // 超过3人时启用tooltip
+                }
+
+                // 先尝试完整绘制一行，如果超宽则用 font.plainSubstrByWidth 截断
+                if (font.width(displayText) > authorAreaWidth) {
+                    displayText = font.plainSubstrByWidth(displayText, authorAreaWidth - font.width("...")) + "...";
+                    showTooltip = true;
+                }
+
+                guiGraphics.drawString(font, Component.literal(displayText), authorX, authorY, 0xAAAAAA, false);
+
+
+                if (showTooltip) {
+                    int textWidth = font.width(displayText);
+                    // 检查鼠标是否在文本区域内
+                    if (mouseX >= authorX && mouseX <= authorX + textWidth &&
+                            mouseY >= authorY && mouseY <= authorY + font.lineHeight) {
+                        // 构建完整作者列表的Tooltip
+                        List<Component> tooltipLines = new ArrayList<>();
+                        tooltipLines.add(Component.translatable("gui.spellweaver.all_authors"));
+                        for (String author : authors) {
+                            tooltipLines.add(Component.literal("§6"+author));
+                        }
+                        guiGraphics.renderTooltip(font, tooltipLines, java.util.Optional.empty(), mouseX, mouseY);
+                    }
+                }
+                // 作者行占用一行高度
+                detailY += 10;
+            }
+            // 备注区域
+            String note = spell.getNote();
+            if (note.isEmpty()) {
+                guiGraphics.drawString(font, Component.translatable("gui.spellweaver.no_note"), detailX, detailY, 0x666666, false);
+            } else {
+                String noteText = "备注: " + note;
+                int maxWidth = 120; // 右侧面板可用宽度
+                List<FormattedCharSequence> lines = font.split(Component.literal(noteText), maxWidth);
+                int yOffset = 0;
+                for (FormattedCharSequence line : lines) {
+                    guiGraphics.drawString(font, line, detailX, detailY + yOffset, 0xCCCCCC, false);
+                    yOffset += 9; // 行高
+                }
+            }
+        }
     }
 
 
@@ -306,27 +427,6 @@ public class SpellStorageScreen extends Screen {
     }
 
 
-
-    //打开绑定界面
-    /*private void openSlotSelectionMenu(double x, double y, StoredSpell spell) {
-        Minecraft.getInstance().setScreen(new SlotSelectionScreen(
-                this, // 传入当前屏幕作为父屏幕
-                slot -> {
-                    ModMessage.sendToServer(new BindSpellC2SPacket(slot,spell.getId()));
-                    //ClientPlayerStorageData.getPlayerSpellStorage().bindSpellToSlot(slot,spell.getId());
-                    // 视觉反馈
-                    player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.5f, 1.0f);
-                    player.displayClientMessage(
-                            Component.translatable("gui.spell_bound",
-                                    spell.getName(),
-                                    slot + 1),
-                            true
-                    );
-                }
-        ));
-    }
-
-     */
     private void openSlotSelectionMenu(double x, double y, StoredSpell spell) {
         Minecraft.getInstance().setScreen(new SlotSelectionScreen(
                 this,
@@ -355,6 +455,10 @@ public class SpellStorageScreen extends Screen {
         Up.active=true;
         Down.active=true;
         backButton.active=true;
+        //2026.5.24新增
+        exportButton.active = hasSelection;
+        importButton.active = ClientPlayerStorageData.getPlayerSpellStorage().getSpells().size() < 27;
+        editNoteButton.active = hasSelection;
     }
 
 
@@ -363,7 +467,6 @@ public class SpellStorageScreen extends Screen {
         if (selectedIndex >= 0 && selectedIndex < displayedSpells.size()) {
             StoredSpell spell = displayedSpells.get(selectedIndex);//根据索引获取法术
             // 发送施法请求到服务器
-            //NetworkHandler.sendToServer(new CastSpellPacket(spell.getId()));
             ModMessage.sendToServer(new SpellCastingC2SPacket(spell.getSequenceNode().serializeNBT()));
 
             this.onClose();//关闭GUI
@@ -472,108 +575,6 @@ public class SpellStorageScreen extends Screen {
         }
     }
 
-
-
-
-    //槽位选择弹出菜单(新增界面
-  /*  class SlotSelectionScreen extends Screen {
-        private final Consumer<Integer> slotConsumer=null;
-
-        protected SlotSelectionScreen(Component title) {
-            super(title);
-        }
-
-        protected void init() {
-            for (int i = 0; i < 9; i++) {
-                int finalI = i;
-                this.addRenderableWidget(Button.builder(Component.literal(String.valueOf(i + 1)), btn -> {
-                            slotConsumer.accept(finalI);
-                            this.onClose();
-                        })
-                        .pos((int) (width * 0.5f - 50 + (i % 3) * 35),
-                                (int) (height * 0.5f - 30 + (i / 3) * 25))
-                        .size(30, 20)
-                        .build());
-            }
-        }
-    }
-
-   */
-
-    /*class SlotSelectionScreen extends Screen {
-        private final Screen parentScreen;
-        private final Consumer<Integer> slotConsumer;
-
-        public SlotSelectionScreen(Screen parentScreen, Consumer<Integer> slotConsumer) {
-            super(Component.translatable("gui.select_slot.title"));
-            this.parentScreen = parentScreen;
-            this.slotConsumer = slotConsumer;
-        }
-
-        @Override
-        protected void init() {
-            super.init();
-
-            int centerX = this.width / 2;
-            int centerY = this.height / 2;
-
-            // 创建 3x3 网格的槽位按钮
-            for (int slot = 0; slot < 9; slot++) {
-                int row = slot / 3;
-                int col = slot % 3;
-
-                int finalSlot = slot;
-                this.addRenderableWidget(Button.builder(
-                                Component.literal(String.valueOf(slot + 1)),
-                                btn -> {
-                                    slotConsumer.accept(finalSlot);
-                                    Minecraft.getInstance().setScreen(parentScreen);
-                                })
-                        .pos(centerX - 45 + col * 30, centerY - 30 + row * 25)
-                        .size(25, 20)
-                        .build());
-            }
-
-            // 添加取消按钮
-            this.addRenderableWidget(Button.builder(
-                            Component.translatable("gui.cancel"),
-                            btn -> Minecraft.getInstance().setScreen(parentScreen))
-                    .pos(centerX - 40, centerY + 40)
-                    .size(80, 20)
-                    .build());
-        }
-
-        @Override
-        public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-            this.renderBackground(guiGraphics);
-            super.render(guiGraphics, mouseX, mouseY, partialTicks);
-
-            // 绘制标题
-            guiGraphics.drawCenteredString(
-                    this.font,
-                    this.title,
-                    this.width / 2,
-                    20,
-                    0xFFFFFF
-            );
-
-            // 绘制提示
-            guiGraphics.drawCenteredString(
-                    this.font,
-                    Component.translatable("gui.select_slot.prompt"),
-                    this.width / 2,
-                    40,
-                    0xA0A0A0
-            );
-        }
-
-        @Override
-        public void onClose() {
-            Minecraft.getInstance().setScreen(parentScreen);
-        }
-    }
-
-     */
 
     class SlotSelectionScreen extends Screen {
         private final Screen parentScreen;
@@ -709,4 +710,326 @@ public class SpellStorageScreen extends Screen {
         }
     }
 
+    //2026.5.24，署名界面
+    class AuthorSignScreen extends Screen {
+        private final SpellStorageScreen parent;
+        private final StoredSpell spell;
+        private EditBox nameField;
+
+        public AuthorSignScreen(SpellStorageScreen parent, StoredSpell spell) {
+            super(Component.translatable("gui.spellweaver.author_sign"));
+            this.parent = parent;
+            this.spell = spell;
+        }
+
+        @Override
+        protected void init() {
+            int centerX = this.width / 2;
+            int centerY = this.height / 2;
+
+            String defaultName = "";
+            if (Minecraft.getInstance().player != null) {
+                defaultName = Minecraft.getInstance().player.getName().getString();
+            }
+
+            this.nameField = new EditBox(font, centerX - 100, centerY - 20, 200, 20,
+                    Component.translatable("gui.author"));
+            this.nameField.setValue(defaultName);
+            this.addRenderableWidget(nameField);
+
+            this.addRenderableWidget(Button.builder(Component.translatable("gui.confirm"), button -> {
+                String author = nameField.getValue().trim();
+                if (author.isEmpty()) {
+                    author = "佚名";
+                }
+                exportSpell(spell, author);
+                this.onClose();
+            }).pos(centerX - 50, centerY + 20).size(100, 20).build());
+
+            this.addRenderableWidget(Button.builder(Component.translatable("gui.cancel"), button -> this.onClose())
+                    .pos(centerX - 50, centerY + 50).size(100, 20).build());
+        }
+
+        @Override
+        public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+            this.renderBackground(guiGraphics);
+            super.render(guiGraphics, mouseX, mouseY, partialTicks);
+            guiGraphics.drawCenteredString(font, this.title, this.width / 2, 40, 0xFFFFFF);
+        }
+
+        @Override
+        public void onClose() {
+            Minecraft.getInstance().setScreen(parent);
+        }
+    }
+
+    private void openAuthorSignScreen() {
+        if (selectedSpell != null) {
+            Minecraft.getInstance().setScreen(new AuthorSignScreen(this, selectedSpell));
+        }
+    }
+
+    //2026.5.24导入界面
+    class ImportSpellScreen extends Screen {
+        private final SpellStorageScreen parent;
+        private EditBox pasteBox;
+
+        public ImportSpellScreen(SpellStorageScreen parent) {
+            super(Component.translatable("gui.spellweaver.import"));
+            this.parent = parent;
+        }
+
+        @Override
+        protected void init() {
+            int centerX = this.width / 2;
+            int centerY = this.height / 2;
+
+            this.pasteBox = new EditBox(font, centerX - 150, centerY - 40, 300, 40,
+                    Component.translatable("gui.paste_here"));
+            this.pasteBox.setMaxLength(4096);
+            this.addRenderableWidget(pasteBox);
+
+            this.addRenderableWidget(Button.builder(Component.translatable("gui.confirm"), button -> {
+                String input = pasteBox.getValue().trim();
+                if (importSpell(input)) {
+                    this.onClose();
+                }
+            }).pos(centerX - 50, centerY + 20).size(100, 20).build());
+
+            this.addRenderableWidget(Button.builder(Component.translatable("gui.cancel"), btn -> this.onClose())
+                    .pos(centerX - 50, centerY + 50).size(100, 20).build());
+        }
+
+        @Override
+        public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+            this.renderBackground(guiGraphics);
+            super.render(guiGraphics, mouseX, mouseY, partialTicks);
+            guiGraphics.drawCenteredString(font, this.title, this.width / 2, 20, 0xFFFFFF);
+        }
+
+        @Override
+        public void onClose() {
+            Minecraft.getInstance().setScreen(parent);
+        }
+    }
+
+    private void openImportScreen() {
+        Minecraft.getInstance().setScreen(new ImportSpellScreen(this));
+    }
+
+    //2026.5.24覆盖确认界面
+    class ConfirmOverwriteScreen extends Screen {
+        private final SpellStorageScreen parent;
+        private final ImportSpellScreen importScreen;
+        private final StoredSpell newSpell;
+        private final StoredSpell oldSpell;
+
+        public ConfirmOverwriteScreen(SpellStorageScreen parent, ImportSpellScreen importScreen,
+                                      StoredSpell newSpell, StoredSpell oldSpell) {
+            super(Component.literal("覆盖法术？"));
+            this.parent = parent;
+            this.importScreen = importScreen;
+            this.newSpell = newSpell;
+            this.oldSpell = oldSpell;
+        }
+
+        @Override
+        protected void init() {
+            int cx = this.width / 2;
+            int cy = this.height / 2;
+
+            this.addRenderableWidget(Button.builder(Component.literal("覆盖"), btn -> {
+                // 发送覆盖请求
+                ModMessage.sendToServer(new ImportSpellC2SPacket(
+                        newSpell.getName(),
+                        newSpell.getSequenceNode().serializeNBT(),
+                        newSpell.getAuthors(),
+                        oldSpell.getId()
+                ));
+                // 乐观更新
+                PlayerSpellStorage storage = ClientPlayerStorageData.getPlayerSpellStorage();
+                storage.getSpells().put(oldSpell.getId(), newSpell);
+                player.displayClientMessage(Component.literal("已覆盖法术：" + newSpell.getName()), false);
+                this.onClose();
+                importScreen.onClose();
+                parent.refreshSpells();
+            }).pos(cx - 50, cy - 10).size(100, 20).build());
+
+            this.addRenderableWidget(Button.builder(Component.literal("新建"), btban -> {
+                // 作为新法术
+                if (ClientPlayerStorageData.getPlayerSpellStorage().getSpells().size() >= 27) {
+                    player.displayClientMessage(Component.literal("存储已满！"), false);
+                    return;
+                }
+                UUID newId = UUID.randomUUID();
+                StoredSpell copySpell = new StoredSpell(newId, newSpell.getName(), newSpell.getSequenceNode(), newSpell.getAuthors(),"");
+                ModMessage.sendToServer(new ImportSpellC2SPacket(
+                        copySpell.getName(),
+                        copySpell.getSequenceNode().serializeNBT(),
+                        copySpell.getAuthors(),
+                        null
+                ));
+                ClientPlayerStorageData.getPlayerSpellStorage().getSpells().put(newId, copySpell);
+                player.displayClientMessage(Component.literal("已导入为新法术：" + copySpell.getName()), false);
+                this.onClose();
+                importScreen.onClose();
+                parent.refreshSpells();
+            }).pos(cx - 50, cy + 20).size(100, 20).build());
+        }
+
+        @Override
+        public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+            renderBackground(guiGraphics);
+            super.render(guiGraphics, mouseX, mouseY, partialTicks);
+            guiGraphics.drawCenteredString(font, "法术已存在，要覆盖吗？", this.width / 2, 40, 0xFFFFFF);
+        }
+
+        @Override
+        public void onClose() {
+            Minecraft.getInstance().setScreen(importScreen); // 返回导入界面
+        }
+    }
+
+
+    private void exportSpell(StoredSpell spell, String author) {
+        //本地添加作者
+        spell.addAuthor(author);
+        // 更新作者列表
+        ModMessage.sendToServer(new UpdateSpellAuthorsC2SPacket(spell.getId(), new ArrayList<>(spell.getAuthors())));
+        // 生成导出字符串
+        String exportString = generateExportString(spell);
+        //  复制到剪贴板
+        Minecraft.getInstance().keyboardHandler.setClipboard(exportString);
+        // 通知玩家
+        player.displayClientMessage(
+                Component.translatable("gui.spellweaver.export.success", spell.getName(), author), false);
+        refreshSpells();
+    }
+    //导出方法
+    private String generateExportString(StoredSpell spell) {
+        CompoundTag exportTag = spell.serialize();
+        //版本信息不要
+       // exportTag.putInt("exportVersion", 1);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            NbtIo.writeCompressed(exportTag, baos);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+        byte[] bytes = baos.toByteArray();
+        return "SPELLWEAVER_SPELL:" + Base64.getEncoder().encodeToString(bytes);
+    }
+    //导入方法
+    private boolean importSpell(String input) {
+        if (!input.startsWith("SPELLWEAVER_SPELL:")) {
+            player.displayClientMessage(Component.literal("无效的法术数据！"), false);
+            return false;
+        }
+        String base64 = input.substring("SPELLWEAVER_SPELL:".length());
+        byte[] bytes;
+        try {
+            bytes = Base64.getDecoder().decode(base64);
+        } catch (IllegalArgumentException e) {
+            player.displayClientMessage(Component.literal("法术数据解码失败！"), false);
+            return false;
+        }
+
+        CompoundTag importTag;
+        try {
+            importTag = NbtIo.readCompressed(new ByteArrayInputStream(bytes));
+        } catch (IOException e) {
+            player.displayClientMessage(Component.literal("无法读取法术数据！"), false);
+            return false;
+        }
+
+        StoredSpell importedSpell;
+        try {
+            importedSpell = StoredSpell.deserialize(importTag);
+        } catch (Exception e) {
+            player.displayClientMessage(Component.literal("法术数据损坏！"), false);
+            return false;
+        }
+
+        PlayerSpellStorage storage = ClientPlayerStorageData.getPlayerSpellStorage();
+        Optional<StoredSpell> existing = storage.getSpell(importedSpell.getId());
+
+        if (existing.isPresent()) {
+            // 弹窗询问覆盖
+            Minecraft.getInstance().setScreen(new ConfirmOverwriteScreen(this, (ImportSpellScreen) Minecraft.getInstance().screen, importedSpell, existing.get()));
+            return false;
+        } else {
+            // 直接新增
+            if (storage.getSpells().size() >=  PlayerSpellStorage.MAX_STORED_SPELLS) {
+                player.displayClientMessage(Component.literal("存储已满，无法导入！"), false);
+                return false;
+            }
+            ModMessage.sendToServer(new ImportSpellC2SPacket(
+                    importedSpell.getName(),
+                    importedSpell.getSequenceNode().serializeNBT(),
+                    importedSpell.getAuthors(),
+                    null
+            ));
+            // 本地更新
+            storage.getSpells().put(importedSpell.getId(), importedSpell);
+            player.displayClientMessage(Component.literal("导入成功：" + importedSpell.getName()), false);
+            refreshSpells();
+            return true;
+        }
+    }
+
+    class NoteEditScreen extends Screen {
+        private final SpellStorageScreen parent;
+        private final StoredSpell spell;
+        private EditBox noteField;
+
+        public NoteEditScreen(SpellStorageScreen parent, StoredSpell spell) {
+            super(Component.translatable("gui.spellweaver.edit_note"));
+            this.parent = parent;
+            this.spell = spell;
+        }
+
+        @Override
+        protected void init() {
+            int centerX = this.width / 2;
+            int centerY = this.height / 2;
+
+            this.noteField = new EditBox(font, centerX - 100, centerY - 20, 200, 40,
+                    Component.translatable("gui.note"));
+            this.noteField.setMaxLength(256);
+            this.noteField.setValue(spell.getNote());
+            this.addRenderableWidget(noteField);
+
+            this.addRenderableWidget(Button.builder(Component.translatable("gui.confirm"), btn -> {
+                String newNote = noteField.getValue().trim();
+                spell.setNote(newNote);
+                PlayerSpellStorage storage = ClientPlayerStorageData.getPlayerSpellStorage();
+                storage.getSpell(spell.getId()).ifPresent(s -> s.setNote(newNote));
+                ModMessage.sendToServer(new UpdateSpellNoteC2SPacket(spell.getId(), newNote));
+                Spellweaver.getLOGGER().debug("[Spellweaver/SpellStorageScreen/NoteEditScreen]备注信息已同步服务端");
+                parent.refreshSpells();
+                this.onClose();
+            }).pos(centerX - 50, centerY + 30).size(100, 20).build());
+            this.addRenderableWidget(Button.builder(Component.translatable("gui.cancel"), btn -> this.onClose())
+                    .pos(centerX - 50, centerY + 55).size(100, 20).build());
+        }
+
+        @Override
+        public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+            this.renderBackground(guiGraphics);
+            super.render(guiGraphics, mouseX, mouseY, partialTicks);
+            guiGraphics.drawCenteredString(font, this.title, this.width / 2, 40, 0xFFFFFF);
+        }
+
+        @Override
+        public void onClose() {
+            Minecraft.getInstance().setScreen(parent);
+        }
+    }
+
+    private void openNoteEditScreen() {
+        if (selectedSpell != null) {
+            Minecraft.getInstance().setScreen(new NoteEditScreen(this, selectedSpell));
+        }
+    }
 }
