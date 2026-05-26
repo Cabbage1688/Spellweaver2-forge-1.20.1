@@ -1329,6 +1329,21 @@ public class SpellExecutorManager {
                  ManaUtil.addManaAndSendPacket(amount, (ServerPlayer) player);
             }
         });
+        //TODO教程书，路径和特效都没做
+        executors.put("净化",context -> {
+           LivingEntity livingEntity=context.pop(LivingEntity.class);
+            List<MobEffect> toRemove = new ArrayList<>();
+            for (MobEffectInstance instance : livingEntity.getActiveEffects()) {
+                if (!instance.getEffect().isBeneficial()) {
+                    toRemove.add(instance.getEffect());
+                }
+            }
+           if(ManaUtil.subManaAndAddExpAndSendPacket(20*toRemove.size(),context)){
+                for (MobEffect effect : toRemove) {
+                    livingEntity.removeEffect(effect);
+                }
+            }
+        });
     }
     //这些方法传入的context仅用把于信息传递到魔力消耗方法
     public void drive(Vec3 velocity, Entity entity, Player player, Level level, SpellContext context){

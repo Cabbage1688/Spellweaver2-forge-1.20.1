@@ -188,7 +188,7 @@ public class SpellStorageScreen extends Screen {
                                 openNoteEditScreen();
                             }
                         })
-                        .pos(leftPos + 63, topPos + GUI_HEIGHT - 28+60-5)  // 根据实际界面调整
+                        .pos(leftPos + 63-5, topPos + GUI_HEIGHT - 28+60-5-5)
                         .size(60, 20)
                         .build()
         );
@@ -844,6 +844,7 @@ public class SpellStorageScreen extends Screen {
                         newSpell.getName(),
                         newSpell.getSequenceNode().serializeNBT(),
                         newSpell.getAuthors(),
+                        newSpell.getNote(),
                         oldSpell.getId()
                 ));
                 // 乐观更新
@@ -867,6 +868,7 @@ public class SpellStorageScreen extends Screen {
                         copySpell.getName(),
                         copySpell.getSequenceNode().serializeNBT(),
                         copySpell.getAuthors(),
+                        copySpell.getNote(),
                         null
                 ));
                 ClientPlayerStorageData.getPlayerSpellStorage().getSpells().put(newId, copySpell);
@@ -968,6 +970,7 @@ public class SpellStorageScreen extends Screen {
                     importedSpell.getName(),
                     importedSpell.getSequenceNode().serializeNBT(),
                     importedSpell.getAuthors(),
+                    importedSpell.getNote(),
                     null
             ));
             // 本地更新

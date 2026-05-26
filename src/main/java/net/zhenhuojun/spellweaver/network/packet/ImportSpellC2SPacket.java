@@ -19,12 +19,14 @@ public class ImportSpellC2SPacket {
     private final String spellName;
     private final CompoundTag spellTag;
     private final List<String> authors;
+    private final String note;
     private final UUID existingId; // null 表示新法术，非空表示覆盖
 
-    public ImportSpellC2SPacket(String spellName, CompoundTag spellTag, List<String> authors, UUID existingId) {
+    public ImportSpellC2SPacket(String spellName, CompoundTag spellTag, List<String> authors,String note,  UUID existingId) {
         this.spellName = spellName;
         this.spellTag = spellTag;
         this.authors = authors;
+        this.note = (note != null) ? note : "";
         this.existingId = existingId;
     }
 
@@ -36,11 +38,13 @@ public class ImportSpellC2SPacket {
         for (int i = 0; i < size; i++) {
             this.authors.add(buf.readUtf(64));
         }
+        this.note = buf.readUtf(256);
         if (buf.readBoolean()) {
             this.existingId = buf.readUUID();
         } else {
             this.existingId = null;
         }
+
     }
 
     public void toByte(FriendlyByteBuf buf) {
@@ -50,6 +54,7 @@ public class ImportSpellC2SPacket {
         for (String author : authors) {
             buf.writeUtf(author, 64);
         }
+        buf.writeUtf(note, 256);
         buf.writeBoolean(existingId != null);
         if (existingId != null) {
             buf.writeUUID(existingId);
@@ -73,11 +78,12 @@ public class ImportSpellC2SPacket {
                             existing.setSequenceNode(sequenceNode);
                             existing.getAuthors().clear();
                             existing.getAuthors().addAll(authors);
+                            existing.setNote(note);
                         }
                     } else {
                         // 新增法术
                         if (storage.getSpells().size() >= PlayerSpellStorage.MAX_STORED_SPELLS) return;
-                        StoredSpell newSpell = new StoredSpell(UUID.randomUUID(), spellName, sequenceNode, authors,"");
+                        StoredSpell newSpell = new StoredSpell(UUID.randomUUID(), spellName, sequenceNode, authors,note);
                         storage.getSpells().put(newSpell.getId(), newSpell);
                     }
 
