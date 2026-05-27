@@ -7,6 +7,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -21,6 +22,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
@@ -80,6 +82,7 @@ public class ModEvent {
         private static final Map<UUID, CompoundTag> DIMENSION_TRANSFER_DATA = new HashMap<>();
 
         private static final String KEY = "spellweaver_has_book";
+        private static final String MOON_KEY="spellweaver_gotten_moon_pearl";
 
         @SubscribeEvent//这byd事件会在玩家加入世界之前就执行，如果要进行玩家相关操作一定要记得空值检查
         public static void onServerTick(TickEvent.ServerTickEvent event){
@@ -601,6 +604,11 @@ public class ModEvent {
                 }
             }
         }
+        //TODO以后再说，我还要考虑考虑
+        public static void onElementHurt(LivingHurtEvent event){
+            DamageType type=event.getSource().type();
+            //switch (type)
+        }
 
         @SubscribeEvent
         public static void onLivingHurtByElement(LivingHurtEvent event) {
@@ -655,6 +663,17 @@ public class ModEvent {
             if(brokenBlock.equals(Blocks.LAPIS_ORE)||brokenBlock.equals(Blocks.DEEPSLATE_LAPIS_ORE)){
                 Level level=event.getPlayer().level();
                 final float chance=0.1f;
+                //2026.5.26更新，如果玩家没有获得过魔珠，则必定获取
+                if(!event.getPlayer().getPersistentData().getCompound(Player.PERSISTED_NBT_TAG).getBoolean(MOON_KEY)){
+                    event.getPlayer().getPersistentData().getCompound(Player.PERSISTED_NBT_TAG).putBoolean(MOON_KEY,true);
+                    ItemEntity itemEntity=new ItemEntity( level,
+                            pos.getX() + 0.5,
+                            pos.getY() + 0.5,
+                            pos.getZ() + 0.5,
+                            new ItemStack(ModItems.MOON_PEARL.get()));
+                    level.addFreshEntity(itemEntity);
+                    return;
+                }
                 if(level.random.nextFloat()<chance){
                     ItemEntity itemEntity=new ItemEntity( level,
                             pos.getX() + 0.5,

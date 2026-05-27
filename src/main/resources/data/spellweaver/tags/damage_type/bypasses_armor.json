@@ -1,0 +1,10 @@
+{
+  "values": [
+    "spellweaver:element_fire",
+    "spellweaver:element_water",
+    "spellweaver:element_lighting",
+    "spellweaver:element_ice",
+    "spellweaver:element_wind",
+    "spellweaver:element_ender"
+  ]
+}

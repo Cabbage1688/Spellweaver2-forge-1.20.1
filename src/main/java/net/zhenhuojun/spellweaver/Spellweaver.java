@@ -8,6 +8,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.zhenhuojun.spellweaver.block.ModBlockEntities;
 import net.zhenhuojun.spellweaver.block.ModBlocks;
 import net.zhenhuojun.spellweaver.capability.provider.mana.ScrollSpellProvider;
+import net.zhenhuojun.spellweaver.damage_type.ModDamageTypes;
 import net.zhenhuojun.spellweaver.entity.ModEntities;
 import net.zhenhuojun.spellweaver.item.ModCreativeTable;
 import net.zhenhuojun.spellweaver.item.ModItems;

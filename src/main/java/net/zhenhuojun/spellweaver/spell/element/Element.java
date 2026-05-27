@@ -111,6 +111,8 @@ public class Element {
         }
         // 传导：水（新） + 雷（顶） → 附加一段雷伤（固定值），清除两者
         else if (newType == ElementType.WATER && topType == ElementType.LIGHTING) {
+            entity.invulnerableTime = 0;
+            entity.hurtTime = 0; //重置 hurt 动画计时
             Vec3 center = entity.getBoundingBox().getCenter();
             ModMessage.sendToClients(new ReactionEffectS2CPacket(center,  ReactionEffectS2CPacket.ReactionType.CONDUCT));
 
@@ -126,7 +128,8 @@ public class Element {
         else if ((newType == ElementType.FIRE && topType == ElementType.LIGHTING) ||
                 (newType == ElementType.LIGHTING && topType == ElementType.FIRE)) {
 
-
+            entity.invulnerableTime = 0;
+            entity.hurtTime = 0; //重置 hurt 动画计时
             //explode方法的第一个参数可以填null,即没有爆炸源。填了爆炸源实体会导致爆炸源不受伤。
             entity.level().explode(null, entity.getX(), entity.getY(), entity.getZ(),
                     3.0f, false, Level.ExplosionInteraction.NONE);
@@ -175,6 +178,9 @@ public class Element {
                 mob.setNoAi(true);
             }
             elementStack.remove(elementStack.size() - 1);
+
+            entity.invulnerableTime = 0;
+            entity.hurtTime = 0; //重置 hurt 动画计时
             return false;
         }
         // 中和：水+火 或 火+水 → 攻击伤害降低30%，清除两者
@@ -222,7 +228,8 @@ public class Element {
         }
         // 扩散（火）：风（新） + 火（顶） → 造成范围火伤，清除风，火消耗,点燃触发反应的实体
         else if (newType == ElementType.WIND && topType == ElementType.FIRE) {
-
+            entity.invulnerableTime = 0;
+            entity.hurtTime = 0; //重置 hurt 动画计时
             ModMessage.sendToClients(new SpreadReactionS2CPacket(entity.position(),0xFF6A00));
             //ModMessage.sendToClients(new ManaBallEffectS2CPacket(entity.position(),0xFF6A00));
 
@@ -256,7 +263,8 @@ public class Element {
         }
         // 扩散（冰）：风（新） + 冰（顶） → 造成范围冰伤，清除风，冰消耗
         else if (newType == ElementType.WIND && topType == ElementType.ICE) {
-
+            entity.invulnerableTime = 0;
+            entity.hurtTime = 0; //重置 hurt 动画计时
             ModMessage.sendToClients(new SpreadReactionS2CPacket(entity.position(),0xF0F8FF));
            //ModMessage.sendToClients(new ManaBallEffectS2CPacket(entity.position(),0xF0F8FF));
 
@@ -272,7 +280,8 @@ public class Element {
         }
         // 扩散（水）：风（新） + 水（顶） → 将水附着扩散至周围实体，清除风，水保留
         else if (newType == ElementType.WIND && topType == ElementType.WATER) {
-
+            entity.invulnerableTime = 0;
+            entity.hurtTime = 0; //重置 hurt 动画计时
             ModMessage.sendToClients(new SpreadReactionS2CPacket(entity.position(),0x1E90FF));
             //ModMessage.sendToClients(new ManaBallEffectS2CPacket(entity.position(),0x1E90FF));
 
@@ -304,7 +313,8 @@ public class Element {
         // 虚空侵蚀(水侵反应)：水+末影 或 末影+水 → 附加虚空伤，清除两者
         else if ((newType == ElementType.WATER && topType == ElementType.ENDER) ||
                 (newType == ElementType.ENDER && topType == ElementType.WATER)) {
-
+            entity.invulnerableTime = 0;
+            entity.hurtTime = 0; //重置 hurt 动画计时
             float damage = 10.0f;
             /*float health=entity.getHealth();
             if(health-damage>0){

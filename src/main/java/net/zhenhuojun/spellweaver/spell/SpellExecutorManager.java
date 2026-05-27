@@ -2,7 +2,9 @@ package net.zhenhuojun.spellweaver.spell;
 
 //import com.ibm.icu.impl.Pair;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -11,6 +13,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -44,6 +47,7 @@ import net.zhenhuojun.spellweaver.capability.impl.mana.ManaSource;
 import net.zhenhuojun.spellweaver.capability.impl.mana.ManaUtil;
 import net.zhenhuojun.spellweaver.capability.provider.mana.PlayerLongTermVariablesProvider;
 import net.zhenhuojun.spellweaver.capability.provider.mana.PlayerManaProvider;
+import net.zhenhuojun.spellweaver.damage_type.ModDamageTypes;
 import net.zhenhuojun.spellweaver.entity.ModEntities;
 import net.zhenhuojun.spellweaver.entity.impl.ManaBall;
 import net.zhenhuojun.spellweaver.entity.util.MagicLightUtils;
@@ -1202,7 +1206,8 @@ public class SpellExecutorManager {
             if (!context.level.isClientSide) {
                 Player player = context.player;
                 if (player != null) {
-                    double manaCost = Math.pow(distance, 1.5);
+                    //double manaCost = Math.pow(distance, 1.5);
+                    double manaCost=0.4105 * (Math.exp(0.16 * distance) - 1);
                     if (ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)) {
                         // 使用原版 pick，精确获取方块命中
                         BlockHitResult hitResult = (BlockHitResult) player.pick(distance, 0.0F, false);
@@ -1230,7 +1235,8 @@ public class SpellExecutorManager {
             if (!context.level.isClientSide) {
                 Player player = context.player;
                 if (player != null) {
-                    double manaCost = Math.pow(distance, 1.5);
+                    //double manaCost = Math.pow(distance, 1.5);
+                    double manaCost=0.4105 * (Math.exp(0.16 * distance) - 1);
                     if (ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)) {
                         Vec3 eyePos = player.getEyePosition();
                         Vec3 viewVec = player.getViewVector(1.0F);
@@ -1502,81 +1508,102 @@ public class SpellExecutorManager {
     /**
      *由于增幅反应需要标记，逻辑上元素附着和元素反应判定先于直伤，因此应该在反应后消除无敌帧而不是在这里
      */
+    //TODO 以后可能会修改这里，改成在事件监听里检测伤害类型而不是在这里计算反应
     public void elementAttack(ElementType type,double attackLevel,LivingEntity entity,Player player,Level level,SpellContext context){
         double manaCost=Math.pow(5+19+attackLevel,1+attackLevel/10);
         if(!level.isClientSide) {
             if (player != null&&attackLevel>0) {
                 if (ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)) {
-                    DamageSource magicSource = player.damageSources().indirectMagic(player, player); // 第一个参数是直接来源（魔法本身），第二个是责任实体
+                    //DamageSource magicSource = player.damageSources().indirectMagic(player, player); // 第一个参数是直接来源（魔法本身），第二个是责任实体
                     switch (type) {
                         case WATER -> {
+                            DamageSource source = new DamageSource(
+                                    level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
+                                            .getHolderOrThrow(ModDamageTypes.ELEMENT_WATER),player,player
+                            );
                             Element.applyElement(entity,ElementType.WATER,200);
                             float damage= (float) (8*attackLevel);
                             if(entity.getPersistentData().contains("water_or_fire_attack_down")){
                                 entity.getPersistentData().remove("water_or_fire_attack_down");
-                                //entity.hurt(entity.damageSources().magic(),0.7f*damage);
-                                entity.hurt(magicSource, 0.7f*damage);
+                                //entity.hurt(magicSource, 0.7f*damage);
+                                entity.hurt(source, 0.7f*damage);
                             }else {
-                                //entity.hurt(entity.damageSources().magic(),damage);
-                                entity.hurt(magicSource, damage);
+                                //entity.hurt(magicSource, damage);
+                                entity.hurt(source, damage);
                             }
                             if(entity.isOnFire()){
                                 entity.extinguishFire();
                             }
                         }
                         case FIRE -> {
+                            DamageSource source = new DamageSource(
+                                    level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
+                                            .getHolderOrThrow(ModDamageTypes.ELEMENT_FIRE),player,player
+                            );
                             Element.applyElement(entity,ElementType.FIRE,200);
                             float damage= (float) (12*attackLevel);
                             if(entity.getPersistentData().contains("fire_attack_up")){
                                 entity.getPersistentData().remove("fire_attack_up");
-                                //entity.hurt(entity.damageSources().magic(),1.3f*damage);
-                                entity.hurt(magicSource, 1.3f*damage);
+                               // entity.hurt(magicSource, 1.3f*damage);
+                                entity.hurt(source, 1.3f*damage);
                             }else if(entity.getPersistentData().contains("water_or_fire_attack_down")){
                                 entity.getPersistentData().remove("water_or_fire_attack_down");
-                                //entity.hurt(entity.damageSources().magic(),0.7f*damage);
-                                entity.hurt(magicSource, 0.7f*damage);
+                                //entity.hurt(magicSource, 0.7f*damage);
+                                entity.hurt(source, 0.7f*damage);
                             } else if (entity.getPersistentData().contains("fire_or_ice_attack_down")) {
                                 entity.getPersistentData().remove("fire_or_ice_attack_down");
-                               // entity.hurt(entity.damageSources().magic(),0.7f*damage);
-                                entity.hurt(magicSource, 0.7f*damage);
+                               // entity.hurt(magicSource, 0.7f*damage);
+                                entity.hurt(source, 0.7f*damage);
                             }else {
-                                //entity.hurt(entity.damageSources().magic(),damage);
-                                entity.hurt(magicSource, damage);
+                                //entity.hurt(magicSource, damage);
+                                entity.hurt(source, damage);
                             }
                         }
                         case LIGHTING -> {
+                            DamageSource source = new DamageSource(
+                                    level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
+                                            .getHolderOrThrow(ModDamageTypes.ELEMENT_LIGHTNING),player,player
+                            );
                             Element.applyElement(entity,ElementType.LIGHTING,200);
                             float damage= (float) (10*attackLevel);
                             if(entity.getPersistentData().contains("lightning_attack_up")){
                                 entity.getPersistentData().remove("lightning_attack_up");
-                                //entity.hurt(entity.damageSources().magic(),1.5f*damage);
-                                entity.hurt(magicSource, 1.5f*damage);
+                                //entity.hurt(magicSource, 1.5f*damage);
+                                entity.hurt(source, 1.5f*damage);
                             }else{
-                                //entity.hurt(entity.damageSources().magic(),damage);
-                                entity.hurt(magicSource, damage);
+                                //entity.hurt(magicSource, damage);
+                                entity.hurt(source, damage);
                             }
                         }
                         case ICE -> {
+                            DamageSource source = new DamageSource(
+                                    level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
+                                            .getHolderOrThrow(ModDamageTypes.ELEMENT_ICE),player,player
+                            );
                             Element.applyElement(entity,ElementType.ICE,200);
                             float damage= (float) (12*attackLevel);
                             if(entity.getPersistentData().contains("fire_or_ice_attack_down")){
                                 entity.getPersistentData().remove("fire_or_ice_attack_down");
-                                //entity.hurt(entity.damageSources().magic(),0.7f*damage);
-                                entity.hurt(magicSource, 0.7f*damage);
+                                //entity.hurt(magicSource, 0.7f*damage);
+                                entity.hurt(source, 0.7f*damage);
                             } else if (entity.getPersistentData().contains("ice_attack_up")) {
                                 entity.getPersistentData().remove("ice_attack_up");
-                                //entity.hurt(entity.damageSources().magic(),1.3f*damage);
-                                entity.hurt(magicSource, 1.3f*damage);
+                                //entity.hurt(magicSource, 1.3f*damage);
+                                entity.hurt(source, 1.3f*damage);
                             }else {
-                                //entity.hurt(entity.damageSources().magic(),damage);
-                                entity.hurt(magicSource, damage);
+                               // entity.hurt(magicSource, damage);
+                                entity.hurt(source, damage);
                             }
                         }
                         case WIND -> {
+                            DamageSource source = new DamageSource(
+                                    level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
+                                            .getHolderOrThrow(ModDamageTypes.ELEMENT_WIND),player,player
+                            );
                             Element.applyElement(entity,ElementType.WIND,100);
                             float damage= (float) (9*attackLevel);
-                            //entity.hurt(entity.damageSources().magic(),damage);
-                            entity.hurt(magicSource, damage);
+                            //entity.hurt(magicSource, damage);
+                            entity.hurt(source, damage);
 
                         }
                         /*case STONE -> {
@@ -1589,17 +1616,18 @@ public class SpellExecutorManager {
 
                          */
                         case ENDER -> {
+                            DamageSource source = new DamageSource(
+                                    level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
+                                            .getHolderOrThrow(ModDamageTypes.ELEMENT_ENDER),player,player
+                            );
                             Element.applyElement(entity,ElementType.ENDER,200);
                             float damage= (float) (10*attackLevel);
-                            //entity.hurt(entity.damageSources().magic(),damage);
                             Spellweaver.getLOGGER().debug("[Spellweaver:SpellExecutorManager/elementAttack]末影元素伤害前血量{}",entity.getHealth());
-                            entity.hurt(magicSource, damage);
+                            //entity.hurt(magicSource, damage);
+                            entity.hurt(source, damage);
                             Spellweaver.getLOGGER().debug("[Spellweaver:SpellExecutorManager/elementAttack]末影元素伤害后血量{}",entity.getHealth());
-                            //entity.hurt(entity.damageSources().fellOutOfWorld(),damage);
                         }
                     }
-                    //entity.invulnerableTime = 0;
-                    //entity.hurtTime = 0; //重置 hurt 动画计时
                 }
             }
         }

@@ -133,8 +133,9 @@ public class ManaBottleItem extends Item {
                 double newManaInItem = manaInItem + extractAmount;
                 tag.putDouble("mana", newManaInItem);
                 Spellweaver.getLOGGER().debug("[Spellweaver:ManaBottlePacket/handle方法]物品魔力更新：{}",newManaInItem);
-
-                ManaUtil.subManaAndAddExpAndSendPacket(extractAmount,player);
+                //ManaUtil.subManaAndAddExpAndSendPacket(extractAmount,player);
+                //2026.5.26现在给魔力瓶充能不再获得魔力经验值
+                ManaUtil.subManaBecauseOfManaBottleButNotAddExpAndSendPacket(extractAmount,player);
                 Spellweaver.getLOGGER().debug("[Spellweaver:ManaBottlePacket/handle方法]玩家注入魔力：{}",extractAmount);
             }else {
                 double newManaInItem = Math.min(8, ManaUtil.CheckMana(player));

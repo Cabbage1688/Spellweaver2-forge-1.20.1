@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -20,6 +21,7 @@ import net.zhenhuojun.spellweaver.network.ModMessage;
 import net.zhenhuojun.spellweaver.network.packet.ManaBallEffectS2CPacket;
 import net.zhenhuojun.spellweaver.spell.RuneRegister;
 import net.zhenhuojun.spellweaver.spell.util.RunesExecuteMethod;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 致阅读此代码的人：
@@ -80,6 +82,15 @@ public class ManaBall extends AbstractHurtingProjectile {
             return false;
         }
         return super.canHitEntity(target);
+    }
+    //2026.5.26增强，魔法飞弹命中后会重置无敌帧数
+    @Override
+    public void onHitEntity(@NotNull EntityHitResult result){
+        super.onHitEntity(result);
+        if (!this.level().isClientSide && result.getEntity() instanceof LivingEntity entity) {
+            entity.invulnerableTime = 0;
+            entity.hurtTime = 0;
+        }
     }
 
 

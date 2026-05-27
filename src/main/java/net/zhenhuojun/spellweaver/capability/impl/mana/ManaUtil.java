@@ -53,6 +53,21 @@ public class ManaUtil {
             });
         }
     }
+    //2026.5.26
+    public static void subManaBecauseOfManaBottleButNotAddExpAndSendPacket(double sub, ServerPlayer player){
+        if(player!=null){
+            //AtomicBoolean result = new AtomicBoolean(false);
+            player.getCapability(PlayerManaProvider.PLAYER_MANA).ifPresent(playerMana -> {
+                if(playerMana.getMana()>=sub){
+                    playerMana.subMana(sub);
+                    ModMessage.sendToPlayer(new ManaChangeS2CPacket(playerMana.getMana(), playerMana.getMaxMana()
+                            ,playerMana.getMana_level()), player);
+                   // result.set(true);
+                }
+            });
+           // result.get();
+        }
+    }
     //布尔值显示魔力是否消耗成功
     public static boolean subManaAndAddExpAndSendPacket(double sub,ServerPlayer player){
         if(player!=null){
