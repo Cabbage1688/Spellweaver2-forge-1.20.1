@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SpellStickItem extends SwordItem {
-    private static final int ATTACK_COOLDOWN_TICKS = 20;
+   // private static final int ATTACK_COOLDOWN_TICKS = 20;
 
 
     public SpellStickItem(Tier pTier, int pAttackDamageModifier, float pAttackSpeedModifier, Properties pProperties) {
@@ -72,10 +72,10 @@ public class SpellStickItem extends SwordItem {
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         // 造成基础伤害
         boolean attacked = super.hurtEnemy(stack, target, attacker);
-        if (attacked && attacker instanceof Player player) {
-            // 设置玩家的攻击冷却
-            player.getCooldowns().addCooldown(this, ATTACK_COOLDOWN_TICKS);
-        }
+        //if (attacked && attacker instanceof Player player) {
+            // 设置玩家的攻击冷却。我发现这里tm是物品冷却不是攻击冷却，所以不要了
+           // player.getCooldowns().addCooldown(this, ATTACK_COOLDOWN_TICKS);
+        //}
         return attacked;
     }
 
