@@ -2,6 +2,7 @@ package net.zhenhuojun.spellweaver.spell.util;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -16,6 +17,7 @@ import net.zhenhuojun.spellweaver.capability.provider.mana.PlayerManaProvider;
 import net.zhenhuojun.spellweaver.spell.*;
 import net.zhenhuojun.spellweaver.spell.node.NodeResult;
 import net.zhenhuojun.spellweaver.spell.node.SequenceNode;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,9 +100,12 @@ public class RunesExecuteMethod {
         Spellweaver.getLOGGER().debug("[Spellweaver:RuneExecuteMethod/新spellLogic]法术树已推入法术管理器，法术树：{}",sequenceNode.serializeNBT());
     }
     //这个是给魔法飞弹专用的执行方法，或者说命中回调
-    public static void simpleSpellLogic(List<String> spellList, Level level, Player player, Vec3 vec3){
+    public static void simpleSpellLogic(List<String> spellList, Level level, Player player, Vec3 vec3, @Nullable Entity entity){
         SpellContext context=new SpellContext(level,player);
         context.push(vec3);
+        if(entity!=null){
+            context.entity=entity;
+        }
         if (context != null) {
             int i = 0;
             int maxIterations = 100; // 每帧最大循环的安全限制，防止主线程卡死,2026.3.16新增

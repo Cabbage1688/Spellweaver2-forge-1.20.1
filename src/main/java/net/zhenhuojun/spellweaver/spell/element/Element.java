@@ -228,6 +228,8 @@ public class Element {
         }
         // 扩散（火）：风（新） + 火（顶） → 造成范围火伤，清除风，火消耗,点燃触发反应的实体
         else if (newType == ElementType.WIND && topType == ElementType.FIRE) {
+
+            elementStack.remove(elementStack.size() - 1); // 移除火
             entity.invulnerableTime = 0;
             entity.hurtTime = 0; //重置 hurt 动画计时
             ModMessage.sendToClients(new SpreadReactionS2CPacket(entity.position(),0xFF6A00));
@@ -241,7 +243,7 @@ public class Element {
                 //target.setRemainingFireTicks(100);
                 applyElement(target,ElementType.FIRE,100);
             }
-            elementStack.remove(elementStack.size() - 1); // 移除火
+
             entity.hurt(entity.damageSources().magic(), 5.0f);
             entity.invulnerableTime = 0;
             entity.hurtTime = 0; //重置 hurt 动画计时
@@ -263,6 +265,8 @@ public class Element {
         }
         // 扩散（冰）：风（新） + 冰（顶） → 造成范围冰伤，清除风，冰消耗
         else if (newType == ElementType.WIND && topType == ElementType.ICE) {
+
+            elementStack.remove(elementStack.size() - 1); // 移除冰
             entity.invulnerableTime = 0;
             entity.hurtTime = 0; //重置 hurt 动画计时
             ModMessage.sendToClients(new SpreadReactionS2CPacket(entity.position(),0xF0F8FF));
@@ -275,11 +279,13 @@ public class Element {
                 target.hurtTime = 0; //重置 hurt 动画计时
                 applyElement(target,ElementType.ICE,100);
             }
-            elementStack.remove(elementStack.size() - 1); // 移除冰
+
             return false;
         }
         // 扩散（水）：风（新） + 水（顶） → 将水附着扩散至周围实体，清除风，水保留
         else if (newType == ElementType.WIND && topType == ElementType.WATER) {
+
+            elementStack.remove(elementStack.size() - 1);//水消耗
             entity.invulnerableTime = 0;
             entity.hurtTime = 0; //重置 hurt 动画计时
             ModMessage.sendToClients(new SpreadReactionS2CPacket(entity.position(),0x1E90FF));
@@ -293,21 +299,26 @@ public class Element {
                 target.hurtTime = 0; //重置 hurt 动画计时
                 applyElement(target, ElementType.WATER, duration); // 递归施加水
             }
-            elementStack.remove(elementStack.size() - 1);//水消耗
+
             // 风被消耗，
             return false;
+            //扩散相关都把附着元素清除放在第一句，也是因为设计缺陷，导致可能左脚踩右脚
         } else if (newType == ElementType.WATER && topType == ElementType.WIND) {
-            ModMessage.sendToClients(new SpreadReactionS2CPacket(entity.position(),0x1E90FF));
             int duration = 100; // 5秒
+            //因为我的元素系统设计缺陷，如果包含触这个反应的实体，会导致无限递归
+            entity.hurt(entity.damageSources().magic(), 2.5f);
+            entity.invulnerableTime = 0;
+            entity.hurtTime = 0; //重置 hurt 动画计时
+            elementStack.remove(elementStack.size() - 1);//风消耗
+            applyElement(entity, ElementType.WATER, duration);//消耗掉风才能给水
+            ModMessage.sendToClients(new SpreadReactionS2CPacket(entity.position(),0x1E90FF));
             AABB aabb = entity.getBoundingBox().inflate(3.0);
-            for (LivingEntity target : entity.level().getEntitiesOfClass(LivingEntity.class, aabb, e -> true)) {
+            for (LivingEntity target : entity.level().getEntitiesOfClass(LivingEntity.class, aabb, e -> e!=entity)) {
                 target.hurt(entity.damageSources().magic(), 2.5f);
                 target.invulnerableTime = 0;
                 target.hurtTime = 0; //重置 hurt 动画计时
                 applyElement(target, ElementType.WATER, duration); // 递归施加水
             }
-            elementStack.remove(elementStack.size() - 1);//水消耗
-            // 风被消耗，
             return false;
         }
         // 虚空侵蚀(水侵反应)：水+末影 或 末影+水 → 附加虚空伤，清除两者

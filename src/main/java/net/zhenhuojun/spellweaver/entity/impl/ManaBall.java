@@ -20,6 +20,7 @@ import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.network.ModMessage;
 import net.zhenhuojun.spellweaver.network.packet.ManaBallEffectS2CPacket;
 import net.zhenhuojun.spellweaver.spell.RuneRegister;
+import net.zhenhuojun.spellweaver.spell.SpellContext;
 import net.zhenhuojun.spellweaver.spell.util.RunesExecuteMethod;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,6 +35,7 @@ public class ManaBall extends AbstractHurtingProjectile {
     private RuneRegister runeRegister;
     private Player player;
     private int time=600;
+    private Entity entity;
 
 
     public ManaBall(EntityType<? extends AbstractHurtingProjectile> pEntityType, Level pLevel) {
@@ -45,6 +47,10 @@ public class ManaBall extends AbstractHurtingProjectile {
         this.runeRegister=runeRegister;
         this.player=player;
         this.setOwner(player);
+    }
+
+    public Entity getEntity() {
+        return entity;
     }
 
     public void setRuneRegister(RuneRegister runeRegister) {
@@ -62,13 +68,7 @@ public class ManaBall extends AbstractHurtingProjectile {
         if (!this.level().isClientSide) {
             if(runeRegister!=null&&runeRegister.getSpellList()!=null){
                 //执行回调
-                RunesExecuteMethod.simpleSpellLogic(runeRegister.getSpellList(),level(),player,result.getLocation());
-                //((ServerLevel)this.level()).sendParticles(ParticleTypes.WITCH,result.getLocation().x,result.getLocation().y,result.getLocation().z,50
-                       // ,0.3,0.3,0.3,0);
-
-                //level().levelEvent(2002, BlockPos.containing(result.getLocation()), 0x4B0082);
-                //这个是喷溅瞬时型药水同款特效
-                //level().levelEvent(2007, BlockPos.containing(result.getLocation()),0xE9FAFF);
+                RunesExecuteMethod.simpleSpellLogic(runeRegister.getSpellList(),level(),player,result.getLocation(),entity);
                 ModMessage.sendToClients(new ManaBallEffectS2CPacket(this.xo,this.yo,this.zo,0xE9FAFF));
             }
             this.discard();
@@ -90,6 +90,8 @@ public class ManaBall extends AbstractHurtingProjectile {
         if (!this.level().isClientSide && result.getEntity() instanceof LivingEntity entity) {
             entity.invulnerableTime = 0;
             entity.hurtTime = 0;
+            this.entity=entity;
+            Spellweaver.getLOGGER().debug("[Spellweaver/ManaBall]魔法飞弹命中实体并存储，实体{}",entity);
         }
     }
 

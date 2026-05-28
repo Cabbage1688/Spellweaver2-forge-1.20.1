@@ -408,12 +408,17 @@ public class SpellExecutorManager {
             Vec3 vec3=context.pop(Vec3.class);
             Vec3 startVec3=new Vec3(vec3.x-0.5, vec3.y-0.5,vec3.z-0.5);
             Vec3 endVec3=new Vec3(vec3.x+0.5, vec3.y+0.5,vec3.z+0.5);
-            //AABB aabb=new AABB(BlockPos.containing(vec3));
-            //AABB aabb=new AABB(startVec3,endVec3);
             AABB aabb=new AABB(vec3, vec3).inflate(0.5);
             List<Entity> entities = context.level.getEntities((Entity) null, aabb, (entity) -> true); // 第三个参数是可选的条件过滤
-            if(!entities.isEmpty()){
+            //优先从缓存获取，这个更稳定
+            if(context.entity!=null) {
+                context.push(context.entity);
+                Spellweaver.getLOGGER().debug("[Spellweaver:SpellExecutorManager/initExecutors/坐标实体符文]从缓存获取实体");
+            }else if(!entities.isEmpty()){
                 context.push(entities.get(0));
+                Spellweaver.getLOGGER().debug("[Spellweaver:SpellExecutorManager/initExecutors/坐标实体符文]直接获取实体");
+            }else {
+                Spellweaver.getLOGGER().debug("[Spellweaver:SpellExecutorManager/initExecutors/坐标实体符文]未获取到实体");
             }
         });
         //TODO：还没实装到图案,可能也不会实装，这个符文有点超过我符文序列不应包含法术结构的初衷
