@@ -12,8 +12,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -23,14 +26,12 @@ import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BoneMealItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.food.FoodData;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseFireBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -45,6 +46,7 @@ import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.block.custom.SpellMachineBlockEntity;
 import net.zhenhuojun.spellweaver.capability.impl.mana.ManaSource;
 import net.zhenhuojun.spellweaver.capability.impl.mana.ManaUtil;
+import net.zhenhuojun.spellweaver.capability.provider.mana.ManaShieldProvider;
 import net.zhenhuojun.spellweaver.capability.provider.mana.PlayerLongTermVariablesProvider;
 import net.zhenhuojun.spellweaver.capability.provider.mana.PlayerManaProvider;
 import net.zhenhuojun.spellweaver.damage_type.ModDamageTypes;
@@ -54,11 +56,10 @@ import net.zhenhuojun.spellweaver.entity.util.MagicLightUtils;
 import net.zhenhuojun.spellweaver.item.ModItems;
 import net.zhenhuojun.spellweaver.item.Util;
 import net.zhenhuojun.spellweaver.network.ModMessage;
-import net.zhenhuojun.spellweaver.network.packet.RayS2CPacket;
-import net.zhenhuojun.spellweaver.network.packet.ScrollSpellCastingC2SPacket;
-import net.zhenhuojun.spellweaver.network.packet.TeleportParticleS2CPacket;
+import net.zhenhuojun.spellweaver.network.packet.*;
 import net.zhenhuojun.spellweaver.spell.element.Element;
 import net.zhenhuojun.spellweaver.spell.element.ElementType;
+import net.zhenhuojun.spellweaver.spell.util.RelativeCoordinate;
 import net.zhenhuojun.spellweaver.spell.util.SlotReference;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -421,24 +422,7 @@ public class SpellExecutorManager {
                 Spellweaver.getLOGGER().debug("[Spellweaver:SpellExecutorManager/initExecutors/坐标实体符文]未获取到实体");
             }
         });
-        //TODO：还没实装到图案,可能也不会实装，这个符文有点超过我符文序列不应包含法术结构的初衷
-        /*executors.put("跳转",context -> {
-            if(context.isTop(Boolean.class)){
-                boolean condition=context.pop(Boolean.class);
-                double jumpTarget=context.pop(Double.class);
-                if(condition){
-                    context.jumpTarget=(int)jumpTarget;
-                }
-            }else if(context.isTop(Double.class)){
-                double jumpTarget=context.pop(Double.class);
-                boolean condition=context.pop(Boolean.class);
-                if(condition){
-                    context.jumpTarget=(int)jumpTarget;
-                }
-            }
-        });
 
-         */
         /*executors.put("实体列表",context -> {
             Vec3 startPos=context.pop(Vec3.class);
             Vec3 endPos=context.pop(Vec3.class);
@@ -722,9 +706,32 @@ public class SpellExecutorManager {
 
                 } else if (containerObj instanceof Vec3 vec) {
                     BlockPos pos = BlockPos.containing(vec);
-                    BlockEntity be = level.getBlockEntity(pos);
-                    if(be==null){
+                   //BlockEntity be = level.getBlockEntity(pos);
+                    //if(be==null){
+                    //BlockEntity be=level.getBlockEntity(pos.above());
+                    //}
+
+
+
+
+                    if (level instanceof ServerLevel serverLevel) {
+                        serverLevel.setChunkForced(pos.getX(),pos.getZ(), true);   // 强制加载
+                        //10 秒后卸载
+                        serverLevel.getServer().tell(
+                                new net.minecraft.server.TickTask(
+                                        serverLevel.getServer().getTickCount() + 200,
+                                        () -> serverLevel.setChunkForced(pos.getX(),pos.getZ(), false)
+                                )
+                        );
+                    }
+
+
+
+                    BlockEntity be;
+                    if(Math.abs(vec.x-(int)vec.x)==0.5){
                         be=level.getBlockEntity(pos.above());
+                    }else {
+                        be=level.getBlockEntity(pos);
                     }
                     if (be != null) {
                         inventory = be.getCapability(ForgeCapabilities.ITEM_HANDLER)
@@ -740,6 +747,33 @@ public class SpellExecutorManager {
                 return;
             }
             context.push(new SlotReference(level, inventory, slot, entitySource, posSource));
+        });
+        //将读取的坐标视为以entity为中心的相对坐标，并转换为世界坐标
+        executors.put("相对坐标转换",context -> {
+           if(context.isTop(Entity.class)){
+               Entity entity=context.pop(Entity.class);
+               Vec3 vec3=context.pop(Vec3.class);
+               RelativeCoordinate coordinate=new RelativeCoordinate(vec3,entity);
+               context.push(coordinate.toWorldCoordinate());
+           }else if (context.isTop(Vec3.class)){
+               Vec3 vec3=context.pop(Vec3.class);
+               Entity entity=context.pop(Entity.class);
+               RelativeCoordinate coordinate=new RelativeCoordinate(vec3,entity);
+               context.push(coordinate.toWorldCoordinate());
+           }
+        });
+
+        executors.put("表长",context -> {
+            List list=context.pop(List.class);
+            double size= list.size();
+            context.push(list);
+            context.push(size);
+        });
+
+        executors.put("物品数量",context -> {
+           SlotReference slotReference=context.pop(SlotReference.class);
+           double count=slotReference.getItem().getCount();
+           context.push(count);
         });
 
         //初始化魔力相关的Runes
@@ -849,7 +883,7 @@ public class SpellExecutorManager {
             //对direction归一化处理，用于处理击退
             Vec3 normalizedDir = direction.normalize();
             //起始位置转换为BlockPos,下面要用
-            BlockPos pos=new BlockPos((int)startPos.x(),(int)startPos.y(),(int)startPos.z());
+            BlockPos pos=BlockPos.containing(startPos);
             double manaCost=5*Math.pow(23+attackLevel,1+attackLevel/10);
             if(!context.level.isClientSide){
                 if(context.player!=null){
@@ -891,7 +925,7 @@ public class SpellExecutorManager {
                                 hitResult.getLocation() :
                                 startPos.add(normalizedDir.scale(direction.length()));
 
-                        // 3. 获取音波路径上的所有实体
+                        //获取音波路径上的所有实体
                         AABB effectArea = new AABB(startPos, endPos).inflate(1.0); // 创建一个包围盒，稍微膨胀以确保捕捉到附近的实体
                         List<LivingEntity> entities = context.level.getEntitiesOfClass(
                                 LivingEntity.class,
@@ -899,11 +933,17 @@ public class SpellExecutorManager {
                                 entity -> entity != context.player && entity.isAlive() // 过滤条件：不是施法者自己且存活
                         );
 
-                        // 4. 对每个命中的实体造成伤害和击退
+                        //对每个命中的实体造成伤害和击退
                         for (LivingEntity entity : entities) {
                             // 造成伤害
                             float damage = (float) (45.0 * attackLevel); // 基础伤害乘以强度
-                            entity.hurt(context.level.damageSources().sonicBoom(context.player), damage);
+
+                            DamageSource source = new DamageSource(
+                                    context.level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
+                                            .getHolderOrThrow(DamageTypes.SONIC_BOOM),null,context.player
+                            );
+                            //entity.hurt(context.level.damageSources().sonicBoom(context.player), damage);
+                            entity.hurt(source, damage);
                         }
                     }
                 }
@@ -1340,7 +1380,7 @@ public class SpellExecutorManager {
                  ManaUtil.addManaAndSendPacket(amount, (ServerPlayer) player);
             }
         });
-        //TODO教程书，路径和特效都没做
+
         executors.put("净化",context -> {
            LivingEntity livingEntity=context.pop(LivingEntity.class);
             List<MobEffect> toRemove = new ArrayList<>();
@@ -1352,8 +1392,296 @@ public class SpellExecutorManager {
            if(ManaUtil.subManaAndAddExpAndSendPacket(20*toRemove.size(),context)){
                 for (MobEffect effect : toRemove) {
                     livingEntity.removeEffect(effect);
+                    ModMessage.sendToClients(new PurifyEffectS2CPacket(livingEntity.position()));
                 }
             }
+        });
+
+        executors.put("修复",context -> {
+            if(context.isTop(SlotReference.class)){
+                SlotReference slotReference=context.pop(SlotReference.class);
+                double repairAmount=context.pop(Double.class);
+                repair(slotReference,repairAmount,context);
+            }else if(context.isTop(Double.class)){
+                double repairAmount=context.pop(Double.class);
+                SlotReference slotReference=context.pop(SlotReference.class);
+                repair(slotReference,repairAmount,context);
+            }
+        });
+
+        executors.put("方块放置",context -> {
+           if(context.isTop(SlotReference.class)){
+               SlotReference slotReference=context.pop(SlotReference.class);
+               Vec3 vec3=context.pop(Vec3.class);
+               cube(slotReference,vec3,context);
+           }else if(context.isTop(Vec3.class)){
+               Vec3 vec3=context.pop(Vec3.class);
+               SlotReference slotReference=context.pop(SlotReference.class);
+               cube(slotReference,vec3,context);
+           }
+        });
+
+        executors.put("物品转移", context -> {
+            if (!context.isTop(SlotReference.class)) return;
+            SlotReference source = context.pop(SlotReference.class);
+            if (!source.isValid()) return;
+            ItemStack extracted = source.extract(source.getItem().getCount(), false);
+            double manaCost=source.getItem().getCount();
+            if (extracted.isEmpty()) return;
+
+            if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost,context)){
+                if (context.isTop(SlotReference.class)) {
+                    SlotReference target = context.pop(SlotReference.class);
+                    if (!target.isValid()) {
+                        source.insert(extracted, false);
+                        return;
+                    }
+                    ItemStack remainder = target.insert(extracted, false);
+                    if (!remainder.isEmpty()) {
+                        source.insert(remainder, false);
+                    }
+                } else if (context.isTop(Vec3.class)) {
+                    Vec3 pos = context.pop(Vec3.class);
+                    BlockPos blockPos=BlockPos.containing(pos);
+
+
+
+                    if (context.level instanceof ServerLevel serverLevel) {
+                        serverLevel.setChunkForced(blockPos.getX(),blockPos.getZ(), true);   // 强制加载
+                        //10 秒后卸载
+                        serverLevel.getServer().tell(
+                                new net.minecraft.server.TickTask(
+                                        serverLevel.getServer().getTickCount() + 200,
+                                        () -> serverLevel.setChunkForced(blockPos.getX(),blockPos.getZ(), false)
+                                )
+                        );
+                    }
+
+
+
+                    Level level = context.level;
+                    if (level == null || level.isClientSide) {
+                        source.insert(extracted, false);
+                        return;
+                    }
+
+                    //BlockEntity be = level.getBlockEntity(blockPos);
+                    //if(be==null){
+                    //BlockEntity be=level.getBlockEntity(blockPos.above());
+                   // }
+                    BlockEntity be;
+                    if(Math.abs(pos.x-(int)pos.x)==0.5){
+                        be=level.getBlockEntity(blockPos.above());
+                    }else {
+                        be=level.getBlockEntity(blockPos);
+                    }
+                    if (be != null) {
+                        var handler = be.getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(null);
+                        ItemStack toInsert = extracted.copy();
+                        for (int slot = 0; slot < handler.getSlots() && !toInsert.isEmpty(); slot++) {
+                            toInsert = handler.insertItem(slot, toInsert, false);
+                        }
+                        if (!toInsert.isEmpty()) {
+                            source.insert(toInsert, false);
+                        }
+                        be.setChanged();
+                        return;
+                    }
+
+                    ItemEntity itemEntity = new ItemEntity(
+                            level,
+                            pos.x + 0.5, pos.y + 0.5, pos.z + 0.5,
+                            extracted.copy()
+                    );
+                    itemEntity.setPickUpDelay(10);
+                    level.addFreshEntity(itemEntity);
+
+                }
+            }
+        });
+
+
+        executors.put("连锁", context -> {
+            double chainDistance = context.pop(Double.class);//最大连锁距离
+            double chainAmount = context.pop(Double.class);
+            int amount = (int) chainAmount;// 最大跳数
+            Level level = context.level;
+
+            // 方块连锁分支（连通矿脉）
+            if (context.isTop(Vec3.class)) {
+                Vec3 startVec = context.pop(Vec3.class);
+                BlockPos startPos=BlockPos.containing(startVec);
+                BlockState startState = level.getBlockState(startPos);
+
+                // 起点无效
+                if (startState.isAir() || !startState.getFluidState().isEmpty()) {
+                   // context.push(new ArrayList<Vec3>());
+                    return;
+                }
+                Block startBlock = startState.getBlock();
+
+                // BFS 准备
+                Queue<BlockPos> queue = new LinkedList<>();
+                Set<BlockPos> visited = new HashSet<>();
+                List<Vec3> result = new ArrayList<>();
+
+                queue.add(startPos);
+                visited.add(startPos);
+
+                // 主循环：最多破坏 amount 个方块
+                while (!queue.isEmpty() && result.size() < amount) {
+                    BlockPos current = queue.poll();
+                    result.add(new Vec3(current.getX() + 0.5, current.getY() + 0.5, current.getZ() + 0.5));
+                    // 遍历 3x3x3 邻居
+                    for (int dx = -1; dx <= 1; dx++) {
+                        for (int dy = -1; dy <= 1; dy++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                if (dx == 0 && dy == 0 && dz == 0) continue;
+                                BlockPos neighbor = current.offset(dx, dy, dz);
+                                if (visited.contains(neighbor)) continue;
+                                BlockState state = level.getBlockState(neighbor);
+                                if (state.getBlock() == startBlock) {
+                                    visited.add(neighbor);
+                                    queue.add(neighbor);
+                                }
+                            }
+                        }
+                    }
+                }
+                context.push(result);
+            }
+            else if (context.isTop(Entity.class)) {
+                Entity startEntity = context.pop(Entity.class);
+                Player player = context.player;
+                // BFS 数据结构
+                Queue<Entity> queue = new LinkedList<>();
+                Set<Entity> visited = new HashSet<>();
+                List<Entity> result = new ArrayList<>();
+                queue.add(startEntity);
+                visited.add(startEntity);
+                // 主循环
+                while (!queue.isEmpty() && result.size() < amount) {
+                    Entity current = queue.poll();
+                    result.add(current);
+
+                    // 查找 current 周围 chainDistance 内的所有候选实体（玩家除外，存活，未访问）
+                    AABB aabb = current.getBoundingBox().inflate(chainDistance);
+                    List<Entity> nearby = level.getEntities(current, aabb,
+                            e -> e != player&&!(e instanceof ItemEntity) && !visited.contains(e) && e.isAlive());
+
+                    for (Entity neighbor : nearby) {
+                        ModMessage.sendToClients(new RayS2CPacket(
+                                current.position().add(0,1,0),
+                                neighbor.position().add(0,1,0),
+                                0xE9FAFF
+                        ));
+
+                        visited.add(neighbor);
+                        queue.add(neighbor);
+                    }
+                }
+                context.push(result);
+            }
+        });
+
+        executors.put("饱腹",context -> {
+            Entity entity=context.pop(Entity.class);
+            if(!context.level.isClientSide){
+                if(context.player!=null){
+                    if(entity instanceof Player player){
+                        FoodData food = player.getFoodData();
+                        double manaCost=2*(20-food.getFoodLevel())+5*(10-food.getSaturationLevel());
+                        if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost,context)){
+                            food.setFoodLevel(20);
+                            food.setSaturation(10.0F);
+
+                            ServerLevel serverLevel = (ServerLevel) context.level;
+                            serverLevel.playSound(null,
+                                    player.blockPosition(),
+                                    SoundEvents.GENERIC_EAT,
+                                    SoundSource.PLAYERS,
+                                    0.8F,
+                                    0.9F + player.level().random.nextFloat() * 0.2F);
+
+                            serverLevel.playSound(null,
+                                    player.blockPosition(),
+                                    SoundEvents.PLAYER_BURP,
+                                    SoundSource.PLAYERS,
+                                    0.6F,
+                                    1.0F);
+                        }
+                    }
+                }
+            }
+        });
+
+        executors.put("魔法护盾",context -> {
+            if(!context.level.isClientSide) {
+                if (context.player != null) {
+                    Player player = context.player;
+                    if (context.isTop(Double.class)) {
+                        double amount = context.pop(Double.class);
+                        if(ManaUtil.subManaAndAddExpAndSendPacket(amount,context)){
+                            player.getCapability(ManaShieldProvider.MANA_SHIELD).ifPresent(manaShield -> {
+                                manaShield.setActive(true);
+                                //manaShield.setShieldAmount(amount);
+                                manaShield.addShieldAmount(amount);
+                                ModMessage.sendToPlayer(new ManaShieldChangeS2CPacket(manaShield.isActive(),
+                                        manaShield.getShieldAmount()), (ServerPlayer) player);
+                            });
+                        }
+                    }else {
+                        player.getCapability(ManaShieldProvider.MANA_SHIELD).ifPresent(manaShield -> {
+                            manaShield.setActive(false);
+                            manaShield.setShieldAmount(0);
+                            ModMessage.sendToPlayer(new ManaShieldChangeS2CPacket(manaShield.isActive(),
+                                    manaShield.getShieldAmount()), (ServerPlayer) player);
+                        });
+                    }
+                }
+            }
+        });
+
+        executors.put("交互",context -> {
+            if(!context.level.isClientSide){
+                Level level=context.level;
+                if(context.player!=null){
+                    if(ManaUtil.subManaAndAddExpAndSendPacket(1,context)){
+                        Player player=context.player;
+                        Vec3 vec3=context.pop(Vec3.class);
+                        BlockPos pos=BlockPos.containing(vec3);
+
+                        if (level instanceof ServerLevel serverLevel) {
+                            serverLevel.setChunkForced(pos.getX(),pos.getZ(), true);   // 强制加载
+                            //10 秒后卸载
+                            serverLevel.getServer().tell(
+                                    new net.minecraft.server.TickTask(
+                                            serverLevel.getServer().getTickCount() + 200,
+                                            () -> serverLevel.setChunkForced(pos.getX(),pos.getZ(), false)
+                                    )
+                            );
+                        }
+
+
+                        BlockState state = level.getBlockState(pos);
+                        if (state.isAir()) return;
+                        BlockHitResult hitResult = new BlockHitResult(vec3, null, pos, false);
+                        // 调用方块的 use 方法，模拟右键点击
+                        InteractionResult result = state.use(level, player, InteractionHand.MAIN_HAND, hitResult);
+                    }
+                }
+            }
+        });
+        executors.put("播种",context -> {
+          if(context.isTop(Vec3.class)){
+              Vec3 vec3=context.pop(Vec3.class);
+              SlotReference slotReference=context.pop(SlotReference.class);
+              cultivate(slotReference,vec3,context);
+          }else if(context.isTop(SlotReference.class)){
+              SlotReference slotReference=context.pop(SlotReference.class);
+              Vec3 vec3=context.pop(Vec3.class);
+              cultivate(slotReference,vec3,context);
+          }
         });
     }
     //这些方法传入的context仅用把于信息传递到魔力消耗方法
@@ -1365,11 +1693,8 @@ public class SpellExecutorManager {
                 double manaCost= Math.abs(2*0.5*((entity.getDeltaMovement().add(velocity))
                         .lengthSqr()-entity.getDeltaMovement().lengthSqr()));
                 if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)){
-                    //获取实体当前速度
                     Vec3 currentVelocity = entity.getDeltaMovement();
-                    //计算新速度（在原有基础上增加）
                     Vec3 newVelocity = currentVelocity.add(velocity);
-                    //应用新速度
                     entity.setDeltaMovement(newVelocity);
                     // entity.setDeltaMovement(velocity);//直接设置速度,现在改为在原有速度上增加，更科学一些
                     Spellweaver.getLOGGER().debug("[Spellweaver:SpellExecutorManager/drive方法]为实体{}应用驱动",entity.getDisplayName());
@@ -1524,7 +1849,7 @@ public class SpellExecutorManager {
                         case WATER -> {
                             DamageSource source = new DamageSource(
                                     level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
-                                            .getHolderOrThrow(ModDamageTypes.ELEMENT_WATER),player,player
+                                            .getHolderOrThrow(ModDamageTypes.ELEMENT_WATER),null,player
                             );
                             Element.applyElement(entity,ElementType.WATER,200);
                             float damage= (float) (8*attackLevel);
@@ -1543,7 +1868,7 @@ public class SpellExecutorManager {
                         case FIRE -> {
                             DamageSource source = new DamageSource(
                                     level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
-                                            .getHolderOrThrow(ModDamageTypes.ELEMENT_FIRE),player,player
+                                            .getHolderOrThrow(ModDamageTypes.ELEMENT_FIRE),null,player
                             );
                             Element.applyElement(entity,ElementType.FIRE,200);
                             float damage= (float) (12*attackLevel);
@@ -1567,7 +1892,7 @@ public class SpellExecutorManager {
                         case LIGHTING -> {
                             DamageSource source = new DamageSource(
                                     level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
-                                            .getHolderOrThrow(ModDamageTypes.ELEMENT_LIGHTNING),player,player
+                                            .getHolderOrThrow(ModDamageTypes.ELEMENT_LIGHTNING),null,player
                             );
                             Element.applyElement(entity,ElementType.LIGHTING,200);
                             float damage= (float) (10*attackLevel);
@@ -1583,7 +1908,7 @@ public class SpellExecutorManager {
                         case ICE -> {
                             DamageSource source = new DamageSource(
                                     level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
-                                            .getHolderOrThrow(ModDamageTypes.ELEMENT_ICE),player,player
+                                            .getHolderOrThrow(ModDamageTypes.ELEMENT_ICE),null,player
                             );
                             Element.applyElement(entity,ElementType.ICE,200);
                             float damage= (float) (12*attackLevel);
@@ -1603,7 +1928,7 @@ public class SpellExecutorManager {
                         case WIND -> {
                             DamageSource source = new DamageSource(
                                     level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
-                                            .getHolderOrThrow(ModDamageTypes.ELEMENT_WIND),player,player
+                                            .getHolderOrThrow(ModDamageTypes.ELEMENT_WIND),null,player
                             );
                             Element.applyElement(entity,ElementType.WIND,100);
                             float damage= (float) (9*attackLevel);
@@ -1623,7 +1948,7 @@ public class SpellExecutorManager {
                         case ENDER -> {
                             DamageSource source = new DamageSource(
                                     level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
-                                            .getHolderOrThrow(ModDamageTypes.ELEMENT_ENDER),player,player
+                                            .getHolderOrThrow(ModDamageTypes.ELEMENT_ENDER),null,player
                             );
                             Element.applyElement(entity,ElementType.ENDER,200);
                             float damage= (float) (10*attackLevel);
@@ -1644,6 +1969,114 @@ public class SpellExecutorManager {
                 if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)){
                     level.explode(player, vec3.x,vec3.y,vec3.z,
                             (float)radius, false, Level.ExplosionInteraction.TNT);
+                }
+            }
+        }
+    }
+    //填入小于0的数额就是损坏
+    public void repair(SlotReference slotReference,double repairAmount,SpellContext context){
+        double manaCost=Math.abs(repairAmount);
+        ItemStack itemStack=slotReference.getItem();
+        if(!context.level.isClientSide){
+            if(context.player!=null){
+                if(!itemStack.isEmpty()){
+                  if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost,context)){
+                      int originalDamageValue=itemStack.getDamageValue();
+                      //不需要检查，forge已经替我做了
+                      itemStack.setDamageValue((int) (originalDamageValue-repairAmount));
+                  }
+                }
+            }
+        }
+    }
+
+    public void cube(SlotReference slotReference,Vec3 vec3,SpellContext context){
+        double manaCost=2;
+        ItemStack itemStack=slotReference.getItem();
+        if(!context.level.isClientSide) {
+            if (context.player != null) {
+                if (!itemStack.isEmpty()&&itemStack.getItem() instanceof BlockItem blockItem) {
+                    if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost,context)){
+                        Level level = context.level;
+                        Player player = context.player;
+                        BlockPos pos = BlockPos.containing(vec3);
+                        Block block = blockItem.getBlock();
+                        BlockState state = block.defaultBlockState();
+                        if (level.getBlockState(pos).canBeReplaced()) {
+                            level.setBlock(pos, state, 3);
+                            // 如果有方块实体，复制物品标签，防止潜影贝盒丢失物品
+                            if (state.hasBlockEntity()) {
+                                BlockEntity blockEntity = level.getBlockEntity(pos);
+                                if (blockEntity != null) {
+                                    CompoundTag tag = itemStack.getOrCreateTag().getCompound("BlockEntityTag");
+                                    if (!tag.isEmpty()) {
+                                        blockEntity.load(tag);
+                                        blockEntity.setChanged();
+                                    }
+                                }
+                            }
+                            SoundType soundType = state.getSoundType(level, pos, player);
+                            level.playSound(null, pos, soundType.getPlaceSound(), SoundSource.BLOCKS,
+                                    (soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F);
+                            level.gameEvent(GameEvent.BLOCK_PLACE, pos, GameEvent.Context.of(player, state));
+                            if (!player.isCreative()) {
+                                slotReference.extract(1, false);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void cultivate(SlotReference slotReference,Vec3 vec3,SpellContext context){
+        double manaCost=1;
+        if(!context.level.isClientSide&&context.player!=null&&ManaUtil.subManaAndAddExpAndSendPacket(manaCost,context)){
+            ItemStack seedStack = slotReference.getItem();
+            if (seedStack.isEmpty()) return;
+            Item seedItem = seedStack.getItem();
+            if (seedItem instanceof BlockItem blockItem) {
+                Block plantBlock = blockItem.getBlock();
+                if (plantBlock instanceof CropBlock || plantBlock instanceof SaplingBlock) {
+                    Level level = context.level;
+                    BlockPos pointedPos = BlockPos.containing(vec3);
+                    BlockState pointedState = level.getBlockState(pointedPos);
+                    BlockPos plantPos;
+                    BlockPos soilPos;
+                    if (pointedState.isAir() || pointedState.canBeReplaced()) {
+                        plantPos = pointedPos;
+                        soilPos = plantPos.below();
+                    }
+                    else {
+                        Block soilBlock = pointedState.getBlock();
+                        boolean isSoil = soilBlock == Blocks.DIRT || soilBlock == Blocks.GRASS_BLOCK ||
+                                soilBlock == Blocks.FARMLAND || soilBlock == Blocks.COARSE_DIRT ||
+                                soilBlock == Blocks.ROOTED_DIRT || soilBlock == Blocks.PODZOL ||
+                                soilBlock == Blocks.MYCELIUM;
+                        if (isSoil) {
+                            plantPos = pointedPos.above();
+                            soilPos = pointedPos;
+                        } else {
+                            return;
+                        }
+                    }
+                    BlockState plantTargetState = level.getBlockState(plantPos);
+                    if (!(plantTargetState.isAir() || plantTargetState.canBeReplaced())) return;
+                    boolean soilValid;
+                    if (plantBlock instanceof CropBlock) {
+                        soilValid = level.getBlockState(soilPos).getBlock() == Blocks.FARMLAND;
+                    } else if (plantBlock instanceof SaplingBlock) {
+                        Block soilBlock = level.getBlockState(soilPos).getBlock();
+                        soilValid = soilBlock == Blocks.DIRT || soilBlock == Blocks.GRASS_BLOCK ||
+                                soilBlock == Blocks.COARSE_DIRT || soilBlock == Blocks.ROOTED_DIRT ||
+                                soilBlock == Blocks.PODZOL || soilBlock == Blocks.MYCELIUM;
+                    } else {
+                        soilValid = false;
+                    }
+                    if (!soilValid) return;
+                    level.setBlock(plantPos, plantBlock.defaultBlockState(), 3);
+                    level.playSound(null, plantPos, SoundEvents.CROP_PLANTED, SoundSource.BLOCKS, 0.5f, 1.0f);
+                    slotReference.extract(1, false);
                 }
             }
         }

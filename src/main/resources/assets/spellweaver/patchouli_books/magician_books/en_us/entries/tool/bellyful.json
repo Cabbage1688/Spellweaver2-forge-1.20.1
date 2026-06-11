@@ -1,0 +1,17 @@
+{
+  "name": "饱腹",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:tool",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "饱腹",
+      "images": ["spellweaver:textures/guidebook/bellyful.png"],
+      "text": "$(l)player->饱腹->player$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "将目标玩家的饱食度和饱和度回满。<br><br>魔力消耗：2×(20-当前饱食度) + 5×(10-当前饱和度)"
+    }
+  ]
+}

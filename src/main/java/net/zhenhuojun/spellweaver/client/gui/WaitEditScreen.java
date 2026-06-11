@@ -1,5 +1,6 @@
 package net.zhenhuojun.spellweaver.client.gui;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -9,11 +10,15 @@ import net.minecraft.network.chat.Component;
 import net.zhenhuojun.spellweaver.spell.node.LoopNode;
 import net.zhenhuojun.spellweaver.spell.node.WaitNode;
 
+import static net.zhenhuojun.spellweaver.client.gui.SpellWeavingScreen.STARS;
+
 public class WaitEditScreen extends Screen {
     private  SpellWeavingScreen parent;
     private EditBox time;
     private WaitNode editNode;
     private int WaitingTime=0;
+
+    private double offsetY;
     protected WaitEditScreen(Component pTitle) {
         super(pTitle);
     }
@@ -53,6 +58,19 @@ public class WaitEditScreen extends Screen {
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         renderBackground(guiGraphics);
+        /*if (offsetY >=this.height) {
+            offsetY = 0;
+        } else {
+            offsetY += 0.01;
+        }
+        PoseStack pose = guiGraphics.pose();
+        pose.pushPose();
+        pose.translate(0, offsetY, 0);
+        guiGraphics.blit(STARS, 0, 0, 0, 0, this.width, this.height, 256, 256);
+        guiGraphics.blit(STARS, 0, -this.height, 0, 0, this.width, this.height, 256, 256);
+        pose.popPose();
+
+         */
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
 
         // 绘制标题

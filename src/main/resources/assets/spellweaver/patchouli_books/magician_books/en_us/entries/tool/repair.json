@@ -1,0 +1,16 @@
+{
+  "name": "修复",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:tool",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "修复",
+      "images": ["spellweaver:textures/guidebook/repair.png"],
+      "text": "$(l)slotReference，double->修复$()<br>参数顺序任意"
+    },{
+      "type": "patchouli:text",
+      "text": "修复工具的损伤<br><br>魔力消耗：修复的耐久值"
+    }
+  ]
+}

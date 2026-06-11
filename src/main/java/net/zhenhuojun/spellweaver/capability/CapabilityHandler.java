@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.capability.impl.long_term_variables.PlayerLongTermVariablesData;
 import net.zhenhuojun.spellweaver.capability.impl.mana.PlayerMana;
+import net.zhenhuojun.spellweaver.capability.impl.mana_shield.ManaShield;
 import net.zhenhuojun.spellweaver.capability.impl.overload.PlayerManaOverload;
 import net.zhenhuojun.spellweaver.capability.impl.scroll.ScrollSpell;
 import net.zhenhuojun.spellweaver.capability.impl.spell_storage.PlayerSpellStorage;
@@ -24,6 +25,7 @@ public class CapabilityHandler {//这个类管理能力相关的东西
     public static final ResourceLocation VARIABLE_CAPABILITY=ResourceLocation.fromNamespaceAndPath(Spellweaver.MODID,"variable");
     public static final ResourceLocation OVERLOAD_CAPABILITY=ResourceLocation.fromNamespaceAndPath(Spellweaver.MODID,"overload");
     public static final ResourceLocation SCROLL_SPELL_HANDLER=ResourceLocation.fromNamespaceAndPath(Spellweaver.MODID,"scroll_spell_handler");
+    public static final ResourceLocation MANA_SHIELD_CAPABILITY=ResourceLocation.fromNamespaceAndPath(Spellweaver.MODID,"mana_shield");
 
     @SubscribeEvent//能力附加于实体
     public static void onAttachCapabilities(AttachCapabilitiesEvent<Entity> event) {
@@ -48,6 +50,9 @@ public class CapabilityHandler {//这个类管理能力相关的东西
                 event.addCapability(OVERLOAD_CAPABILITY,new PlayerManaOverloadProvider());
                 Spellweaver.getLOGGER().debug("[CapAttach] 超载能力已经附加能力");
             }
+            if(!event.getObject().getCapability(ManaShieldProvider.MANA_SHIELD).isPresent()){
+                event.addCapability(MANA_SHIELD_CAPABILITY,new ManaShieldProvider());
+            }
 
         }
     }
@@ -65,6 +70,7 @@ public class CapabilityHandler {//这个类管理能力相关的东西
         event.register(PlayerLongTermVariablesData.class);
         event.register(PlayerManaOverload.class);
         event.register(ScrollSpell.class);
+        event.register(ManaShield.class);
     }
 
 }

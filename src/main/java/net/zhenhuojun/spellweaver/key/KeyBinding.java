@@ -55,11 +55,9 @@ public class KeyBinding {
     public static final KeyMapping SPELL_CAST_KEY9=new KeyMapping(KEY_CAST_SPELL9,KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,GLFW.GLFW_KEY_H,KEY_CATEGORY_SPELL);
 
-    public static final KeyMapping SPELL_CAST_KEY10=new KeyMapping(KEY_CAST_SPELL10,KeyConflictContext.IN_GAME,
-            InputConstants.Type.KEYSYM,GLFW.GLFW_KEY_B,KEY_CATEGORY_SPELL);
 
     public static KeyMapping[] SPELL_KEYS={SPELL_CAST_KEY1,SPELL_CAST_KEY2,SPELL_CAST_KEY3,SPELL_CAST_KEY4,SPELL_CAST_KEY5
-            ,SPELL_CAST_KEY6,SPELL_CAST_KEY7,SPELL_CAST_KEY8,SPELL_CAST_KEY9,SPELL_CAST_KEY10};
+            ,SPELL_CAST_KEY6,SPELL_CAST_KEY7,SPELL_CAST_KEY8,SPELL_CAST_KEY9};
 
     public static final KeyMapping OVERLOAD_KEY=new KeyMapping(KEY_OVERLOAD,KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,GLFW.GLFW_KEY_M,KEY_CATEGORY_TEST);

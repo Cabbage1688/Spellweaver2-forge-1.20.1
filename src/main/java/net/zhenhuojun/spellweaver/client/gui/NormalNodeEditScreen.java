@@ -17,6 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.client.event.ScreenEvent;
+import net.zhenhuojun.spellweaver.Config;
 import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.client.gui.util.ClientPlayerSpellData;
 import net.zhenhuojun.spellweaver.client.gui.util.GuiUtil;
@@ -30,6 +31,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static net.minecraft.resources.ResourceLocation.fromNamespaceAndPath;
+import static net.zhenhuojun.spellweaver.client.gui.SpellWeavingScreen.STARS;
 
 public class NormalNodeEditScreen extends Screen {
     // 网格参数
@@ -77,6 +79,8 @@ public class NormalNodeEditScreen extends Screen {
 
     EditBox constantInput; // 1.20.1 是 EditBox，需导入
     Button addConstantButton;
+
+    private double offsetY = 0;
 
 
 
@@ -362,6 +366,20 @@ public class NormalNodeEditScreen extends Screen {
 
         // 渲染背景
         this.renderBackground(guiGraphics);
+        //2026.5.29背景修改
+        /*if (offsetY >=this.height) {
+            offsetY = 0;
+        } else {
+            offsetY += 0.01;
+        }
+        PoseStack pose = guiGraphics.pose();
+        pose.pushPose();
+        pose.translate(0, offsetY, 0);
+        guiGraphics.blit(STARS, 0, 0, 0, 0, this.width, this.height, 256, 256);
+        guiGraphics.blit(STARS, 0, -this.height, 0, 0, this.width, this.height, 256, 256);
+        pose.popPose();
+
+         */
         this.renderRotingNode(guiGraphics,gridCenterX-85,gridCenterY-85,170,170,NORMAL_TEXTURE);
 
         // 渲染六边形点阵
@@ -466,10 +484,12 @@ public class NormalNodeEditScreen extends Screen {
 
 
         //测试逻辑
-       // if (currentPath.size()> 2){
-           //List<HexPoint> normalizedPath = normalizePath(currentPath);
-           // System.out.println("[DEBUG]:player's path"+pathToString(normalizedPath));
-       // }
+        /*if (currentPath.size()> 2){
+           List<HexPoint> normalizedPath = normalizePath(currentPath);
+            System.out.println("[DEBUG]:player's path"+pathToString(normalizedPath));
+       }
+
+         */
 
         // 绘制已经固定的线段（完整显示）
         //Spellweaver.getLOGGER().debug("[Spellweaver:NormalNodeEditScreen/renderCurrentPath方法]尝试绘制当前路径");
@@ -617,6 +637,16 @@ public class NormalNodeEditScreen extends Screen {
                         // 关键：选中时绿色，否则原色
                         int lineColor = (idx == selectedIndex) ? 0xFF88FF88: pattern.getColor();
                         drawEnergyLine_Bezier(poseStack, x1, y1, x2, y2, 1.8f, lineColor, false);
+                    }
+                    //名称
+                    //Spellweaver.getLOGGER().debug("[Config]是否展示名称{}",Config.showPatternName);
+                    if (Config.showPatternName) {
+                        String name = pattern.getName();
+                        int nameWidth = font.width(name);
+                        int nameX = startX + (patternWidth - nameWidth) / 2; // 居中显示
+                        int nameY = startY + patternHeight + 2;              // 图案底部下方 2 像素
+                        //浅灰色
+                        guiGraphics.drawString(font, name, nameX, nameY, 0xFFAAAAAA);
                     }
                 }
                 totalPatternsWidth += patternWidth + horizontalSpacing;

@@ -39,6 +39,8 @@ public class SpellWeavingScreen extends Screen {
     private static final ResourceLocation WAIT_TEXTURE = fromNamespaceAndPath(Spellweaver.MODID, "textures/gui/wait_node.png");
     private static final ResourceLocation CONDITION_TEXTURE=fromNamespaceAndPath(Spellweaver.MODID,"textures/gui/condition_node.png");
 
+    public static final ResourceLocation STARS=fromNamespaceAndPath("minecraft","textures/entity/end_portal.png");
+
     // 节点当前层级和选中的节点
     public Node currentNode;
     public Node rootNode;
@@ -78,6 +80,12 @@ public class SpellWeavingScreen extends Screen {
     private static final int PERSISTENT_ITEM_HEIGHT = 12;      // 每行高度
     private static final int PERSISTENT_PADDING = 5;          // 边距
     private boolean displayLongTermVariable=false;
+
+    private double starOffsetX = 0;
+    private double offsetX = 0;      // 水平偏移
+    private double offsetY = 0;      // 垂直偏移
+    private double offsetDiag = 0;   // 对角线偏移
+
 
 
 
@@ -532,8 +540,37 @@ public class SpellWeavingScreen extends Screen {
 
     @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        // 渲染背景
         this.renderBackground(pGuiGraphics);
+        /*
+        if(starOffsetX>=this.width){
+            starOffsetX=0;
+        }else {
+            starOffsetX+=0.01;
+        }
+        PoseStack poseStack=pGuiGraphics.pose();
+        poseStack.pushPose();
+        poseStack.translate(starOffsetX,0,0);
+        pGuiGraphics.blit(STARS,0,0,0,0,this.width,this.height,256,256);
+        pGuiGraphics.blit(STARS,-this.width,0,0,0,this.width,this.height,256,256);
+        poseStack.popPose();
+
+         */
+
+        //2026.5.29背景修改
+        /*if (offsetY >=this.height) {
+            offsetY = 0;
+        } else {
+            offsetY += 0.01;
+        }
+        PoseStack pose = pGuiGraphics.pose();
+        pose.pushPose();
+        pose.translate(0, offsetY, 0);
+        pGuiGraphics.blit(STARS, 0, 0, 0, 0, this.width, this.height, 256, 256);
+        pGuiGraphics.blit(STARS, 0, -this.height, 0, 0, this.width, this.height, 256, 256);
+        pose.popPose();
+
+         */
+
 
         // 渲染中心节点
         if(currentNode instanceof SequenceNode sequenceNode){

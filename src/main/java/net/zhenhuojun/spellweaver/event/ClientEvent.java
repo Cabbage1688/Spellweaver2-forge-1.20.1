@@ -10,6 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -21,17 +22,15 @@ import net.zhenhuojun.spellweaver.client.gui.SpellWeavingScreen;
 import net.zhenhuojun.spellweaver.client.gui.util.ClientPlayerManaData;
 import net.zhenhuojun.spellweaver.client.gui.util.ClientPlayerStorageData;
 import net.zhenhuojun.spellweaver.client.hud.ManaHud;
+import net.zhenhuojun.spellweaver.client.hud.ShieldHud;
 import net.zhenhuojun.spellweaver.client.render.impl.*;
 import net.zhenhuojun.spellweaver.entity.ModEntities;
 import net.zhenhuojun.spellweaver.entity.impl.ManaArrow;
-import net.zhenhuojun.spellweaver.entity.impl.SpellEffectEntity;
 import net.zhenhuojun.spellweaver.item.ModItems;
 import net.zhenhuojun.spellweaver.key.KeyBinding;
 import net.zhenhuojun.spellweaver.network.ModMessage;
 import net.zhenhuojun.spellweaver.network.packet.OverloadDataC2SPacket;
 import net.zhenhuojun.spellweaver.network.packet.SpellCastingC2SPacket;
-
-import javax.swing.text.JTextComponent;
 
 import static net.zhenhuojun.spellweaver.key.KeyBinding.*;
 
@@ -124,7 +123,7 @@ public class ClientEvent {
             event.register(KeyBinding.SPELL_CAST_KEY7);
             event.register(KeyBinding.SPELL_CAST_KEY8);
             event.register(KeyBinding.SPELL_CAST_KEY9);
-            event.register(KeyBinding.SPELL_CAST_KEY10);
+           // event.register(KeyBinding.SPELL_CAST_KEY10);
             event.register(KeyBinding.OVERLOAD_KEY);
             event.register(KeyBinding.OVERLOAD_UP_KEY);
             event.register(KeyBinding.OVERLOAD_DOWN_KEY);
@@ -134,6 +133,7 @@ public class ClientEvent {
         @SubscribeEvent//hud注册
         public static void registerGuiOverlays(RegisterGuiOverlaysEvent event ){
             event.registerAboveAll("spellweaver_mana_hud", ManaHud.HUD_MANA);
+            event.registerAboveAll("spellweaver_shield_hud", ShieldHud.HUD_SHIELD);
             Spellweaver.getLOGGER().debug("[Spellweaver:ClientModBusEvents]hud已注册");
         }
         @SubscribeEvent
@@ -192,6 +192,8 @@ public class ClientEvent {
                 ItemProperties.register(testBow, PULLING, (stack, world, entity, seed) -> {
                     return (entity != null && entity.isUsingItem() && entity.getUseItem() == stack) ? 1.0F : 0.0F;
                 });
+                //不是在注册某个实体的渲染器，而是直接在世界的某个渲染阶段插入自定义绘制代码,因此这个不和渲染器绑定在一起
+                MinecraftForge.EVENT_BUS.addListener(EnergyShieldWorldRenderer::onRenderLevelStage);
             });
         }
     }

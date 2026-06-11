@@ -55,10 +55,7 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.capability.impl.mana.ManaUtil;
-import net.zhenhuojun.spellweaver.capability.provider.mana.PlayerLongTermVariablesProvider;
-import net.zhenhuojun.spellweaver.capability.provider.mana.PlayerManaOverloadProvider;
-import net.zhenhuojun.spellweaver.capability.provider.mana.PlayerManaProvider;
-import net.zhenhuojun.spellweaver.capability.provider.mana.PlayerSpellStorageProvider;
+import net.zhenhuojun.spellweaver.capability.provider.mana.*;
 import net.zhenhuojun.spellweaver.item.ModItems;
 import net.zhenhuojun.spellweaver.network.ModMessage;
 import net.zhenhuojun.spellweaver.network.packet.*;
@@ -132,6 +129,19 @@ public class ModEvent {
                 });
             }
         }
+       @SubscribeEvent
+        public static void shieldCostMana(TickEvent.PlayerTickEvent event){
+            if (event.phase == TickEvent.Phase.END && event.side == LogicalSide.SERVER) {
+                event.player.getCapability(ManaShieldProvider.MANA_SHIELD).ifPresent(manaShield -> {
+                    if(!manaShield.isActive()) return;
+                    double cost=manaShield.getShieldAmount()/400;
+                    if(!ManaUtil.subManaAndAddExpAndSendPacket(cost, (ServerPlayer) event.player)){
+                        manaShield.setActive(false);
+                    }
+                    ModMessage.sendToClients(new ManaShieldChangeS2CPacket(manaShield.isActive(),manaShield.getShieldAmount()));
+                });
+            }
+        }
 
         @SubscribeEvent//玩家在绝境中会觉醒魔力能力
         public static void manaGetUpByHurt(LivingDamageEvent event){
@@ -195,6 +205,9 @@ public class ModEvent {
                        // Spellweaver.getLOGGER().debug("[Spellweaver:ModEvent/onPLayerJoinWorld]我没调用updateMaxMultiplier");
                     });
 
+                    player.getCapability(ManaShieldProvider.MANA_SHIELD).ifPresent(manaShield -> {
+                        ModMessage.sendToClients(new ManaShieldChangeS2CPacket(manaShield.isActive(),manaShield.getShieldAmount()));
+                    });
                 }
             }
         }
@@ -246,6 +259,15 @@ public class ModEvent {
                         hasData.set(true);
                     }
                 });
+                player.getCapability(ManaShieldProvider.MANA_SHIELD).ifPresent(manaShield -> {
+                    CompoundTag shieldTag=manaShield.serialize();
+                    if(!shieldTag.isEmpty()){
+                        data.put("ManaShield",shieldTag);
+                        hasData.set(true);
+                    }
+                });
+
+
                 if (hasData.get()) {
                     DIMENSION_TRANSFER_DATA.put(player.getUUID(), data);
                     Spellweaver.getLOGGER().debug("[Spellweaver:ModEvent/onPlayerTravelToDimension]玩家数据已缓存");
@@ -289,6 +311,14 @@ public class ModEvent {
                     CompoundTag overloadTag=playerManaOverload.serializeNBT();
                     if(!overloadTag.isEmpty()){
                         data.put("Overload",overloadTag);
+                        hasData.set(true);
+                    }
+                });
+
+                player.getCapability(ManaShieldProvider.MANA_SHIELD).ifPresent(manaShield -> {
+                    CompoundTag shieldTag=manaShield.serialize();
+                    if(!shieldTag.isEmpty()){
+                        data.put("ManaShield",shieldTag);
                         hasData.set(true);
                     }
                 });
@@ -351,6 +381,12 @@ public class ModEvent {
                                     playerManaOverload.getMaxMultiplier()),(ServerPlayer) player);
                         });
                     }
+                    if(data.contains("ManaShield")){
+                        player.getCapability(ManaShieldProvider.MANA_SHIELD).ifPresent(manaShield -> {
+                            manaShield.deserialize(data.getCompound("ManaShield"));
+                            ModMessage.sendToPlayer(new ManaShieldChangeS2CPacket(manaShield.isActive(),manaShield.getShieldAmount()),(ServerPlayer)player);
+                        });
+                    }
                 }
             }
         }
@@ -361,35 +397,7 @@ public class ModEvent {
             DIMENSION_TRANSFER_DATA.remove(event.getEntity().getUUID());
             Spellweaver.getLOGGER().debug("[Spellweaver:ModEvent/onPlayerLogout]数据缓存清理完成");
         }
-        /*@SubscribeEvent
-        public static void onPlayerClone(PlayerEvent.Clone event) {
-            Spellweaver.getLOGGER().debug("[Spellweaver:ModEvent/onPlayerClone]玩家克隆事件触发");
-            Player original = event.getOriginal();
-            Spellweaver.getLOGGER().debug("[Clone] 原实体是否存活: {}, 是否已移除: {}", original.isAlive(), original.isRemoved());
-            Player player = event.getEntity();
 
-            // 检查旧实体魔力能力是否存在
-            LazyOptional<PlayerMana> oldManaCap = original.getCapability(PlayerManaProvider.PLAYER_MANA);
-            Spellweaver.getLOGGER().debug("旧实体魔力能力存在: {}", oldManaCap.isPresent());
-            oldManaCap.ifPresent(oldMana -> {
-                Spellweaver.getLOGGER().debug("旧魔力数据 - 等级:{} 经验:{} 现有:{}",
-                        oldMana.getMana_level(), oldMana.getMana_exp(), oldMana.getMana());
-                player.getCapability(PlayerManaProvider.PLAYER_MANA).ifPresent(newMana -> {
-                    newMana.copyFrom(oldMana);
-                });
-            });
-
-            // 类似检查法术存储
-            LazyOptional<PlayerSpellStorage> oldSpellCap = original.getCapability(PlayerSpellStorageProvider.PLAYER_SPELL_STORAGE);
-            Spellweaver.getLOGGER().debug("旧实体法术存储能力存在: {}", oldSpellCap.isPresent());
-            oldSpellCap.ifPresent(oldSpell -> {
-                player.getCapability(PlayerSpellStorageProvider.PLAYER_SPELL_STORAGE).ifPresent(newSpell -> {
-                    newSpell.copyFrom(oldSpell);
-                });
-            });
-        }
-
-         */
 
         @SubscribeEvent//处理元素自然消退,以及环境元素附着
         public static void onLivingTick(LivingEvent.LivingTickEvent event) {
@@ -812,6 +820,29 @@ public class ModEvent {
                                     })
                             )
             );
+        }
+        @SubscribeEvent
+        public  static void onShieldProtected(LivingHurtEvent event){
+            if(!(event.getEntity() instanceof Player player)) return;
+            player.getCapability(ManaShieldProvider.MANA_SHIELD).ifPresent(manaShield -> {
+               if(manaShield.isActive()){
+                   double shieldAmount=manaShield.getShieldAmount();
+                   double hurt=event.getAmount();
+                   if(shieldAmount>hurt){
+                       event.setCanceled(true);
+                       manaShield.setShieldAmount(shieldAmount-hurt);
+                   }else if(shieldAmount==hurt){
+                       event.setCanceled(true);
+                       manaShield.setShieldAmount(0);
+                       manaShield.setActive(false);
+                   }else {
+                       event.setAmount((float) (hurt-shieldAmount));
+                       manaShield.setShieldAmount(0);
+                       manaShield.setActive(false);
+                   }
+                   ModMessage.sendToPlayer(new ManaShieldChangeS2CPacket(manaShield.isActive(),manaShield.getShieldAmount()), (ServerPlayer) player);
+               }
+            });
         }
 
         /**

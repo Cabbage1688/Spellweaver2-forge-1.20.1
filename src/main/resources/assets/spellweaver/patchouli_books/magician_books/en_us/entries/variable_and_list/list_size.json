@@ -1,0 +1,17 @@
+{
+  "name": "表长",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:variable_and_list",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "表长",
+      "images": ["spellweaver:textures/guidebook/list_size.png"],
+      "text": "$(l)list->表长->,list,double$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "获取列表长度并压入栈，不消耗原列表"
+    }
+  ]
+}

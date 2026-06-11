@@ -1,0 +1,17 @@
+{
+  "name": "魔法护盾",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:attack",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "魔法护盾",
+      "images": ["spellweaver:textures/guidebook/shield.png"],
+      "text": "$(l)[double]->魔法护盾$()<br>"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "为施法者开启或增加魔法护盾。$(br)• 若提供护盾值参数，则消耗等量魔力增加护盾值。$(br)• 若不提供参数，则关闭护盾并将护盾值归零。$(br)$(br)魔力消耗：增加的护盾值（仅开启/增加时）<br><br>维持护盾也需要消耗一定魔力值，护盾防御力越强消耗越高"
+    }
+  ]
+}

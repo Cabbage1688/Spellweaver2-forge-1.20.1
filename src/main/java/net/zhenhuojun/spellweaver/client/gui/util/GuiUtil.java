@@ -866,5 +866,140 @@ public class GuiUtil {
                 new HexPoint(1, 1),
                 new HexPoint(2, 0)
         ));
+
+        predefinedPatterns.add(new SpellPattern("连锁", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(1, -1),
+                new HexPoint(1, -2),
+                new HexPoint(0, -1),
+                new HexPoint(0, 0),
+                new HexPoint(1, 0),
+                new HexPoint(2, -1),
+                new HexPoint(2, -2),
+                new HexPoint(1, -1),
+                new HexPoint(1, 0)
+        ));
+
+
+        predefinedPatterns.add(new SpellPattern("魔法护盾", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(1, 0),
+                new HexPoint(1, -1),
+                new HexPoint(0, 0),
+                new HexPoint(0, -1),
+                new HexPoint(1, -2),
+                new HexPoint(2, -2),
+                new HexPoint(2, -1),
+                new HexPoint(1, 0),
+                new HexPoint(0, 1),
+                new HexPoint(0, 0)
+        ));
+
+        predefinedPatterns.add(new SpellPattern("净化", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(1, 0),
+                new HexPoint(2, -1),
+                new HexPoint(2, -2),
+                new HexPoint(1, -1),
+                new HexPoint(0, 0),
+                new HexPoint(-1, 0),
+                new HexPoint(-1, -1),
+                new HexPoint(0, -2),
+                new HexPoint(0, -1),
+                new HexPoint(0, 0)
+        ));
+
+        predefinedPatterns.add(new SpellPattern("修复", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(1, 0),
+                new HexPoint(2, 0),
+                new HexPoint(1, 1),
+                new HexPoint(2, 1),
+                new HexPoint(2, 0),
+                new HexPoint(2, -1),
+                new HexPoint(3, -1),
+                new HexPoint(2, 0)
+        ));
+
+        predefinedPatterns.add(new SpellPattern("方块放置", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(1, 0),
+                new HexPoint(2, -1),
+                new HexPoint(1, -1),
+                new HexPoint(0, 0)
+        ));
+
+        predefinedPatterns.add(new SpellPattern("物品转移", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(1, -1),
+                new HexPoint(2, -1),
+                new HexPoint(2, 0)
+        ));
+
+        predefinedPatterns.add(new SpellPattern("饱腹", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(1, -1),
+                new HexPoint(1, -2),
+                new HexPoint(2, -2),
+                new HexPoint(2, -1),
+                new HexPoint(1, -1)
+        ));
+
+        predefinedPatterns.add(new SpellPattern("相对坐标转换", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(1, -1),
+                new HexPoint(1, -2),
+                new HexPoint(0, -1),
+                new HexPoint(0, 0),
+                new HexPoint(0, 1),
+                new HexPoint(-1, 2),
+                new HexPoint(-1, 1),
+                new HexPoint(0, 0),
+                new HexPoint(1, 0),
+                new HexPoint(2, 0)
+        ));
+
+        predefinedPatterns.add(new SpellPattern("交互", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(1, -1),
+                new HexPoint(1, -2),
+                new HexPoint(0, -1),
+                new HexPoint(-1, -1)
+        ));
+
+        predefinedPatterns.add(new SpellPattern("播种", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(1, 0),
+                new HexPoint(2, 0),
+                new HexPoint(2, -1),
+                new HexPoint(1, -1),
+                new HexPoint(0, 0),
+                new HexPoint(0, -1),
+                new HexPoint(1, -2),
+                new HexPoint(1, -1)
+        ));
+
+        predefinedPatterns.add(new SpellPattern("表长", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(-1, 0),
+                new HexPoint(-2, 1),
+                new HexPoint(-2, 2),
+                new HexPoint(-1, 2),
+                new HexPoint(0, 2),
+                new HexPoint(1, 1),
+                new HexPoint(1, 0),
+                new HexPoint(0, 0),
+                new HexPoint(0, -1),
+                new HexPoint(1, -2)
+        ));
+
+        predefinedPatterns.add(new SpellPattern("物品数量", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(0, 1),
+                new HexPoint(1, 1),
+                new HexPoint(2, 0),
+                new HexPoint(2, -1),
+                new HexPoint(3, -2)
+        ));
     }
 }
