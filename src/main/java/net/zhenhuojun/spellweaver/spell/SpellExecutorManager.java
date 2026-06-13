@@ -42,6 +42,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.items.IItemHandler;
+import net.zhenhuojun.spellweaver.Config;
 import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.block.custom.SpellMachineBlockEntity;
 import net.zhenhuojun.spellweaver.capability.impl.mana.ManaSource;
@@ -61,6 +62,7 @@ import net.zhenhuojun.spellweaver.spell.element.Element;
 import net.zhenhuojun.spellweaver.spell.element.ElementType;
 import net.zhenhuojun.spellweaver.spell.util.RelativeCoordinate;
 import net.zhenhuojun.spellweaver.spell.util.SlotReference;
+import net.zhenhuojun.spellweaver.spell.util.VanillaBeneficialEffects;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
@@ -776,6 +778,91 @@ public class SpellExecutorManager {
            context.push(count);
         });
 
+
+        executors.put("连锁", context -> {
+            double chainDistance = context.pop(Double.class);//最大连锁距离
+            double chainAmount = context.pop(Double.class);
+            int amount = (int) chainAmount;// 最大跳数
+            Level level = context.level;
+
+            // 方块连锁分支（连通矿脉）
+            if (context.isTop(Vec3.class)) {
+                Vec3 startVec = context.pop(Vec3.class);
+                BlockPos startPos=BlockPos.containing(startVec);
+                BlockState startState = level.getBlockState(startPos);
+
+                // 起点无效
+                if (startState.isAir() || !startState.getFluidState().isEmpty()) {
+                    // context.push(new ArrayList<Vec3>());
+                    return;
+                }
+                Block startBlock = startState.getBlock();
+
+                // BFS 准备
+                Queue<BlockPos> queue = new LinkedList<>();
+                Set<BlockPos> visited = new HashSet<>();
+                List<Vec3> result = new ArrayList<>();
+
+                queue.add(startPos);
+                visited.add(startPos);
+
+                // 主循环：最多破坏 amount 个方块
+                while (!queue.isEmpty() && result.size() < amount) {
+                    BlockPos current = queue.poll();
+                    result.add(new Vec3(current.getX() + 0.5, current.getY() + 0.5, current.getZ() + 0.5));
+                    // 遍历 3x3x3 邻居
+                    for (int dx = -1; dx <= 1; dx++) {
+                        for (int dy = -1; dy <= 1; dy++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                if (dx == 0 && dy == 0 && dz == 0) continue;
+                                BlockPos neighbor = current.offset(dx, dy, dz);
+                                if (visited.contains(neighbor)) continue;
+                                BlockState state = level.getBlockState(neighbor);
+                                if (state.getBlock() == startBlock) {
+                                    visited.add(neighbor);
+                                    queue.add(neighbor);
+                                }
+                            }
+                        }
+                    }
+                }
+                context.push(result);
+            }
+            else if (context.isTop(Entity.class)) {
+                Entity startEntity = context.pop(Entity.class);
+                Player player = context.player;
+                // BFS 数据结构
+                Queue<Entity> queue = new LinkedList<>();
+                Set<Entity> visited = new HashSet<>();
+                List<Entity> result = new ArrayList<>();
+                queue.add(startEntity);
+                visited.add(startEntity);
+                // 主循环
+                while (!queue.isEmpty() && result.size() < amount) {
+                    Entity current = queue.poll();
+                    result.add(current);
+
+                    // 查找 current 周围 chainDistance 内的所有候选实体（玩家除外，存活，未访问）
+                    AABB aabb = current.getBoundingBox().inflate(chainDistance);
+                    List<Entity> nearby = level.getEntities(current, aabb,
+                            e -> e != player&&!(e instanceof ItemEntity) && !visited.contains(e) && e.isAlive());
+
+                    for (Entity neighbor : nearby) {
+                        ModMessage.sendToClients(new RayS2CPacket(
+                                current.position().add(0,1,0),
+                                neighbor.position().add(0,1,0),
+                                0xE9FAFF
+                        ));
+
+                        visited.add(neighbor);
+                        queue.add(neighbor);
+                    }
+                }
+                context.push(result);
+            }
+        });
+
+
         //初始化魔力相关的Runes
         initRunesNeedingMana();
     }
@@ -797,7 +884,9 @@ public class SpellExecutorManager {
                     //防止玩家破坏基岩，众所周知那玩意硬度-1
                     if(hardness>=0){
                         //2026.4.7调整魔力消耗，增设上限防止硬度过高方块耗费巨额魔力
-                        double manaCost=Math.pow(hardness,3)>100?100:Math.pow(hardness,3);
+                        //再次减少魔力消耗，从3次方调整到二次方
+                        //double manaCost=Math.pow(hardness,2)>100?100:Math.pow(hardness,2);
+                        double manaCost = (Math.pow(hardness,2) > 100 ? 100 : Math.pow(hardness,2)) * Config.breakManaMultiplier;
                         if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)){
                             context.level.destroyBlock(pos,true,context.player);
                                //给所有玩家发送特效包
@@ -847,7 +936,8 @@ public class SpellExecutorManager {
             BlockPos pos=BlockPos.containing(vec3.x,vec3.y,vec3.z);
             BlockState waterState = Blocks.WATER.defaultBlockState();
             BlockState blockState =context.level.getBlockState(pos);
-            int manaCost=15;
+            //int manaCost=15;
+            double manaCost = 15 * Config.waterManaMultiplier;
             if (!context.level.isClientSide) {
                 if (context.player != null) {
                     if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)){
@@ -884,7 +974,14 @@ public class SpellExecutorManager {
             Vec3 normalizedDir = direction.normalize();
             //起始位置转换为BlockPos,下面要用
             BlockPos pos=BlockPos.containing(startPos);
-            double manaCost=5*Math.pow(23+attackLevel,1+attackLevel/10);
+            //double manaCost=5*Math.pow(23+attackLevel,1+attackLevel/10);
+            double manaCost;
+            if (Config.sonicUseLinearMana) {
+                manaCost = Config.sonicLinearManaBase + Config.sonicLinearManaPerLevel * attackLevel;
+            } else {
+                manaCost = 5.0 * Math.pow(23 + attackLevel, 1 + attackLevel / 10.0);
+            }
+
             if(!context.level.isClientSide){
                 if(context.player!=null){
                     if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)){
@@ -936,7 +1033,8 @@ public class SpellExecutorManager {
                         //对每个命中的实体造成伤害和击退
                         for (LivingEntity entity : entities) {
                             // 造成伤害
-                            float damage = (float) (45.0 * attackLevel); // 基础伤害乘以强度
+                            //float damage = (float) (45.0 * attackLevel); // 基础伤害乘以强度
+                            float damage = (float)(Config.sonicDamageMultiplier * attackLevel);
 
                             DamageSource source = new DamageSource(
                                     context.level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
@@ -953,7 +1051,8 @@ public class SpellExecutorManager {
             Vec3 vec3= context.pop(Vec3.class);
             //BlockPos pos= new BlockPos((int)vec3.x,(int)vec3.y,(int)vec3.z);
             BlockPos pos=BlockPos.containing(vec3);
-            double manaCost=5;
+            //double manaCost=5;
+            double manaCost = 5 * Config.magicLightManaMultiplier;
             if(!context.level.isClientSide){
                 if(context.player!=null){
                     if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)){
@@ -1040,7 +1139,8 @@ public class SpellExecutorManager {
         executors.put("泥土",context -> {
             if(!context.level.isClientSide){
                 if(context.player!=null){
-                    double manaCost=10;
+                    //double manaCost=10;
+                    double manaCost = 10 * Config.dirtManaMultiplier;
                     Vec3 pos=context.pop(Vec3.class);
                     BlockPos blockPos=BlockPos.containing(pos);//安全转换
                     BlockState state = context.level.getBlockState(blockPos);
@@ -1060,7 +1160,8 @@ public class SpellExecutorManager {
         executors.put("细雪",context -> {
             if(!context.level.isClientSide){
                 if(context.player!=null){
-                    double manaCost=20;
+                    //double manaCost=20;
+                    double manaCost = 20 * Config.snowManaMultiplier;
                     Vec3 pos=context.pop(Vec3.class);
                     BlockPos blockPos=BlockPos.containing(pos);//安全转换
                     BlockState state = context.level.getBlockState(blockPos);
@@ -1080,7 +1181,8 @@ public class SpellExecutorManager {
         executors.put("沙",context -> {
             if(!context.level.isClientSide){
                 if(context.player!=null){
-                    double manaCost=10;
+                    //double manaCost=10;
+                    double manaCost = 10 * Config.sandManaMultiplier;
                     Vec3 pos=context.pop(Vec3.class);
                     BlockPos blockPos=BlockPos.containing(pos);//安全转换
                     BlockState state = context.level.getBlockState(blockPos);
@@ -1100,7 +1202,8 @@ public class SpellExecutorManager {
         executors.put("岩浆",context -> {
             if(!context.level.isClientSide){
                 if(context.player!=null){
-                    double manaCost=10;
+                    //double manaCost=10;
+                    double manaCost = 10 * Config.lavaManaMultiplier;
                     Vec3 vec3=context.pop(Vec3.class);
                     //vec3安全转换为BlockPos
                     BlockPos pos=BlockPos.containing(vec3.x,vec3.y,vec3.z);
@@ -1209,7 +1312,8 @@ public class SpellExecutorManager {
         });
         executors.put("幻化之剑",context -> {
             RuneRegister runeRegister=context.pop(RuneRegister.class);
-            double manaCost=25;
+            //double manaCost=25;
+            double manaCost = 25 * Config.manaSwordManaMultiplier;
             if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)){
                 ItemStack manaSword=Util.summonManaSword(runeRegister);
                 if (!context.player.addItem(manaSword)) {
@@ -1219,7 +1323,8 @@ public class SpellExecutorManager {
         });
         executors.put("幻化之弓", context -> {
             RuneRegister runeRegister = context.pop(RuneRegister.class);
-            double manaCost=25;
+            //double manaCost=25;
+            double manaCost = 25 * Config.manaBowManaMultiplier;
             if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)) {
                 ItemStack manaBow = Util.summonManaBow(runeRegister);
                 if (!context.player.addItem(manaBow)) {
@@ -1251,8 +1356,9 @@ public class SpellExecutorManager {
             if (!context.level.isClientSide) {
                 Player player = context.player;
                 if (player != null) {
-                    //double manaCost = Math.pow(distance, 1.5);
-                    double manaCost=0.4105 * (Math.exp(0.16 * distance) - 1);
+                    //double manaCost=0.4105 * (Math.exp(0.16 * distance) - 1);
+                    double rawManaCost = 0.4105 * (Math.exp(0.16 * distance) - 1);
+                    double manaCost = rawManaCost * Config.blockRayManaMultiplier;
                     if (ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)) {
                         // 使用原版 pick，精确获取方块命中
                         BlockHitResult hitResult = (BlockHitResult) player.pick(distance, 0.0F, false);
@@ -1280,8 +1386,9 @@ public class SpellExecutorManager {
             if (!context.level.isClientSide) {
                 Player player = context.player;
                 if (player != null) {
-                    //double manaCost = Math.pow(distance, 1.5);
-                    double manaCost=0.4105 * (Math.exp(0.16 * distance) - 1);
+                    //double manaCost=0.4105 * (Math.exp(0.16 * distance) - 1);
+                    double rawManaCost = 0.4105 * (Math.exp(0.16 * distance) - 1);
+                    double manaCost = rawManaCost * Config.blockRayManaMultiplier;
                     if (ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)) {
                         Vec3 eyePos = player.getEyePosition();
                         Vec3 viewVec = player.getViewVector(1.0F);
@@ -1338,7 +1445,8 @@ public class SpellExecutorManager {
                BlockPos pos = BlockPos.containing(vec3).above();
                BlockState state = context.level.getBlockState(pos);
                if ((state.isAir()||state.canBeReplaced())) {
-                  double manaCost=5;
+                  //double manaCost=5;
+                   double manaCost = 5 * Config.igniteManaMultiplier;
                   if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost,context)){
                       level.playSound(context.player, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
                       BlockState blockstate = BaseFireBlock.getState(level, pos);
@@ -1385,11 +1493,16 @@ public class SpellExecutorManager {
            LivingEntity livingEntity=context.pop(LivingEntity.class);
             List<MobEffect> toRemove = new ArrayList<>();
             for (MobEffectInstance instance : livingEntity.getActiveEffects()) {
-                if (!instance.getEffect().isBeneficial()) {
+                /*if (!instance.getEffect().isBeneficial()) {
+                    toRemove.add(instance.getEffect());
+                }
+                 */
+                if (!VanillaBeneficialEffects.isAllowed(instance.getEffect())) {
                     toRemove.add(instance.getEffect());
                 }
             }
-           if(ManaUtil.subManaAndAddExpAndSendPacket(20*toRemove.size(),context)){
+            double manaCost = 20 * toRemove.size() * Config.purifyManaMultiplier;
+           if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost,context)){
                 for (MobEffect effect : toRemove) {
                     livingEntity.removeEffect(effect);
                     ModMessage.sendToClients(new PurifyEffectS2CPacket(livingEntity.position()));
@@ -1426,7 +1539,8 @@ public class SpellExecutorManager {
             SlotReference source = context.pop(SlotReference.class);
             if (!source.isValid()) return;
             ItemStack extracted = source.extract(source.getItem().getCount(), false);
-            double manaCost=source.getItem().getCount();
+            //double manaCost=source.getItem().getCount();
+            double manaCost = source.getItem().getCount() * Config.transferManaMultiplier;
             if (extracted.isEmpty()) return;
 
             if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost,context)){
@@ -1501,88 +1615,6 @@ public class SpellExecutorManager {
         });
 
 
-        executors.put("连锁", context -> {
-            double chainDistance = context.pop(Double.class);//最大连锁距离
-            double chainAmount = context.pop(Double.class);
-            int amount = (int) chainAmount;// 最大跳数
-            Level level = context.level;
-
-            // 方块连锁分支（连通矿脉）
-            if (context.isTop(Vec3.class)) {
-                Vec3 startVec = context.pop(Vec3.class);
-                BlockPos startPos=BlockPos.containing(startVec);
-                BlockState startState = level.getBlockState(startPos);
-
-                // 起点无效
-                if (startState.isAir() || !startState.getFluidState().isEmpty()) {
-                   // context.push(new ArrayList<Vec3>());
-                    return;
-                }
-                Block startBlock = startState.getBlock();
-
-                // BFS 准备
-                Queue<BlockPos> queue = new LinkedList<>();
-                Set<BlockPos> visited = new HashSet<>();
-                List<Vec3> result = new ArrayList<>();
-
-                queue.add(startPos);
-                visited.add(startPos);
-
-                // 主循环：最多破坏 amount 个方块
-                while (!queue.isEmpty() && result.size() < amount) {
-                    BlockPos current = queue.poll();
-                    result.add(new Vec3(current.getX() + 0.5, current.getY() + 0.5, current.getZ() + 0.5));
-                    // 遍历 3x3x3 邻居
-                    for (int dx = -1; dx <= 1; dx++) {
-                        for (int dy = -1; dy <= 1; dy++) {
-                            for (int dz = -1; dz <= 1; dz++) {
-                                if (dx == 0 && dy == 0 && dz == 0) continue;
-                                BlockPos neighbor = current.offset(dx, dy, dz);
-                                if (visited.contains(neighbor)) continue;
-                                BlockState state = level.getBlockState(neighbor);
-                                if (state.getBlock() == startBlock) {
-                                    visited.add(neighbor);
-                                    queue.add(neighbor);
-                                }
-                            }
-                        }
-                    }
-                }
-                context.push(result);
-            }
-            else if (context.isTop(Entity.class)) {
-                Entity startEntity = context.pop(Entity.class);
-                Player player = context.player;
-                // BFS 数据结构
-                Queue<Entity> queue = new LinkedList<>();
-                Set<Entity> visited = new HashSet<>();
-                List<Entity> result = new ArrayList<>();
-                queue.add(startEntity);
-                visited.add(startEntity);
-                // 主循环
-                while (!queue.isEmpty() && result.size() < amount) {
-                    Entity current = queue.poll();
-                    result.add(current);
-
-                    // 查找 current 周围 chainDistance 内的所有候选实体（玩家除外，存活，未访问）
-                    AABB aabb = current.getBoundingBox().inflate(chainDistance);
-                    List<Entity> nearby = level.getEntities(current, aabb,
-                            e -> e != player&&!(e instanceof ItemEntity) && !visited.contains(e) && e.isAlive());
-
-                    for (Entity neighbor : nearby) {
-                        ModMessage.sendToClients(new RayS2CPacket(
-                                current.position().add(0,1,0),
-                                neighbor.position().add(0,1,0),
-                                0xE9FAFF
-                        ));
-
-                        visited.add(neighbor);
-                        queue.add(neighbor);
-                    }
-                }
-                context.push(result);
-            }
-        });
 
         executors.put("饱腹",context -> {
             Entity entity=context.pop(Entity.class);
@@ -1590,7 +1622,8 @@ public class SpellExecutorManager {
                 if(context.player!=null){
                     if(entity instanceof Player player){
                         FoodData food = player.getFoodData();
-                        double manaCost=2*(20-food.getFoodLevel())+5*(10-food.getSaturationLevel());
+                        //double manaCost=2*(20-food.getFoodLevel())+5*(10-food.getSaturationLevel());
+                        double manaCost = (2 * (20 - food.getFoodLevel()) + 5 * (10 - food.getSaturationLevel())) * Config.saturateManaMultiplier;
                         if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost,context)){
                             food.setFoodLevel(20);
                             food.setSaturation(10.0F);
@@ -1621,7 +1654,8 @@ public class SpellExecutorManager {
                     Player player = context.player;
                     if (context.isTop(Double.class)) {
                         double amount = context.pop(Double.class);
-                        if(ManaUtil.subManaAndAddExpAndSendPacket(amount,context)){
+                        double manaCost=amount * Config.manaShieldManaMultiplier;
+                        if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost,context)){
                             player.getCapability(ManaShieldProvider.MANA_SHIELD).ifPresent(manaShield -> {
                                 manaShield.setActive(true);
                                 //manaShield.setShieldAmount(amount);
@@ -1646,7 +1680,9 @@ public class SpellExecutorManager {
             if(!context.level.isClientSide){
                 Level level=context.level;
                 if(context.player!=null){
-                    if(ManaUtil.subManaAndAddExpAndSendPacket(1,context)){
+                  // double manaCost=1;
+                    double manaCost = 1 * Config.interactManaMultiplier;
+                    if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost,context)){
                         Player player=context.player;
                         Vec3 vec3=context.pop(Vec3.class);
                         BlockPos pos=BlockPos.containing(vec3);
@@ -1690,8 +1726,10 @@ public class SpellExecutorManager {
             if(player!=null){
 
 
-                double manaCost= Math.abs(2*0.5*((entity.getDeltaMovement().add(velocity))
-                        .lengthSqr()-entity.getDeltaMovement().lengthSqr()));
+                //double manaCost= Math.abs(2*0.5*((entity.getDeltaMovement().add(velocity))
+                        //.lengthSqr()-entity.getDeltaMovement().lengthSqr()));
+                double manaCost = Math.abs(2*0.5*((entity.getDeltaMovement().add(velocity))
+                        .lengthSqr()-entity.getDeltaMovement().lengthSqr())) * Config.driveManaMultiplier;
                 if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)){
                     Vec3 currentVelocity = entity.getDeltaMovement();
                     Vec3 newVelocity = currentVelocity.add(velocity);
@@ -1708,12 +1746,19 @@ public class SpellExecutorManager {
         }
     }
     public void lightningBolt(Vec3 vec3,double attack_level,Player player, Level level,SpellContext context){
-        double manaCost=4*Math.pow(23+attack_level,1+attack_level/10);
+        //double manaCost=4*Math.pow(23+attack_level,1+attack_level/10);
+        double manaCost;
+        if (Config.lightningUseLinearMana) {
+            manaCost = Config.lightningLinearManaBase + Config.lightningLinearManaPerLevel * attack_level;
+        } else {
+            manaCost = 4.0 * Math.pow(23 + attack_level, 1 + attack_level / 10.0);
+        }
         if(!level.isClientSide){
             if(player!=null&&attack_level>0){
                 if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)){
                     LightningBolt lightningBolt=new LightningBolt(EntityType.LIGHTNING_BOLT, level);
-                    lightningBolt.setDamage(40*(float)attack_level);
+                   // lightningBolt.setDamage(40*(float)attack_level);
+                    lightningBolt.setDamage((float)(Config.lightningDamageMultiplier * attack_level));
                     lightningBolt.moveTo(vec3);
                     level.addFreshEntity(lightningBolt);
                 }
@@ -1725,7 +1770,9 @@ public class SpellExecutorManager {
         double x_sqrt=Math.pow(targetPos.x-position.x,2);
         double y_sqrt=Math.pow(targetPos.y-position.y,2);
         double z_sqrt=Math.pow(targetPos.z-position.z,2);
-        int manaCost=(int)Math.sqrt(x_sqrt+y_sqrt+z_sqrt)<200?3*(int)Math.sqrt(x_sqrt+y_sqrt+z_sqrt):600;
+        //int manaCost=(int)Math.sqrt(x_sqrt+y_sqrt+z_sqrt)<200?3*(int)Math.sqrt(x_sqrt+y_sqrt+z_sqrt):600;
+        double preManaCost=Math.sqrt(x_sqrt+y_sqrt+z_sqrt)<200?3*Math.sqrt(x_sqrt+y_sqrt+z_sqrt):600;
+        double manaCost=preManaCost*Config.tpManaMultiplier;
         if(!level.isClientSide){
             if(player!=null){
                 if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)){
@@ -1746,7 +1793,8 @@ public class SpellExecutorManager {
         }
     }
     public void grow(Vec3 centerPos,double radius,Player player,Level level,SpellContext context){
-        double manaCost=  5*radius*radius;
+        //double manaCost=  5*radius*radius;
+        double manaCost = 5 * radius * radius * Config.growManaMultiplier;
         if(!level.isClientSide){
             if(player!=null){
                 if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)){
@@ -1777,7 +1825,8 @@ public class SpellExecutorManager {
     }
     public void health(double healCount,Entity entity,Player player,Level level,SpellContext context){
         //为什么是5魔力消耗？因为这是小巧思。众所周知一级生命提升是4点生命，一级魔力是20点，哎这不就对应了吗
-        double manaCost=(5*healCount);
+        //double manaCost=(5*healCount);
+        double manaCost = (5 * healCount) * Config.healthManaMultiplier;
         if(!level.isClientSide){
             if(player!=null){
                 if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)){
@@ -1810,7 +1859,8 @@ public class SpellExecutorManager {
         }
     }
     public void slowDown(double time,Entity entity,Player player,Level level,SpellContext context){
-        double manaCost=4+time;
+        //double manaCost=4+time;
+        double manaCost = (4 + time) * Config.slowFallManaMultiplier;
         if(!level.isClientSide){
             if(player!=null){
                 if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)){
@@ -1824,7 +1874,8 @@ public class SpellExecutorManager {
         }
     }
     public boolean shouldManaBall(Vec3 vec3,RuneRegister runeRegister,Player player,Level level,SpellContext context){
-        double manaCost=runeRegister.getSpellList().size();
+        //double manaCost=runeRegister.getSpellList().size();
+        double manaCost = runeRegister.getSpellList().size() * Config.manaBallManaMultiplier;
         if(!level.isClientSide) {
             if (player != null) {
                 if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)){
@@ -1840,11 +1891,18 @@ public class SpellExecutorManager {
      */
     //TODO 以后可能会修改这里，改成在事件监听里检测伤害类型而不是在这里计算反应
     public void elementAttack(ElementType type,double attackLevel,LivingEntity entity,Player player,Level level,SpellContext context){
-        double manaCost=Math.pow(5+19+attackLevel,1+attackLevel/10);
+        //double manaCost=Math.pow(5+19+attackLevel,1+attackLevel/10);
+        double manaCost;
+        if (Config.elementUseLinearMana) {
+            manaCost = Config.elementLinearManaBase + Config.elementLinearManaPerLevel * attackLevel;
+        } else {
+            // 原版指数公式（黑箱）
+            manaCost = Math.pow(24 + attackLevel, 1 + attackLevel / 10.0);
+        }
         if(!level.isClientSide) {
             if (player != null&&attackLevel>0) {
                 if (ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)) {
-                    //DamageSource magicSource = player.damageSources().indirectMagic(player, player); // 第一个参数是直接来源（魔法本身），第二个是责任实体
+                    //DamageSource magicSource = player.damageSources().indirectMagic(player, player); // 第一个参数是直接来源，第二个是责任实体
                     switch (type) {
                         case WATER -> {
                             DamageSource source = new DamageSource(
@@ -1852,13 +1910,12 @@ public class SpellExecutorManager {
                                             .getHolderOrThrow(ModDamageTypes.ELEMENT_WATER),null,player
                             );
                             Element.applyElement(entity,ElementType.WATER,200);
-                            float damage= (float) (8*attackLevel);
+                            //float damage= (float) (8*attackLevel);
+                            float damage = (float) (Config.elementDamageMultiplier * 8 * attackLevel);
                             if(entity.getPersistentData().contains("water_or_fire_attack_down")){
                                 entity.getPersistentData().remove("water_or_fire_attack_down");
-                                //entity.hurt(magicSource, 0.7f*damage);
                                 entity.hurt(source, 0.7f*damage);
                             }else {
-                                //entity.hurt(magicSource, damage);
                                 entity.hurt(source, damage);
                             }
                             if(entity.isOnFire()){
@@ -1871,21 +1928,18 @@ public class SpellExecutorManager {
                                             .getHolderOrThrow(ModDamageTypes.ELEMENT_FIRE),null,player
                             );
                             Element.applyElement(entity,ElementType.FIRE,200);
-                            float damage= (float) (12*attackLevel);
+                           // float damage= (float) (12*attackLevel);
+                            float damage = (float) (Config.elementDamageMultiplier * 12 * attackLevel);
                             if(entity.getPersistentData().contains("fire_attack_up")){
                                 entity.getPersistentData().remove("fire_attack_up");
-                               // entity.hurt(magicSource, 1.3f*damage);
                                 entity.hurt(source, 1.3f*damage);
                             }else if(entity.getPersistentData().contains("water_or_fire_attack_down")){
                                 entity.getPersistentData().remove("water_or_fire_attack_down");
-                                //entity.hurt(magicSource, 0.7f*damage);
                                 entity.hurt(source, 0.7f*damage);
                             } else if (entity.getPersistentData().contains("fire_or_ice_attack_down")) {
                                 entity.getPersistentData().remove("fire_or_ice_attack_down");
-                               // entity.hurt(magicSource, 0.7f*damage);
                                 entity.hurt(source, 0.7f*damage);
                             }else {
-                                //entity.hurt(magicSource, damage);
                                 entity.hurt(source, damage);
                             }
                         }
@@ -1895,13 +1949,12 @@ public class SpellExecutorManager {
                                             .getHolderOrThrow(ModDamageTypes.ELEMENT_LIGHTNING),null,player
                             );
                             Element.applyElement(entity,ElementType.LIGHTING,200);
-                            float damage= (float) (10*attackLevel);
+                           // float damage= (float) (10*attackLevel);
+                            float damage = (float) (Config.elementDamageMultiplier * 10 * attackLevel);
                             if(entity.getPersistentData().contains("lightning_attack_up")){
                                 entity.getPersistentData().remove("lightning_attack_up");
-                                //entity.hurt(magicSource, 1.5f*damage);
                                 entity.hurt(source, 1.5f*damage);
                             }else{
-                                //entity.hurt(magicSource, damage);
                                 entity.hurt(source, damage);
                             }
                         }
@@ -1911,17 +1964,15 @@ public class SpellExecutorManager {
                                             .getHolderOrThrow(ModDamageTypes.ELEMENT_ICE),null,player
                             );
                             Element.applyElement(entity,ElementType.ICE,200);
-                            float damage= (float) (12*attackLevel);
+                            //float damage= (float) (12*attackLevel);
+                            float damage = (float) (Config.elementDamageMultiplier * 12 * attackLevel);
                             if(entity.getPersistentData().contains("fire_or_ice_attack_down")){
                                 entity.getPersistentData().remove("fire_or_ice_attack_down");
-                                //entity.hurt(magicSource, 0.7f*damage);
                                 entity.hurt(source, 0.7f*damage);
                             } else if (entity.getPersistentData().contains("ice_attack_up")) {
                                 entity.getPersistentData().remove("ice_attack_up");
-                                //entity.hurt(magicSource, 1.3f*damage);
                                 entity.hurt(source, 1.3f*damage);
                             }else {
-                               // entity.hurt(magicSource, damage);
                                 entity.hurt(source, damage);
                             }
                         }
@@ -1931,29 +1982,20 @@ public class SpellExecutorManager {
                                             .getHolderOrThrow(ModDamageTypes.ELEMENT_WIND),null,player
                             );
                             Element.applyElement(entity,ElementType.WIND,100);
-                            float damage= (float) (9*attackLevel);
-                            //entity.hurt(magicSource, damage);
+                            //float damage= (float) (9*attackLevel);
+                            float damage = (float) (Config.elementDamageMultiplier * 9 * attackLevel);
                             entity.hurt(source, damage);
 
                         }
-                        /*case STONE -> {
-                            Element.applyElement(entity,ElementType.STONE,300);
-                            float damage= (float) (12*attackLevel);
-                            //entity.hurt(entity.damageSources().magic(),damage);
-                            entity.hurt(magicSource, damage);
-
-                        }
-
-                         */
                         case ENDER -> {
                             DamageSource source = new DamageSource(
                                     level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
                                             .getHolderOrThrow(ModDamageTypes.ELEMENT_ENDER),null,player
                             );
                             Element.applyElement(entity,ElementType.ENDER,200);
-                            float damage= (float) (10*attackLevel);
+                            //float damage= (float) (10*attackLevel);
+                            float damage = (float) (Config.elementDamageMultiplier * 10 * attackLevel);
                             Spellweaver.getLOGGER().debug("[Spellweaver:SpellExecutorManager/elementAttack]末影元素伤害前血量{}",entity.getHealth());
-                            //entity.hurt(magicSource, damage);
                             entity.hurt(source, damage);
                             Spellweaver.getLOGGER().debug("[Spellweaver:SpellExecutorManager/elementAttack]末影元素伤害后血量{}",entity.getHealth());
                         }
@@ -1963,7 +2005,8 @@ public class SpellExecutorManager {
         }
     }
     public void boom(Vec3 vec3,double radius,Player player,Level level,SpellContext context){
-        double manaCost=10*Math.pow(radius,1.5);
+        //double manaCost=10*Math.pow(radius,1.5);
+        double manaCost = 10 * Math.pow(radius, 1.5) * Config.boomManaMultiplier;
         if(!level.isClientSide){
             if(player!=null&&radius>0){
                 if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)){
@@ -1975,7 +2018,8 @@ public class SpellExecutorManager {
     }
     //填入小于0的数额就是损坏
     public void repair(SlotReference slotReference,double repairAmount,SpellContext context){
-        double manaCost=Math.abs(repairAmount);
+       // double manaCost=Math.abs(repairAmount);
+        double manaCost = Math.abs(repairAmount) * Config.repairManaMultiplier;
         ItemStack itemStack=slotReference.getItem();
         if(!context.level.isClientSide){
             if(context.player!=null){
@@ -1991,7 +2035,8 @@ public class SpellExecutorManager {
     }
 
     public void cube(SlotReference slotReference,Vec3 vec3,SpellContext context){
-        double manaCost=2;
+        //double manaCost=2;
+        double manaCost = 2 * Config.placeManaMultiplier;
         ItemStack itemStack=slotReference.getItem();
         if(!context.level.isClientSide) {
             if (context.player != null) {
@@ -2030,7 +2075,8 @@ public class SpellExecutorManager {
     }
 
     public void cultivate(SlotReference slotReference,Vec3 vec3,SpellContext context){
-        double manaCost=1;
+        //double manaCost=1;
+        double manaCost = 1 * Config.cultivateManaMultiplier;
         if(!context.level.isClientSide&&context.player!=null&&ManaUtil.subManaAndAddExpAndSendPacket(manaCost,context)){
             ItemStack seedStack = slotReference.getItem();
             if (seedStack.isEmpty()) return;
