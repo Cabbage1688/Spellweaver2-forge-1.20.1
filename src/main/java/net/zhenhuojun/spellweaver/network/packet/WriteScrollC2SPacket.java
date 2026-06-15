@@ -40,25 +40,7 @@ public class WriteScrollC2SPacket {
             if (player != null) {
                 ItemStack heldItem = player.getMainHandItem();
                 if (!heldItem.isEmpty() && heldItem.is(ModItems.SCROLL.get())) {
-                    // 消耗原版卷轴
-                    /*if (heldItem.getCount() > 1) {
-                        heldItem.shrink(1);
-                    } else {
-                        player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
-                    }
-                    // 创建已写入卷轴
-                    ItemStack usedScroll = new ItemStack(ModItems.USED_SCROLL.get(), 1);
-                    Spellweaver.getLOGGER().debug("[Spellweaver: WriteScrollC2SPacket/handle方法]检查法术tag{}",spellTag);
-                    SequenceNode sequenceNode=new SequenceNode();
-                    sequenceNode.deserializeNBT(spellTag);
-                    // 使用工具类设置法术
-                    ScrollSpellHelper.setSpell(usedScroll, sequenceNode, spellName);
-                    // 给予玩家卷轴
-                    if (!player.addItem(usedScroll)) {
-                        player.drop(usedScroll, false);
-                    }
 
-                     */
                     heldItem.shrink(1);
                     ItemStack usedScroll=new ItemStack(ModItems.USED_SCROLL.get(),1);
                     CompoundTag tag = new CompoundTag();

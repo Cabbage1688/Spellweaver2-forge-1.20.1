@@ -1733,7 +1733,10 @@ public class SpellExecutorManager {
                 if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)){
                     Vec3 currentVelocity = entity.getDeltaMovement();
                     Vec3 newVelocity = currentVelocity.add(velocity);
-                    entity.setDeltaMovement(newVelocity);
+                    if(!player.getPersistentData().contains("FrozenUntil")){
+                        entity.setDeltaMovement(newVelocity);
+                    }
+
                     // entity.setDeltaMovement(velocity);//直接设置速度,现在改为在原有速度上增加，更科学一些
                     Spellweaver.getLOGGER().debug("[Spellweaver:SpellExecutorManager/drive方法]为实体{}应用驱动",entity.getDisplayName());
                     entity.hurtMarked = true;
@@ -1939,7 +1942,15 @@ public class SpellExecutorManager {
                             } else if (entity.getPersistentData().contains("fire_or_ice_attack_down")) {
                                 entity.getPersistentData().remove("fire_or_ice_attack_down");
                                 entity.hurt(source, 0.7f*damage);
-                            }else {
+                            }
+                            /*else if (entity.getPersistentData().contains("FrozenUntil")){
+                                entity.hurt(source, 0.7f*damage);
+                                CompoundTag persistentData = entity.getPersistentData();
+                                persistentData.putLong("FrozenUntil", entity.level().getGameTime());
+                            }
+
+                             */
+                            else {
                                 entity.hurt(source, damage);
                             }
                         }

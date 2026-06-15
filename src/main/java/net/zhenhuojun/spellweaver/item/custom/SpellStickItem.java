@@ -11,10 +11,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.zhenhuojun.spellweaver.Spellweaver;
@@ -29,6 +26,7 @@ import net.zhenhuojun.spellweaver.network.packet.WriteScrollC2SPacket;
 import net.zhenhuojun.spellweaver.network.packet.WriteSpellStickC2SPacket;
 import net.zhenhuojun.spellweaver.spell.node.SequenceNode;
 import net.zhenhuojun.spellweaver.spell.util.RunesExecuteMethod;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -93,15 +91,6 @@ public class SpellStickItem extends SwordItem {
             if (isMainHand) {
                 if (!hasSpell) {
 
-                    /*if (ClientPlayerSpellData.get(player).getSpellTag()!=null) {
-                        // 发送存入法术包
-                        SequenceNode sequenceNode= new SequenceNode();
-                        sequenceNode.deserializeNBT(ClientPlayerSpellData.get(player).getSpellTag());
-                        Spellweaver.getLOGGER().debug("[Spellweaver:SpellStickItem/use方法]法术数据已获取{}",ClientPlayerSpellData.get(player).getSpellTag());
-                        storeCurrentSpell(sequenceNode);
-                    }
-
-                     */
                     Minecraft.getInstance().setScreen(new SpellStickEditScreen());
                 } else {
                     // 主手 + 有法术 → 释放法术
@@ -148,8 +137,8 @@ public class SpellStickItem extends SwordItem {
         }
 
         @Override
-        public Ingredient getRepairIngredient() {
-            return null;
+        public @NotNull Ingredient getRepairIngredient() {
+            return Ingredient.of(Items.GOLD_INGOT);
         }
 
     };

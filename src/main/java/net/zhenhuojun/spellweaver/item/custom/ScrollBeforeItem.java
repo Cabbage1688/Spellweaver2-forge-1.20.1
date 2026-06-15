@@ -31,35 +31,6 @@ public class ScrollBeforeItem extends Item {
     public ScrollBeforeItem(Properties pProperties) {
         super(pProperties);
     }
-    /*@Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        if(level.isClientSide){
-            SequenceNode sequenceNode= new SequenceNode();
-            sequenceNode.deserializeNBT(ClientPlayerSpellData.get(player).getSpellTag());
-            Spellweaver.getLOGGER().debug("[Spellweaver:ScrollBeforeItem/use方法]法术数据已获取{}",ClientPlayerSpellData.get(player).getSpellTag());
-            storeCurrentSpell(sequenceNode);
-        }
-        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
-    }
-
-    // 法术存储方法
-    private void storeCurrentSpell(SequenceNode sequenceNode) {
-        // 获取法术名称（可扩展为自定义命名）
-        String spellName = "法术_" + System.currentTimeMillis();
-        // 打开命名对话框
-        Minecraft.getInstance().setScreen(new SpellNamingScreen(
-                spellName,
-                name -> confirmSpellStorage(name, sequenceNode.serializeNBT())
-        ));
-    }
-    // 确认存储回调
-    private void confirmSpellStorage(String spellName, CompoundTag spellTag) {
-        ModMessage.sendToServer(new WriteScrollC2SPacket(spellName,spellTag));
-        Minecraft.getInstance().setScreen(null);
-    }
-
-     */
 
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);

@@ -41,7 +41,7 @@ public class PlayerSpellStorage {
     public Optional<StoredSpell> getSpellInSlot(int slot) {
         UUID spellId = slotBindings.get(slot);
         if(spellId!=null) {
-            System.out.println("[DEBUG]get spell id");
+           // System.out.println("[DEBUG]get spell id");
         }
         return spellId != null ? getSpell(spellId) : Optional.empty();
     }

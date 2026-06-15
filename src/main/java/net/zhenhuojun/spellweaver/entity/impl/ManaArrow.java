@@ -6,6 +6,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.SpectralArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
@@ -14,9 +15,9 @@ import net.zhenhuojun.spellweaver.spell.util.RunesExecuteMethod;
 
 import java.util.ArrayList;
 import java.util.List;
-
-public class ManaArrow extends AbstractArrow {
-    private List<String> spellList = new ArrayList<>();
+//改为继承 SpectralArrow而不是AbstractArrow
+public class ManaArrow extends SpectralArrow {
+    private final List<String> spellList = new ArrayList<>();
     private int time=300;
 
     public ManaArrow(EntityType<? extends ManaArrow> type, Level level) {
@@ -54,7 +55,7 @@ public class ManaArrow extends AbstractArrow {
     @Override
     protected void onHit(HitResult result) {
         super.onHit(result);
-        // 如果命中其他物体，直接消失（或继续处理）
+        // 如果命中其他物体，直接消失
         //if (!this.level().isClientSide && result.getType() == HitResult.Type.BLOCK) {
            // this.discard();
         //}

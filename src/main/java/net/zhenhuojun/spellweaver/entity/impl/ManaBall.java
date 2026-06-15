@@ -77,8 +77,8 @@ public class ManaBall extends AbstractHurtingProjectile {
 
     @Override
     public boolean canHitEntity(Entity target) {
-        // 忽略所有者
-        if (target == getOwner()) {
+        // 忽略所有者和魔法飞弹
+        if (target == getOwner()||target instanceof ManaBall) {
             return false;
         }
         return super.canHitEntity(target);

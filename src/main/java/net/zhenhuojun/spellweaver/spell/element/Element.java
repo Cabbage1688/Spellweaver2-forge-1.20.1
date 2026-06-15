@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -12,6 +13,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -23,6 +26,11 @@ import net.zhenhuojun.spellweaver.network.packet.ManaBallEffectS2CPacket;
 import net.zhenhuojun.spellweaver.network.packet.ReactionEffectS2CPacket;
 import net.zhenhuojun.spellweaver.network.packet.SpreadReactionS2CPacket;
 import net.zhenhuojun.spellweaver.network.packet.VoidErosionS2CPacket;
+import net.minecraft.world.entity.player.Player;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import java.util.UUID;
 
 //元素附着相关
 public class Element {
@@ -99,12 +107,6 @@ public class Element {
             entity.getPersistentData().putInt("lightning_attack_up",2);
 
 
-            /*if(entity.level() instanceof ServerLevel serverLevel){
-                serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,entity.getX(),entity.getY()+1,
-                        entity.getZ(),20,0,0,0,0.05);
-            }
-
-             */
             Vec3 center = entity.getBoundingBox().getCenter();
             ModMessage.sendToClients(new ReactionEffectS2CPacket(center,  ReactionEffectS2CPacket.ReactionType.ELECTROCUTE));
             return false; // 新雷被消耗
@@ -161,7 +163,7 @@ public class Element {
                 freezeDuration = 100; // 默认 5 秒
             }
             // 记录冻结位置与截止时间
-            persistentData.putDouble("FrozenX", entity.getX());
+            /*persistentData.putDouble("FrozenX", entity.getX());
             persistentData.putDouble("FrozenY", entity.getY());
             persistentData.putDouble("FrozenZ", entity.getZ());
             persistentData.putLong("FrozenUntil", entity.level().getGameTime() + freezeDuration);
@@ -171,12 +173,35 @@ public class Element {
 
             entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, freezeDuration, 7));
             entity.addEffect(new MobEffectInstance(MobEffects.JUMP, freezeDuration, -7));
+
+             */
+            CompoundTag data = entity.getPersistentData();
+            data.putDouble("FrozenX", entity.getX());
+            data.putDouble("FrozenY", entity.getY());
+            data.putDouble("FrozenZ", entity.getZ());
+            data.putLong("FrozenUntil", entity.level().getGameTime() + freezeDuration);
+            // 增加 FrozenTime，上限 15
+            frozenTime = Math.min(frozenTime + 5, 15);
+            persistentData.putInt("FrozenTime", frozenTime);
+
+
             FrozenIceEntity frozenIceEntity = new FrozenIceEntity(entity.level(), entity, freezeDuration);
             entity.level().addFreshEntity(frozenIceEntity);
 
             if (entity instanceof Mob mob) {
                 mob.setNoAi(true);
             }
+            if (entity.isNoGravity()) {
+                entity.setNoGravity(false);
+            }
+            if(entity instanceof ServerPlayer player){
+                UUID uuid=UUID.nameUUIDFromBytes("spellweaver:frozen_speed".getBytes(StandardCharsets.UTF_8));
+                AttributeModifier frozenModifier=new AttributeModifier(uuid,"frozen",-1, AttributeModifier.Operation.MULTIPLY_TOTAL);
+                Objects.requireNonNull(player.getAttribute(Attributes.MOVEMENT_SPEED))
+                        .addTransientModifier(frozenModifier);
+            }
+            entity.addEffect(new MobEffectInstance(MobEffects.JUMP, freezeDuration, -7));
+
             elementStack.remove(elementStack.size() - 1);
 
             entity.invulnerableTime = 0;

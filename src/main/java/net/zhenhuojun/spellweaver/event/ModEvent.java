@@ -14,6 +14,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,9 +27,13 @@ import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.*;
+import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ShulkerBullet;
@@ -65,6 +70,7 @@ import net.zhenhuojun.spellweaver.spell.element.ElementType;
 
 import java.awt.event.ContainerEvent;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -486,59 +492,12 @@ public class ModEvent {
                     }
                 }
             }
-               //冻结反应处理
             /*if (persistentData.contains("FrozenUntil")) {
                 long frozenUntil = persistentData.getLong("FrozenUntil");
                 if (entity.level().getGameTime() < frozenUntil) {
                     double fx = persistentData.getDouble("FrozenX");
                     double fy = persistentData.getDouble("FrozenY");
                     double fz = persistentData.getDouble("FrozenZ");
-
-                    if (!entity.level().isClientSide) {
-                        // 判断是否在地面
-                        if (entity.onGround()||entity.isInWater()) {
-                            // 完全复位
-                            entity.teleportTo(fx, fy, fz);
-                            entity.setDeltaMovement(0, 0, 0);
-                        } else {
-                            if (entity.isNoGravity()) {
-                                entity.setNoGravity(false);
-                            }
-                            entity.setPos(fx, entity.getY(), fz);
-                            Vec3 motion = entity.getDeltaMovement();
-                            double gravity = 0.08; // 近似原版重力
-                            double newMotionY = motion.y - gravity;
-                            entity.setDeltaMovement(0, newMotionY, 0);
-                            // MoverType.SELF 代表自发移动，会正常触发着地、方块碰撞等
-                            entity.move(MoverType.SELF, entity.getDeltaMovement());
-                            persistentData.putDouble("FrozenY", entity.position().y);
-                        }
-                    }
-                } else {
-                    // 冻结结束，清理数据
-                    if(entity instanceof Mob mob){
-                        mob.setNoAi(false);
-                    }
-                    if(entity instanceof FlyingMob){
-                        entity.setNoGravity(true);
-                    }else
-                    {
-                        entity.setNoGravity(false);
-                    }
-                    persistentData.remove("FrozenX");
-                    persistentData.remove("FrozenY");
-                    persistentData.remove("FrozenZ");
-                    persistentData.remove("FrozenUntil");
-                }
-            }
-
-             */if (persistentData.contains("FrozenUntil")) {
-                long frozenUntil = persistentData.getLong("FrozenUntil");
-                if (entity.level().getGameTime() < frozenUntil) {
-                    double fx = persistentData.getDouble("FrozenX");
-                    double fy = persistentData.getDouble("FrozenY");
-                    double fz = persistentData.getDouble("FrozenZ");
-
                     if (!entity.level().isClientSide) {
                         if (entity.onGround() || entity.isInWater()) {
                             entity.teleportTo(fx, fy, fz);
@@ -554,7 +513,7 @@ public class ModEvent {
                             entity.move(MoverType.SELF, entity.getDeltaMovement());
                         }
                     }
-                } else {
+                    } else {
                     // 冻结时间结束，清理冻结状态
                     if (entity instanceof Mob mob) {
                         mob.setNoAi(false);
@@ -570,6 +529,50 @@ public class ModEvent {
                     persistentData.remove("FrozenUntil");
                 }
             }
+
+             */
+             if (persistentData.contains("FrozenUntil")) {
+                long frozenUntil = persistentData.getLong("FrozenUntil");
+                if (!(entity.level().getGameTime() < frozenUntil)) {
+                    if(entity instanceof ServerPlayer player){
+                        UUID FROZEN_UUID = UUID.nameUUIDFromBytes("spellweaver:frozen_speed".getBytes(StandardCharsets.UTF_8));
+                        AttributeInstance speedAttr = player.getAttribute(Attributes.MOVEMENT_SPEED);
+                        if (speedAttr != null && speedAttr.getModifier(FROZEN_UUID) != null) {
+                            speedAttr.removeModifier(FROZEN_UUID);
+
+                        }
+                    }
+                    if (entity instanceof Mob mob) {
+                        mob.setNoAi(false);
+                    }
+                    if (entity instanceof FlyingMob) {
+                        entity.setNoGravity(true);
+                    } else {
+                        entity.setNoGravity(false);
+                    }
+                    persistentData.remove("FrozenX");
+                    persistentData.remove("FrozenY");
+                    persistentData.remove("FrozenZ");
+                    persistentData.remove("FrozenUntil");
+                }else {
+                    //游泳速度没修饰符只能这样了
+                    if(entity instanceof  Player player){
+                        if(player.isInWater()){
+                            double fx = persistentData.getDouble("FrozenX");
+                            double fy = persistentData.getDouble("FrozenY");
+                            double fz = persistentData.getDouble("FrozenZ");
+                            entity.teleportTo(fx, fy, fz);
+                            entity.setDeltaMovement(0, 0, 0);
+                        }
+                    }else if(entity instanceof FlyingMob mob){
+                        if(!(mob.onGround()||mob.isInWater())){
+                            entity.addDeltaMovement(new Vec3(0,-0.05,0));
+                            entity.move(MoverType.SELF, entity.getDeltaMovement());
+                        }
+                    }
+                }
+            }
+
 
             // 非冻结状态下，每 20 tick 减少 1 点 FrozenTime
             if (!persistentData.contains("FrozenUntil")) {
