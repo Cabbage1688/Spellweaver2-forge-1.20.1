@@ -98,7 +98,16 @@ public class ManaBowItem extends BowItem {
         }
         ItemStack stack = player.getItemInHand(hand);
         //调用原版 use，开始拉弓
-        return super.use(level, player, hand);
+        //return super.use(level, player, hand);
+
+        ItemStack itemstack = player.getItemInHand(hand);
+        boolean flag = true;
+
+        InteractionResultHolder<ItemStack> ret = net.minecraftforge.event.ForgeEventFactory.onArrowNock(itemstack, level, player, hand, flag);
+        if (ret != null) return ret;
+
+        player.startUsingItem(hand);
+        return InteractionResultHolder.consume(itemstack);
     }
 
 
