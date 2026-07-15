@@ -1,13 +1,13 @@
 {
-  "name": "检测速度向量",
+  "name": "Check Velocity",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:query",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "检测速度向量",
+      "title": "Check Velocity",
       "images": ["spellweaver:textures/guidebook/check_speed.png"],
-      "text": "entity->检测速度向量->vec3<br>弹出实体，将其当前速度向量（Vec3）压入栈。"
+      "text": "entity -> Check Velocity -> vec3<br>Pops entity, pushes its current velocity vector (Vec3)."
     }
   ]
 }

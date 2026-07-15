@@ -108,7 +108,9 @@ public class SpellMachineBlockEntity extends BlockEntity {
         //客户端同步
         currentManaBottle++;
         setChanged();
-        level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
+        if (level != null) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
+        }
     }
 
     public void extractManaBottles(Player player) {
@@ -129,9 +131,11 @@ public class SpellMachineBlockEntity extends BlockEntity {
         }
 
         mana = mana-manaPerBottle;
-        currentManaBottle = --currentManaBottle;
+        --currentManaBottle;
         setChanged();
-        level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
+        if (level != null) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
+        }
     }
 
 

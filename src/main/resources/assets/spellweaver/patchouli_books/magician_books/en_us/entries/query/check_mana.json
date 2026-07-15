@@ -1,13 +1,13 @@
 {
-  "name": "检测魔力值",
+  "name": "Check Mana",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:query",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "检测魔力值",
+      "title": "Check Mana",
       "images": ["spellweaver:textures/guidebook/check_mana.png"],
-      "text": "entity->检测魔力值->double<br>弹出实体，如果是玩家则将其当前魔力值（double）压入栈。"
+      "text": "entity -> Check Mana -> double<br>Pops entity, pushes its current mana (double) if it's a player."
     }
   ]
 }

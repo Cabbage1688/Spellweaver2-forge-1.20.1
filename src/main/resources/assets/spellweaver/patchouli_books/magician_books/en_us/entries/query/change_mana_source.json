@@ -1,0 +1,17 @@
+{
+  "name": "Change Mana Source",
+  "icon": "minecraft:book",
+  "category": "spellweaver:query",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "Change Mana Source",
+      "images": ["spellweaver:textures/guidebook/change_mana_source.png"],
+      "text": "player/vec3/slotReference -> Change Mana Source"
+    }, {
+      "type": "patchouli:text",
+      "title": "Change Mana Source",
+      "text": "Changes spell mana source from default to specified player/mana pedestal/spell machine/mana bottle"
+    }
+  ]
+}

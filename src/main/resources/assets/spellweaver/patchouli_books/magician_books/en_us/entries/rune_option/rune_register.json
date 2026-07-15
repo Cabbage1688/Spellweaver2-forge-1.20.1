@@ -1,5 +1,5 @@
 {
-  "name": "符文寄存器",
+  "name": "Rune Register",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:rune_option",
   "pages": [
@@ -13,7 +13,7 @@
       "type": "patchouli:image",
       "title": "]",
       "images": ["spellweaver:textures/guidebook/close_bracket.png"],
-      "text": "被[]包裹的符文会被打包成一个符文寄存器（RuneRegister）压入栈"
+      "text": "Runes wrapped in [] will be packaged into a RuneRegister and pushed onto stack"
     }
   ]
 }

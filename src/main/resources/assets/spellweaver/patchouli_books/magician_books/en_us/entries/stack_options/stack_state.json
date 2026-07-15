@@ -1,13 +1,13 @@
 {
-  "name": "栈状态",
+  "name": "Stack State",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:stack_options",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "栈状态",
+      "title": "Stack State",
       "images": ["spellweaver:textures/guidebook/stack_state.png"],
-      "text": "打印栈中所有参数"
+      "text": "Prints all parameters in the stack"
     }
   ]
 }

@@ -1,17 +1,17 @@
 {
-  "name": "幻化之剑",
+  "name": "Illusion Sword",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:attack",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "幻化之剑",
+      "title": "Illusion Sword",
       "images": ["spellweaver:textures/guidebook/mana_sword.png"],
-      "text": "符文寄存器（RuneRegister） -> 幻化之剑 -><br>弹出符文寄存器，生成一把幻化之剑。"
+      "text": "RuneRegister (RuneRegister) -> Illusion Sword -><br>Pops the RuneRegister, creates an illusion sword."
     },
     {
       "type": "patchouli:text",
-      "text": "<br>召唤时魔力消耗25，每秒需要1魔力维持形态。<br>被玩家从物品栏丢出时会立即消散。<br<br>>命中时将寄存器中符文片段作为新法术执行，在执行之前会向新法术栈压入命中实体（entity）"
+      "text": "<br>Mana cost 25 on summon, requires 1 mana per second to maintain form.<br>Disappears immediately when thrown from inventory.<br><br>On hit, executes the rune fragments in the register as a new spell, pushing the hit entity onto the new spell stack before execution"
     }
   ]
 }

@@ -1,13 +1,13 @@
 {
-  "name": "眼坐标",
+  "name": "Vision Coordinate",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:query",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "眼坐标",
+      "title": "Vision Coordinate",
       "images": ["spellweaver:textures/guidebook/vision_coordinate.png"],
-      "text": "entity->眼坐标->vec3<br>从法术栈弹出一个实体，将其眼睛所在方块的中心坐标压入栈。"
+      "text": "entity -> Vision Coordinate -> vec3<br>Pops an entity from spell stack, pushes center coordinate of the block where its eyes are located."
     }
   ]
 }

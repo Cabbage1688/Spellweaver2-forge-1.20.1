@@ -140,7 +140,7 @@ public class SpellStorageScreen extends Screen {
                         .build()
         );
         this.backButton=this.addRenderableWidget(
-                Button.builder(Component.literal("返回"), button -> {
+                Button.builder(Component.translatable("gui.spellweaver.return"), button -> {
                             Minecraft.getInstance().setScreen(parentScreen);
                         })
                        // .pos(leftPos +63, topPos + GUI_HEIGHT +12)
@@ -149,7 +149,7 @@ public class SpellStorageScreen extends Screen {
                         .build()
         );
         this.editButton=this.addRenderableWidget(
-                Button.builder(Component.literal("编辑"), button -> {
+                Button.builder(Component.translatable("gui.edit"), button -> {
                             if (selectedSpell != null) {
                                 Minecraft.getInstance().setScreen(new SpellEditScreen(selectedSpell, this));
                             }
@@ -313,11 +313,10 @@ public class SpellStorageScreen extends Screen {
                         0x00FF00, false);
             }
         }
-        //法术库存量
         Font font= Minecraft.getInstance().font;
-        MutableComponent text= net.minecraft.network.chat.Component.literal("法术库存"+preSpellList.size()+"/27");
-        int color=0xFFFFFF;//白色
-        MutableComponent text2=net.minecraft.network.chat.Component.literal("右键法术条目以打开法术绑定界面");
+        MutableComponent text= Component.translatable("message.spellweaver.spell_inventory", preSpellList.size(), 27);
+        int color=0xFFFFFF;
+        MutableComponent text2=Component.translatable("message.spellweaver.binding_tip");
         guiGraphics.drawString(font,text,leftPos + 63, topPos + GUI_HEIGHT - 28+25,color);
         guiGraphics.drawString(font,text2,leftPos + 63-40, topPos + GUI_HEIGHT - 28+25-100-80,color);
 
@@ -664,7 +663,7 @@ public class SpellStorageScreen extends Screen {
         public SpellNamingScreen(SpellStorageScreen parent,
                                  String defaultName,
                                  Consumer<String> onConfirm) {
-            super(Component.literal("命名法术"));
+            super(Component.translatable("gui.spellweaver.name_spell"));
             this.parent = parent;
             this.defaultName = defaultName;
             this.onConfirm = onConfirm;
@@ -677,13 +676,13 @@ public class SpellStorageScreen extends Screen {
 
             // 名称输入框
             nameField = new EditBox(font, centerX - 100, centerY - 20, 200, 20,
-                    Component.literal("法术名称"));
+                    Component.translatable("gui.spellweaver.spell_name"));
             nameField.setValue(defaultName);
             nameField.setResponder(text -> updateButtonState());
             addRenderableWidget(nameField);
 
             // 确认按钮
-            addRenderableWidget(Button.builder(Component.literal("确认"), button -> {
+            addRenderableWidget(Button.builder(Component.translatable("gui.confirm"), button -> {
                 onConfirm.accept(nameField.getValue().trim());
             }).pos(centerX - 50, centerY + 20).size(100, 20).build());
         }
@@ -702,7 +701,7 @@ public class SpellStorageScreen extends Screen {
             // 绘制标题
             guiGraphics.drawCenteredString(
                     font,
-                    Component.literal("为法术命名"),
+                    Component.translatable("gui.spellweaver.name_your_spell"),
                     width / 2,
                     height / 4,
                     0xFFFFFF
@@ -740,7 +739,7 @@ public class SpellStorageScreen extends Screen {
             this.addRenderableWidget(Button.builder(Component.translatable("gui.confirm"), button -> {
                 String author = nameField.getValue().trim();
                 if (author.isEmpty()) {
-                    author = "佚名";
+                    author = Component.translatable("message.spellweaver.anonymous").getString();
                 }
                 exportSpell(spell, author);
                 this.onClose();
@@ -826,7 +825,7 @@ public class SpellStorageScreen extends Screen {
 
         public ConfirmOverwriteScreen(SpellStorageScreen parent, ImportSpellScreen importScreen,
                                       StoredSpell newSpell, StoredSpell oldSpell) {
-            super(Component.literal("覆盖法术？"));
+            super(Component.translatable("message.spellweaver.overwrite_spell"));
             this.parent = parent;
             this.importScreen = importScreen;
             this.newSpell = newSpell;
@@ -838,7 +837,7 @@ public class SpellStorageScreen extends Screen {
             int cx = this.width / 2;
             int cy = this.height / 2;
 
-            this.addRenderableWidget(Button.builder(Component.literal("覆盖"), btn -> {
+            this.addRenderableWidget(Button.builder(Component.translatable("gui.overwrite"), btn -> {
                 // 发送覆盖请求
                 ModMessage.sendToServer(new ImportSpellC2SPacket(
                         newSpell.getName(),
@@ -850,16 +849,16 @@ public class SpellStorageScreen extends Screen {
                 // 乐观更新
                 PlayerSpellStorage storage = ClientPlayerStorageData.getPlayerSpellStorage();
                 storage.getSpells().put(oldSpell.getId(), newSpell);
-                player.displayClientMessage(Component.literal("已覆盖法术：" + newSpell.getName()), false);
+                player.displayClientMessage(Component.translatable("message.spellweaver.overwritten", newSpell.getName()), false);
                 this.onClose();
                 importScreen.onClose();
                 parent.refreshSpells();
             }).pos(cx - 50, cy - 10).size(100, 20).build());
 
-            this.addRenderableWidget(Button.builder(Component.literal("新建"), btban -> {
+            this.addRenderableWidget(Button.builder(Component.translatable("gui.new"), btban -> {
                 // 作为新法术
                 if (ClientPlayerStorageData.getPlayerSpellStorage().getSpells().size() >= 27) {
-                    player.displayClientMessage(Component.literal("存储已满！"), false);
+                    player.displayClientMessage(Component.translatable("message.spellweaver.storage_full"), false);
                     return;
                 }
                 UUID newId = UUID.randomUUID();
@@ -872,7 +871,7 @@ public class SpellStorageScreen extends Screen {
                         null
                 ));
                 ClientPlayerStorageData.getPlayerSpellStorage().getSpells().put(newId, copySpell);
-                player.displayClientMessage(Component.literal("已导入为新法术：" + copySpell.getName()), false);
+                player.displayClientMessage(Component.translatable("message.spellweaver.imported_new", copySpell.getName()), false);
                 this.onClose();
                 importScreen.onClose();
                 parent.refreshSpells();
@@ -883,7 +882,7 @@ public class SpellStorageScreen extends Screen {
         public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
             renderBackground(guiGraphics);
             super.render(guiGraphics, mouseX, mouseY, partialTicks);
-            guiGraphics.drawCenteredString(font, "法术已存在，要覆盖吗？", this.width / 2, 40, 0xFFFFFF);
+            guiGraphics.drawCenteredString(font, Component.translatable("message.spellweaver.spell_exists"), this.width / 2, 40, 0xFFFFFF);
         }
 
         @Override
@@ -925,7 +924,7 @@ public class SpellStorageScreen extends Screen {
     //导入方法
     private boolean importSpell(String input) {
         if (!input.startsWith("SPELLWEAVER_SPELL:")) {
-            player.displayClientMessage(Component.literal("无效的法术数据！"), false);
+            player.displayClientMessage(Component.translatable("message.spellweaver.invalid_spell_data"), false);
             return false;
         }
         String base64 = input.substring("SPELLWEAVER_SPELL:".length());
@@ -933,7 +932,7 @@ public class SpellStorageScreen extends Screen {
         try {
             bytes = Base64.getDecoder().decode(base64);
         } catch (IllegalArgumentException e) {
-            player.displayClientMessage(Component.literal("法术数据解码失败！"), false);
+            player.displayClientMessage(Component.translatable("message.spellweaver.decode_failed"), false);
             return false;
         }
 
@@ -941,7 +940,7 @@ public class SpellStorageScreen extends Screen {
         try {
             importTag = NbtIo.readCompressed(new ByteArrayInputStream(bytes));
         } catch (IOException e) {
-            player.displayClientMessage(Component.literal("无法读取法术数据！"), false);
+            player.displayClientMessage(Component.translatable("message.spellweaver.cannot_read_spell"), false);
             return false;
         }
 
@@ -949,7 +948,7 @@ public class SpellStorageScreen extends Screen {
         try {
             importedSpell = StoredSpell.deserialize(importTag);
         } catch (Exception e) {
-            player.displayClientMessage(Component.literal("法术数据损坏！"), false);
+            player.displayClientMessage(Component.translatable("message.spellweaver.spell_corrupted"), false);
             return false;
         }
 
@@ -963,7 +962,7 @@ public class SpellStorageScreen extends Screen {
         } else {
             // 直接新增
             if (storage.getSpells().size() >=  PlayerSpellStorage.MAX_STORED_SPELLS) {
-                player.displayClientMessage(Component.literal("存储已满，无法导入！"), false);
+                player.displayClientMessage(Component.translatable("message.spellweaver.cannot_import"), false);
                 return false;
             }
             ModMessage.sendToServer(new ImportSpellC2SPacket(
@@ -975,7 +974,7 @@ public class SpellStorageScreen extends Screen {
             ));
             // 本地更新
             storage.getSpells().put(importedSpell.getId(), importedSpell);
-            player.displayClientMessage(Component.literal("导入成功：" + importedSpell.getName()), false);
+            player.displayClientMessage(Component.translatable("message.spellweaver.import_success", importedSpell.getName()), false);
             refreshSpells();
             return true;
         }

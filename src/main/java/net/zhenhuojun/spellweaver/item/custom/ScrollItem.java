@@ -31,13 +31,13 @@ import java.util.Optional;
  *
  */
 
-public class ScrollItem extends Item {
+public class ScrollItem extends UsedScroll{
 
     public ScrollItem(Properties properties) {
-        super(properties.durability(256));
+        super(properties, 256);
     }
 
-    @Override
+    /*@Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, level, tooltip, flag);
 
@@ -68,7 +68,7 @@ public class ScrollItem extends Item {
         if(spellData.contains("mana")){
             double mana=spellData.getDouble("mana");
             tooltipComponents.add(
-                    Component.literal("注入魔力")
+                    Component.literal("魔力")
                             .append(": ")
                             .append(String.valueOf(mana))
                             .withStyle(ChatFormatting.LIGHT_PURPLE)
@@ -122,4 +122,6 @@ public class ScrollItem extends Item {
         }
         return false;
     }
+
+     */
 }

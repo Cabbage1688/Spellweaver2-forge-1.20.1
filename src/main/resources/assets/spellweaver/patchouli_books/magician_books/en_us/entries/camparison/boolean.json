@@ -1,19 +1,19 @@
 {
-  "name": "布尔值",
+  "name": "Boolean",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:comparison",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "是",
+      "title": "True",
       "images": ["spellweaver:textures/guidebook/true.png"],
-      "text": "是->true。<br>向法术栈顶压入布尔值true"
+      "text": "True -> true.<br>Pushes boolean true to stack top"
     },
     {
       "type": "patchouli:image",
-      "title": "非",
+      "title": "False",
       "images": ["spellweaver:textures/guidebook/false.png"],
-      "text": "非->false。<br>向法术栈顶压入布尔值false"
+      "text": "False -> false.<br>Pushes boolean false to stack top"
     }
   ]
 }

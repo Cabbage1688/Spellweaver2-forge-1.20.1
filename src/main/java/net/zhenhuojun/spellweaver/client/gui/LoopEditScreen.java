@@ -22,7 +22,7 @@ public class LoopEditScreen extends Screen {
         super(pTitle);
     }
    public LoopEditScreen(SpellWeavingScreen parent, LoopNode editNode){
-        super(Component.literal("循环次数"));
+        super(Component.translatable("gui.spellweaver.loop_count"));
        this.parent = parent;
        this.editNode=editNode;
    }
@@ -33,12 +33,12 @@ public class LoopEditScreen extends Screen {
 
 
         time = new EditBox(font, centerX - 100, centerY - 20, 200, 20,
-                Component.literal("循环次数"));
+                Component.translatable("gui.spellweaver.loop_count"));
         time.setResponder(text -> updateButtonState());
         addRenderableWidget(time);
 
         // 确认按钮
-        addRenderableWidget(Button.builder(Component.literal("确认"), button -> {
+        addRenderableWidget(Button.builder(Component.translatable("gui.confirm"), button -> {
             if(!time.getValue().trim().isEmpty()){
                 currentTime= Integer.parseInt(time.getValue());
                 saveAndReturn();
@@ -74,7 +74,7 @@ public class LoopEditScreen extends Screen {
         // 绘制标题
         guiGraphics.drawCenteredString(
                 font,
-                Component.literal("法术循环次数"),
+                Component.translatable("gui.spellweaver.spell_loop_count"),
                 width / 2,
                 height / 4,
                 0xFFFFFF

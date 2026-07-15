@@ -1,35 +1,35 @@
 {
-  "name": "四则运算",
+  "name": "Arithmetic",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:math",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "加",
+      "title": "Add",
       "images": ["spellweaver:textures/guidebook/add.png"],
-      "text": "弹出栈顶两个同为 Vec3 或同为 double 的参数，压入它们的和"
+      "text": "Pops two parameters from stack top (both Vec3 or both double), pushes their sum"
     },
     {
       "type": "patchouli:image",
-      "title": "减",
+      "title": "Subtract",
       "images": ["spellweaver:textures/guidebook/sub.png"],
-      "text": "弹出栈顶两个同为 Vec3 或同为 double 的参数，压入它们的差。<br>先弹出的为减数，后弹出的为被减数"
+      "text": "Pops two parameters from stack top (both Vec3 or both double), pushes their difference.<br>First popped is subtrahend, second is minuend"
     },
     {
       "type": "patchouli:image",
-      "title": "乘",
+      "title": "Multiply",
       "images": ["spellweaver:textures/guidebook/multiply.png"],
-      "text": "弹出法术栈顶的一个double类型参数和一个Vec3类型参数，或两个double类型参数，并压入乘积"
+      "text": "Pops one double and one Vec3, or two doubles from stack top, pushes the product"
     },
     {
       "type": "patchouli:image",
-      "title": "除",
+      "title": "Divide",
       "images": ["spellweaver:textures/guidebook/division.png"],
-      "text": "弹出栈顶两个参数，支持以下情况："
+      "text": "Pops two parameters from stack top, supports:"
     },
     {
       "type": "patchouli:text",
-      "text": "两个 double：压入它们的商（先弹出的为除数，后弹出的为被除数）<br>一个 Vec3 和一个 double：向量除以标量，即向量的每个分量除以该标量。如果你使用这个不规范的用法，会收到一条来自模组的温馨提示。"
+      "text": "Two doubles: pushes their quotient (first popped is divisor, second is dividend)<br>One Vec3 and one double: vector divided by scalar, each component divided by the scalar. If you use this unconventional method, you'll receive a friendly reminder from the mod."
     }
   ]
 }

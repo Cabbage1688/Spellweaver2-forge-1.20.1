@@ -41,7 +41,7 @@ public class ClientEvent {
         public static void onKeyInput(InputEvent.Key event) {
             if(KeyBinding.TEST_KEY.consumeClick()){
                // Minecraft.getInstance().player.sendSystemMessage(Component.literal("Pressed Test Key!"));
-                Minecraft.getInstance().setScreen(new SpellWeavingScreen(Component.literal("测试")));
+                Minecraft.getInstance().setScreen(new SpellWeavingScreen(Component.translatable("gui.spellweaver.test")));
             }
             for (int slot = 0; slot < SPELL_KEYS.length; slot++) {
                 if (SPELL_KEYS[slot].consumeClick()) {
@@ -67,13 +67,13 @@ public class ClientEvent {
                     if(ClientPlayerOverloadData.isEnabled()){
                         ClientPlayerOverloadData.setEnabled(false);
                         player.displayClientMessage(
-                                Component.literal("法术超载关闭").withStyle(ChatFormatting.LIGHT_PURPLE),
+                                Component.translatable("message.spellweaver.overload_disabled").withStyle(ChatFormatting.LIGHT_PURPLE),
                                 true
                         );
                     } else {
                         ClientPlayerOverloadData.setEnabled(true);
                         player.displayClientMessage(
-                                Component.literal("法术超载启用,超载倍数"+ClientPlayerOverloadData.getCurrentMultiplier()).withStyle(ChatFormatting.LIGHT_PURPLE),
+                                Component.translatable("message.spellweaver.overload_enabled", ClientPlayerOverloadData.getCurrentMultiplier()).withStyle(ChatFormatting.LIGHT_PURPLE),
                                 true
                         );
 
@@ -91,7 +91,7 @@ public class ClientEvent {
             }else if (!ClientPlayerOverloadData.isEnabled()&&OVERLOAD_UP_KEY.consumeClick()) {
                     ClientPlayerOverloadData.addCurrentMultiplier(1);
                     player.displayClientMessage(
-                            Component.literal("超载倍数调整为"+ClientPlayerOverloadData.getCurrentMultiplier()).withStyle(ChatFormatting.LIGHT_PURPLE),
+                            Component.translatable("message.spellweaver.overload_multiplier", ClientPlayerOverloadData.getCurrentMultiplier()).withStyle(ChatFormatting.LIGHT_PURPLE),
                             true
                     );
                     ModMessage.sendToServer(new OverloadDataC2SPacket(ClientPlayerOverloadData.isEnabled(),
@@ -161,6 +161,11 @@ public class ClientEvent {
                     SpellMachineRenderer::new
             );
 
+            event.registerBlockEntityRenderer(
+                    ModBlockEntities.MANA_PEDESTAL_BLOCK_ENTITY.get(),
+                    ManaPedestalRenderer::new
+            );
+
         }
 
         @SubscribeEvent
@@ -194,6 +199,8 @@ public class ClientEvent {
                 });
                 //不是在注册某个实体的渲染器，而是直接在世界的某个渲染阶段插入自定义绘制代码,因此这个不和渲染器绑定在一起
                 MinecraftForge.EVENT_BUS.addListener(EnergyShieldWorldRenderer::onRenderLevelStage);
+
+                MinecraftForge.EVENT_BUS.addListener(SpellBlockGlowRenderer::onRenderLevelStage);
             });
         }
     }

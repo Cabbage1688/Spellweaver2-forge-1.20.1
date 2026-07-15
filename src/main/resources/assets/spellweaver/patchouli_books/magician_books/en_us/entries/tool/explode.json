@@ -1,17 +1,17 @@
 {
-  "name": "爆炸",
+  "name": "Explode",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:tool",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "爆炸",
+      "title": "Explode",
       "images": ["spellweaver:textures/guidebook/explode.png"],
-      "text": "坐标（Vec3），半径（double） -> 爆炸 -><br>顺序任意，在指定位置产生爆炸,不会伤害施法者。"
+      "text": "Coordinate (Vec3), radius (double) -> Explode -><br>Order doesn't matter, creates explosion at specified position, won't damage caster."
     },
     {
       "type": "patchouli:text",
-      "text": "<br>魔力消耗 = 半径的1.5次方 × 10<br>爆炸会对周围实体造成伤害并破坏地形。"
+      "text": "<br>Mana cost = radius^1.5 × 10<br>Explosion deals damage to nearby entities and destroys terrain."
     }
   ]
 }

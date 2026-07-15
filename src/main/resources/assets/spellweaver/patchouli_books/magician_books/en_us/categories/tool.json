@@ -1,6 +1,6 @@
 {
-  "name": "功能",
-  "description": "能够产生现实效应的功能符文符文",
+  "name": "Utility",
+  "description": "Runes that produce real-world effects",
   "icon": "minecraft:diamond_pickaxe",
   "sortnum": 2
 }

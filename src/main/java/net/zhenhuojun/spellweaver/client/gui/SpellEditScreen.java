@@ -17,7 +17,7 @@ public class SpellEditScreen extends SpellWeavingScreen {
     private final Screen parentScreen;
 
     public SpellEditScreen(StoredSpell spell, Screen parent) {
-        super(Component.literal("编辑法术"));
+        super(Component.translatable("gui.spellweaver.edit_spell"));
         this.originalSpell = spell;
         this.parentScreen = parent;
 
@@ -40,11 +40,11 @@ public class SpellEditScreen extends SpellWeavingScreen {
         this.removeWidget(spellBoxButton);
 
         // 保存按钮
-        this.addRenderableWidget(Button.builder(Component.literal("保存更改"), button -> saveAndClose())
+        this.addRenderableWidget(Button.builder(Component.translatable("gui.spellweaver.save_changes"), button -> saveAndClose())
                 .bounds(width - 60, height / 4, 50, 20).build());
 
         // 取消按钮
-        this.addRenderableWidget(Button.builder(Component.literal("取消更改"), button -> onClose())
+        this.addRenderableWidget(Button.builder(Component.translatable("gui.spellweaver.cancel_changes"), button -> onClose())
                 .bounds(width - 60, height / 4 - 30, 50, 20).build());
 
         // 复制按钮

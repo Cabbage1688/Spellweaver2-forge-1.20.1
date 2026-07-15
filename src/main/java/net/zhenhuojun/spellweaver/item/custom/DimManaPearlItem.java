@@ -9,18 +9,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.zhenhuojun.spellweaver.capability.impl.mana.ManaUtil;
 
-public class MoonPearlItem extends Item {
-
-    public MoonPearlItem(Properties pProperties) {
+public class DimManaPearlItem extends Item {
+    public DimManaPearlItem(Properties pProperties) {
         super(pProperties);
     }
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand){
         ItemStack stack = pPlayer.getItemInHand(pUsedHand);
         if(!pLevel.isClientSide) {
-            ManaUtil.addManaExpOrAwakeManaByMoonPearlAndSendPacket((ServerPlayer)pPlayer);
+            ManaUtil.addManaExpOrAwakeManaByDimManaPearlAndSendPacket((ServerPlayer)pPlayer);
             stack.shrink(1);
         }
         return InteractionResultHolder.sidedSuccess(stack, pLevel.isClientSide());
     }
-
 }

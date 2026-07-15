@@ -1,5 +1,6 @@
 package net.zhenhuojun.spellweaver.network;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
@@ -229,6 +230,37 @@ public class ModMessage {
                 .consumerMainThread(PurifyEffectS2CPacket::handle)
                 .add();
 
+        net.messageBuilder(FeatherPenSpellC2SPacket.class,id(),NetworkDirection.PLAY_TO_SERVER)
+                .decoder(FeatherPenSpellC2SPacket::new)
+                .encoder(FeatherPenSpellC2SPacket::toByte)
+                .consumerMainThread(FeatherPenSpellC2SPacket::handle)
+                .add();
+
+        net.messageBuilder(MagicBrushClearC2SPacket.class,id(),NetworkDirection.PLAY_TO_SERVER)
+                .decoder(MagicBrushClearC2SPacket::new)
+                .encoder(MagicBrushClearC2SPacket::toByte)
+                .consumerMainThread(MagicBrushClearC2SPacket::handle)
+                .add();
+
+        net.messageBuilder(SpellBlockSyncS2CPacket.class,id(),NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(SpellBlockSyncS2CPacket::new)
+                .encoder(SpellBlockSyncS2CPacket::toByte)
+                .consumerMainThread(SpellBlockSyncS2CPacket::handle)
+                .add();
+
+        net.messageBuilder(InscriptionTableWriteC2SPacket.class,id(),NetworkDirection.PLAY_TO_SERVER)
+                .decoder(InscriptionTableWriteC2SPacket::new)
+                .encoder(InscriptionTableWriteC2SPacket::toByte)
+                .consumerMainThread(InscriptionTableWriteC2SPacket::handle)
+                .add();
+
+        net.messageBuilder(InscriptionTableClearC2SPacket.class,id(),NetworkDirection.PLAY_TO_SERVER)
+                .decoder(InscriptionTableClearC2SPacket::new)
+                .encoder(InscriptionTableClearC2SPacket::toByte)
+                .consumerMainThread(InscriptionTableClearC2SPacket::handle)
+                .add();
+
+
     }
 
     public static <MSG> void sendToServer(MSG message) {
@@ -240,5 +272,14 @@ public class ModMessage {
     }
     public static <MSG> void sendToClients(MSG message) {
         INSTANCE.send(PacketDistributor.ALL.noArg(), message);
+    }
+
+    //这个方法按维度发送，用于法术方块，不同Level数据不一样
+    public static <MSG> void sendToClientsInLevel(MSG message, ServerLevel level) {
+        for (ServerPlayer player : level.getServer().getPlayerList().getPlayers()) {
+            if (player.level() == level) {
+                INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
+            }
+        }
     }
 }

@@ -1,6 +1,6 @@
 {
   "name": "破旧的书籍",
-  "landing_text": "据说，少部分青金石矿中有着一种叫做魔珠的物质，使用它，就能叩开魔法的大门……",
+  "landing_text": "book.spellweaver.landing_text",
   "version": 1,
   "creative_tab": "minecraft:tools_and_utilities",
   "use_resource_pack": true

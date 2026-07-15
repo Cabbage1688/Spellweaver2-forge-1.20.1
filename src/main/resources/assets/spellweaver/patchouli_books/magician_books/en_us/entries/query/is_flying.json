@@ -1,17 +1,17 @@
 {
-  "name": "滞空判断器",
+  "name": "Is Flying",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:query",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "滞空判断器",
+      "title": "Is Flying",
       "images": ["spellweaver:textures/guidebook/is_flying.png"],
-      "text": "entity -> 滞空判断器 -> entity, boolean"
+      "text": "entity -> Is Flying -> entity, boolean"
     },
     {
       "type": "patchouli:text",
-      "text": "判断实体是否在空中（未站在地面上），再压入布尔值（true 表示滞空），不消耗原参数。"
+      "text": "Checks if entity is airborne (not standing on ground), pushes boolean (true means flying), original parameter is not consumed."
     }
   ]
 }

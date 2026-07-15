@@ -1,21 +1,21 @@
 {
-  "name": "第二章：实用（？）法术",
+  "name": "Chapter 2: Practical (?) Spells",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:before_everything",
   "sortnum": 2,
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "$(l)欢迎来到第二章！$()<br><br>这里收集了几个个立刻就能用上的小法术。每个都很短，可以直接抄下来试试效果，顺便认识新符文。"
+      "text": "$(l)Welcome to Chapter 2!$()<br><br>Here are several small spells you can use right away. Each is short and can be copied directly to test the effects while learning new runes."
     },    {
       "type": "patchouli:spotlight",
       "item": "minecraft:torch",
-      "title": "照明术",
-      "text": "$(l)符文序列：$()<br>$(9)$(l)自我 眼坐标 魔法光源$()<br><br>$(l)效果：$()在眼睛位置召唤一团魔法光，照亮周围。下矿懒得插火把的时候特别好用。<br><br>$(l)知识点：$()<br>·$(9)眼坐标$()与$(9)脚下坐标$()都是查询类符文，一个取眼部位置，一个取脚底位置。<br>·$(9)魔法光源$()是消耗魔力的世界交互符文——从栈顶弹出一个坐标，在那里生成光源。"
+      "title": "Light Spell",
+      "text": "$(l)Rune Sequence:$()<br>$(9)$(l)Self VisionCoordinate MagicLight$()<br><br>$(l)Effect:$()Summons a magical light at eye position, illuminating surroundings. Especially useful when mining without placing torches.<br><br>$(l)Knowledge Points:$()<br>·$(9)VisionCoordinate$() and $(9)FootCoordinate$() are both query runes — one takes eye position, one takes foot position.<br>·$(9)MagicLight$() is a world-interaction rune that consumes mana — pops a coordinate from stack top and generates light there."
     },{
       "type": "relations",
-      "title": "照明术相关符文页面",
-      "text": "这些是该法术用到的符文",
+      "title": "Light Spell Related Rune Pages",
+      "text": "These are the runes used in this spell",
       "entries": [
         "spellweaver:query/myself",
         "spellweaver:query/vision_coordinate",
@@ -24,12 +24,12 @@
     }, {
       "type": "patchouli:spotlight",
       "item": "minecraft:flint_and_steel",
-      "title": "点火",
-      "text": "$(l)符文序列：$()<br>$(9)$(l)5.0 射线 点燃$()<br><br>$(l)效果：$()点燃5格内视线所指的方块。<br><br>$(l)知识点：$()<br>·$(9)射线$()从栈顶弹出距离，从玩家眼睛射出一条线，碰到方块就把那个方块的坐标压入栈。<br>·$(9)点燃$()弹出坐标，在坐标上方生成火焰。<br><br>符文序列中允许插入常量"
+      "title": "Ignite",
+      "text": "$(l)Rune Sequence:$()<br>$(9)$(l)5.0 Ray Ignite$()<br><br>$(l)Effect:$()Ignites blocks within 5 blocks of your line of sight.<br><br>$(l)Knowledge Points:$()<br>·$(9)Ray$() pops distance from stack top, shoots a line from player's eyes, and pushes the hit block's coordinate onto the stack.<br>·$(9)Ignite$() pops coordinate and spawns fire above it.<br><br>Constants can be inserted directly into rune sequences"
     },{
       "type": "relations",
-      "title": "点火相关符文页面",
-      "text": "这些是该法术用到的符文",
+      "title": "Ignite Related Rune Pages",
+      "text": "These are the runes used in this spell",
       "entries": [
         "spellweaver:query/ray",
         "spellweaver:tool/ignite"
@@ -38,13 +38,13 @@
     {
       "type": "patchouli:spotlight",
       "item": "minecraft:apple",
-      "title": "治疗术",
-      "text": "$(l)符文序列：$()<br>$(9)$(l) 20 自我 检测生命值 - 自我 治疗$()<br><br>$(l)效果：$()将你的生命值补满到 20 点。<br><br>$(l)知识点：$()<br>·$(9)检测生命值$()弹出实体，压入它的当前血量。<br>·$(9)-$()减法运算：20 - 当前血量 = 需要治疗的量。<br>·$(9)治疗$()弹出实体和数值，消耗魔力恢复生命。这里栈上有两个$(9)自我$()——第二个是为$(9)治疗$()准备的目标实体。"
+      "title": "Heal",
+      "text": "$(l)Rune Sequence:$()<br>$(9)$(l) 20 Self CheckHealth - Self Heal$()<br><br>$(l)Effect:$()Heals your health up to 20 points.<br><br>$(l)Knowledge Points:$()<br>·$(9)CheckHealth$() pops entity, pushes its current health.<br>·$(9)-$() subtraction: 20 - current health = amount to heal.<br>·$(9)Heal$() pops entity and value, consumes mana to restore health. There are two $(9)Self$() on the stack — the second is the target entity for $(9)Heal$()."
     }
   ,{
       "type": "relations",
-      "title": "治疗术相关符文页面",
-      "text": "这些是该法术用到的符文",
+      "title": "Heal Related Rune Pages",
+      "text": "These are the runes used in this spell",
       "entries": [
         "spellweaver:query/myself",
         "spellweaver:query/check_health",
@@ -55,13 +55,13 @@
     {
       "type": "patchouli:spotlight",
       "item": "minecraft:ender_pearl",
-      "title": "闪现",
-      "text": "$(l)符文序列：$()<br>$(9)$(l)自我 视线方向 5 * 自我 传送$()<br><br>$(l)效果：$()沿你视线方向瞬间移动 5 格。可用于跨越峡谷等。<br><br>$(l)知识点：$()<br>·$(9)视线方向$()弹出实体，压入它正在看的方向（单位向量）。<br>·$(9)*$()向量数乘：把方向向量拉长到 5 格。<br>·$(9)传送$()弹出坐标和实体，消耗魔力将实体传送过去。注意栈上有两个$(9)自我$()——一个用来获取视线方向，一个是传送的目标实体。"
+      "title": "Flash Step",
+      "text": "$(l)Rune Sequence:$()<br>$(9)$(l)Self VisionDirection 5 * Self Teleport$()<br><br>$(l)Effect:$()Instantly moves 5 blocks in your line of sight direction. Useful for crossing canyons.<br><br>$(l)Knowledge Points:$()<br>·$(9)VisionDirection$() pops entity, pushes the direction it's looking (unit vector).<br>·$(9)*$() scalar multiplication: stretches direction vector to 5 blocks.<br>·$(9)Teleport$() pops coordinate and entity, consumes mana to teleport entity. Note there are two $(9)Self$() on the stack — one to get vision direction, one is the teleport target."
     },
     {
       "type": "relations",
-      "title": "闪现相关符文页面",
-      "text": "这些是该法术用到的符文",
+      "title": "Flash Step Related Rune Pages",
+      "text": "These are the runes used in this spell",
       "entries": [
         "spellweaver:query/myself",
         "spellweaver:query/vision_vec3",
@@ -71,13 +71,13 @@
     },{
       "type": "patchouli:spotlight",
       "item": "minecraft:fire_charge",
-      "title": "魔法飞弹",
-      "text": "$(l)符文序列：$()<br>$(9)$(l)[ 2.0 爆炸 ] 自我 眼坐标 魔法飞弹$()<br><br>$(l)效果：$()从眼睛位置发射一颗魔法飞弹，撞击方块或实体后产生半径 2 的爆炸。<br><br>$(l)知识点：$()<br>·方括号$(9)[ ... ]$()把一组符文打包成$(l)符文寄存器$()——寄存器里的符文不会立即执行，而是被当作一个“法术包”暂存起来。<br>·$(9)魔法飞弹$()生成的飞弹撞到东西后会开启新的法术栈并自动压入命中坐标（Vec3），然后执行其存储的符文。"
+      "title": "Mana Ball",
+      "text": "$(l)Rune Sequence:$()<br>$(9)$(l)[ 2.0 Explode ] Self VisionCoordinate ManaBall$()<br><br>$(l)Effect:$()Launches a mana ball from eye position, creating an explosion with radius 2 upon impact with blocks or entities.<br><br>$(l)Knowledge Points:$()<br>·Square brackets $(9)[ ... ]$() package a group of runes into a $(l)RuneRegister$() — runes in the register won't execute immediately, but are stored as a \"spell package\".<br>·When a $(9)ManaBall$() projectile hits something, it opens a new spell stack, automatically pushes the hit coordinate (Vec3), then executes its stored runes."
     },
     {
       "type": "relations",
-      "title": "魔法飞弹相关符文页面",
-      "text": "这些是该法术用到的符文",
+      "title": "Mana Ball Related Rune Pages",
+      "text": "These are the runes used in this spell",
       "entries": [
         "spellweaver:rune_option/rune_register",
         "spellweaver:tool/explode",
@@ -88,11 +88,11 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(l)小贴士与下一步$()<br><br>·释放法术前检查魔力——具有现实效应的法术消耗会魔力，魔力不足什么都不会发生。<br>·如果法术出现问题可以使用$(9)栈状态$()查看栈中数据情况，它是你最好的调试工具。<br>·试着修改法术逻辑——把闪现术的 5 改成 10 会怎样？在魔法飞弹的逻辑中增加爆炸前放置水，爆炸后放置方块破坏方块会怎么样？"
+      "text": "$(l)Tips and Next Steps$()<br><br>·Check mana before casting — spells with real-world effects consume mana, nothing happens if insufficient.<br>·Use $(9)StackState$() to view stack data if something goes wrong — it's your best debugging tool.<br>·Try modifying spell logic — what happens if you change Flash Step's 5 to 10? What if you add water placement before explosion and block breaking after in Mana Ball?"
     },
     {
       "type": "patchouli:text",
-      "text": "$(l)常见参数类型速查$()<br><br>你已经在六个法术中接触了这些数据类型，现在我们来整理一下：<br><br>·$(9)Double$() —— 数字。如 $(9)5.0$()、$(9)20$()。用于计算、距离、治疗量等。<br>·$(9)Vec3$() —— 坐标或向量。如眼坐标、脚下坐标、视线方向。由三个数字组成 (x, y, z)。<br>·$(9)Entity$() —— 实体。$(9)自我$() 压入的就是玩家实体。<br>·$(9)Boolean$() —— 布尔值，只有 $(2)true$() 和 $(4)false$()。下一章的条件节点会用到。<br>·$(9)String$() —— 字符串。用引号包裹，如 $(9)\"0\"$()，主要用于变量名。<br>·$(9)Object$() —— 任意类型。<br><br>了解这些类型后，翻看符文字典时会更容易理解每个符文需要什么输入、会产生什么输出。"
+      "text": "$(l)Quick Reference for Common Parameter Types$()<br><br>You've encountered these data types across six spells. Let's summarize:<br><br>·$(9)Double$() — Numbers. Like $(9)5.0$(), $(9)20$(). Used for calculations, distances, heal amounts.<br>·$(9)Vec3$() — Coordinates or vectors. Like vision coordinate, foot coordinate, vision direction. Consists of three numbers (x, y, z).<br>·$(9)Entity$() — Entities. $(9)Self$() pushes the player entity.<br>·$(9)Boolean$() — Boolean values, only $(2)true$() and $(4)false$(). Used in condition nodes next chapter.<br>·$(9)String$() — Strings. Wrapped in quotes, like $(9)\"0\"$(), mainly used for variable names.<br>·$(9)Object$() — Any type.<br><br>Understanding these types makes it easier to understand what inputs each rune needs and what outputs it produces when browsing the rune dictionary."
     }
   ]
 }

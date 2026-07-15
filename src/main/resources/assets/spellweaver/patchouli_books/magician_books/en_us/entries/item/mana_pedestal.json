@@ -1,0 +1,17 @@
+{
+  "name": "Mana Pedestal",
+  "icon": "spellweaver:mana_pedestal",
+  "category": "spellweaver:item",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "spellweaver:mana_pedestal",
+      "title": "Mana Pedestal",
+      "text": "Connects mana bottles as a mana source, can hold up to nine mana bottles.<br><br>$(l)Usage:$()<br>Hold mana bottle and right-click to place it, empty hand + shift+right-click to remove. Usually used with the \"Mana Source Conversion\" rune."
+    },{
+      "type": "crafting",
+      "recipe": "spellweaver:mana_pedestal",
+      "title": "Mana Pedestal"
+    }
+  ]
+}

@@ -11,7 +11,7 @@ import net.zhenhuojun.spellweaver.spell.node.SequenceNode;
 public class SpellStickEditScreen extends SpellWeavingScreen {
 
     public SpellStickEditScreen() {
-        super(Component.literal("注入法术到法杖"));
+        super(Component.translatable("gui.spellweaver.infuse_spell_staff"));
         //2026.5.21修复会读取父屏幕缓存的bug
         if(this.rootNode instanceof SequenceNode sequenceNode){
             sequenceNode.clearChildren();

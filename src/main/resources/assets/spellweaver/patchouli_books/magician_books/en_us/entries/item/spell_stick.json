@@ -1,17 +1,17 @@
 {
-  "name": "法杖",
+  "name": "Spell Staff",
   "icon": "spellweaver:spell_stick",
   "category": "spellweaver:item",
   "pages": [
     {
       "type": "patchouli:spotlight",
       "item": "spellweaver:spell_stick",
-      "title": "法杖",
-      "text": "法师的好伙伴，能存储一道法术，存储于其中的法术在释放时只会消耗80%的魔力。当然，也可在必要时充当近战武器。<br><br>$(l)使用方法：$()<br>放在主手右键打开法术编辑界面，编辑完成后按下Esc弹出命名窗口，命名后点击确定即可（若不想存储直接按Esc即可）"
+      "title": "Spell Staff",
+      "text": "A mage's good companion, can store one spell. Spells stored in it only consume 80% mana when cast. Can also serve as a melee weapon if needed.<br><br>$(l)Usage:$()<br>Hold in main hand and right-click to open spell editing interface, after editing press Esc to bring up naming window, name it and click confirm (press Esc directly if not wanting to store)"
     },{
       "type": "crafting",
       "recipe": "spellweaver:spell_stick",
-      "text": "存入法术的法杖右键即可释放其存储的法术，将法杖放置于副手右键可移除法杖内的法术"
+      "text": "Staff with spell stored can be right-clicked to cast. Place staff in offhand and right-click to remove the spell"
     }
   ]
 }

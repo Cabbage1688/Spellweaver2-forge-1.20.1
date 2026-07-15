@@ -18,7 +18,7 @@ public class ConditionEditScreen extends Screen {
     private double offsetY = 0;
 
     public ConditionEditScreen(SpellWeavingScreen parent, ConditionNode editNode) {
-        super(Component.literal("条件设置"));
+        super(Component.translatable("gui.spellweaver.condition_settings"));
         this.parent = parent;
         this.editNode = editNode;
         this.currentCondition = editNode.getCondition();
@@ -46,7 +46,7 @@ public class ConditionEditScreen extends Screen {
         addRenderableWidget(falseButton);
 
         // 确认按钮
-        addRenderableWidget(Button.builder(Component.literal("确认"), btn -> {
+        addRenderableWidget(Button.builder(Component.translatable("gui.confirm"), btn -> {
             editNode.setCondition(currentCondition);
             saveAndReturn();
         }).pos(centerX - 50, centerY + 30).size(100, 20).build());
@@ -82,17 +82,17 @@ public class ConditionEditScreen extends Screen {
 
         guiGraphics.drawCenteredString(
                 font,
-                Component.literal("条件为此时执行子节点"),
+                Component.translatable("gui.spellweaver.condition_true"),
                 width / 2,
                 height / 4,
                 0xFFFFFF
         );
 
         // 绘制当前选中状态文字
-        String status = currentCondition ? "当前：true" : "当前：false";
+        String status = currentCondition ? "true" : "false";
         guiGraphics.drawCenteredString(
                 font,
-                Component.literal(status),
+                Component.translatable("gui.spellweaver.current_state", status),
                 width / 2,
                 height / 2 - 20,
                 0xAAAAAA

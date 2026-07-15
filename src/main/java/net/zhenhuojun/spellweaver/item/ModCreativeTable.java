@@ -13,7 +13,6 @@ import java.util.function.Supplier;
 public class ModCreativeTable {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Spellweaver.MODID);//获得一个创造模式物品栏的注册器
-    //这里的string是鼠标移动到tab上显示的内容
     public static final String MAGIC_MOD_TAB_STRING="Spellweaver2";
 
     //添加一个tab,title标题,icon图标,displayItems为tab中添加的内容
@@ -23,17 +22,25 @@ public class ModCreativeTable {
             .icon(() -> ModItems.MANA_BOTTLE.get().getDefaultInstance())//物品栏显示图标
             .displayItems((pParameters, pOutput) -> {
                 // 功能/材料类
-                pOutput.accept(ModItems.MOON_PEARL.get());
+                pOutput.accept(ModItems.DIM_MANA_PEARL.get());
+                pOutput.accept(ModItems.MANA_PEARL.get());
                 pOutput.accept(ModItems.MANA_PAPER.get());
                 pOutput.accept(ModItems.MANA_BOTTLE.get());
                 pOutput.accept(ModItems.SCROLL.get());
-                pOutput.accept(ModItems.USED_SCROLL.get());
+                //pOutput.accept(ModItems.USED_SCROLL.get());
                 pOutput.accept(ModItems.LAZULI_SCROLL.get());
-                pOutput.accept(ModItems.USED_LAZULI_SCROLL.get());
+                //pOutput.accept(ModItems.USED_LAZULI_SCROLL.get());
+                pOutput.accept(ModItems.DIAMOND_SCROLL.get());
+                //pOutput.accept(ModItems.USED_DIAMOND_SCROLL.get());
                 // 武器/工具
                 pOutput.accept(ModItems.SPELL_STICK.get());
+                pOutput.accept(ModItems.FEATHER_PEN.get());
+                pOutput.accept(ModItems.ERASING_KNIFE.get());
+                pOutput.accept(ModItems.MAGICIAN_MIRROR.get());
                 // 方块物品
                 pOutput.accept(ModItems.SPELL_MACHINE_ITEM.get());
+                pOutput.accept(ModItems.MANA_PEDESTAL_ITEM.get());
+                pOutput.accept(ModItems.INSCRIPTION_TABLE_ITEM.get());
             })
             .build());
 

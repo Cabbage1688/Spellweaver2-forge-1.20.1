@@ -1,0 +1,17 @@
+{
+  "name": "Erasing Knife",
+  "icon": "spellweaver:erasing_knife",
+  "category": "spellweaver:item",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "spellweaver:erasing_knife",
+      "title": "Erasing Knife",
+      "text": "Used to erase spells written by the Feather Pen.<br><br>$(l)Usage:$()<br>Right-click to erase spells on offhand items, Shift+right-click to erase spells in blocks within 3 blocks of crosshair"
+    },{
+      "type": "crafting",
+      "recipe": "spellweaver:erasing_knife",
+      "title": "Erasing Knife"
+    }
+  ]
+}

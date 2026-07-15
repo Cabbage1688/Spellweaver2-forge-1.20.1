@@ -1,17 +1,17 @@
 {
-  "name": "播种",
+  "name": "Seed",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:tool",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "播种",
+      "title": "Seed",
       "images": ["spellweaver:textures/guidebook/seed.png"],
-      "text": "$(l)slotReference，vec3->播种$()<br>参数顺序任意"
+      "text": "$(l)slotReference, vec3 -> Seed$()<br>Parameter order doesn't matter"
     },
     {
       "type": "patchouli:text",
-      "text": "在指定坐标处种植作物或树苗。$(br)$(br)魔力消耗：1"
+      "text": "Plants crops or saplings at specified coordinate. $(br)$(br)Mana cost: 1"
     }
   ]
 }

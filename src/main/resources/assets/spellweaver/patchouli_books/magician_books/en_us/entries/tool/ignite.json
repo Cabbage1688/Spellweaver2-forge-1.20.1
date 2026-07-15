@@ -1,17 +1,17 @@
 {
-  "name": "点燃",
+  "name": "Ignite",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:tool",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "点燃",
+      "title": "Ignite",
       "images": ["spellweaver:textures/guidebook/ignite.png"],
-      "text": "坐标（Vec3） -> 点燃 -><br>弹出坐标，在该位置的方块上方生成火焰（需为空气或可替换方块）。"
+      "text": "Coordinate (Vec3) -> Ignite -><br>Pops coordinate, spawns fire above the block at that position (must be air or replaceable block)."
     },
     {
       "type": "patchouli:text",
-      "text": "<br>魔力消耗：5"
+      "text": "<br>Mana cost: 5"
     }
   ]
 }

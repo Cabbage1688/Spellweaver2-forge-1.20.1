@@ -1,18 +1,18 @@
 {
-  "name": "生长",
+  "name": "Grow",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:tool",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "生长",
+      "title": "Grow",
       "images": [
         "spellweaver:textures/guidebook/grow.png"
       ],
-      "text": "半径（double）, 中心坐标(vec3) -> 生长 ->促进植物生长"
+      "text": "Radius (double), center coordinate (vec3) -> Grow -> promote plant growth"
     },{
       "type": "patchouli:text",
-      "text": "弹出半径（double）和中心坐标（Vec3），对水平范围内的植物施用骨粉效果。<br><br>魔力消耗 = 5 × 半径²"
+      "text": "Pops radius (double) and center coordinate (Vec3), applies bonemeal effect to plants within horizontal range.<br><br>Mana cost = 5 × radius²"
     }
   ]
 }

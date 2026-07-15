@@ -16,7 +16,7 @@ public class ModItemModelProvider extends ItemModelProvider {
     @Override
     protected void registerModels() {
         this.basicItem(ModItems.TEST_ITEM.get());
-        this.basicItem(ModItems.MOON_PEARL.get());
+        this.basicItem(ModItems.MANA_PEARL.get());
         this.withExistingParent(ModItems.MANA_SWORD.get().toString(), mcLoc("item/handheld"))
                 .texture("layer0", modLoc("item/mana_sword"));
         /**
@@ -58,6 +58,20 @@ public class ModItemModelProvider extends ItemModelProvider {
         this.basicItem(ModItems.MANA_PAPER.get());
         withExistingParent(ModItems.SPELL_MACHINE_ITEM.getId().getPath(),
                 modLoc("block/spell_machine"));
+
+        withExistingParent(ModItems.MANA_PEDESTAL_ITEM.getId().getPath(),
+                modLoc("block/mana_pedestal"));
+
+        withExistingParent(ModItems.INSCRIPTION_TABLE_ITEM.getId().getPath(),
+                modLoc("block/inscription_table"));
+
+        this.basicItem(ModItems.DIAMOND_SCROLL.get());
+        this.basicItem(ModItems.USED_DIAMOND_SCROLL.get());
+        this.basicItem(ModItems.FEATHER_PEN.get());
+        this.basicItem(ModItems.ERASING_KNIFE.get());
+        this.basicItem(ModItems.MAGICIAN_MIRROR.get());
+        this.basicItem(ModItems.DIM_MANA_PEARL.get());
+
 
 
 

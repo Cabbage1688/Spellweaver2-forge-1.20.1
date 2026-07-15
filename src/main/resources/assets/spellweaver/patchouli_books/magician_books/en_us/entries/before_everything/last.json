@@ -1,18 +1,18 @@
 {
-  "name": "最后",
+  "name": "Final Words",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:before_everything",
   "sortnum": 5,
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "最后",
+      "title": "Final Words",
       "images": ["spellweaver:textures/guidebook/nana.png"],
-      "text": "最后，祝你玩的开心！有什么bug/意见可以联系我哟"
+      "text": "Finally, have fun! Contact me if you find any bugs or have suggestions"
     },
     {
       "type": "patchouli:text",
-      "text": "$(l)我的联系方式:$()<br><br>$(l:https://center.mcmod.cn/909588/)我的mc百科主页$(/l)<br><br>$(l:https://space.bilibili.com/3546565746624679?spm_id_from=333.1007.0.0)我的b站主页$(/l)"
+      "text": "$(l)Contact Information:$()<br><br>$(l:https://center.mcmod.cn/909588/)My MC Mod Center Page$(/l)<br><br>$(l:https://space.bilibili.com/3546565746624679?spm_id_from=333.1007.0.0)My Bilibili Channel$(/l)<br><br>$(l:https://github.com/Cabbage1688)My Github Channel$(/l)"
     }
   ]
 }

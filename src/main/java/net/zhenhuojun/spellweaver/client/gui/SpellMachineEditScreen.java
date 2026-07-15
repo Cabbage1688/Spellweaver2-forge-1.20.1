@@ -13,7 +13,7 @@ public class SpellMachineEditScreen extends SpellWeavingScreen {
     private final BlockPos machinePos;
 
     public SpellMachineEditScreen(BlockPos machinePos, CompoundTag initialSpell) {
-        super(Component.literal("编辑机器法术"));
+        super(Component.translatable("gui.spellweaver.edit_machine_spell"));
         this.machinePos = machinePos;
 
         if (initialSpell != null && !initialSpell.isEmpty()) {

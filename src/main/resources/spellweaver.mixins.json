@@ -5,7 +5,9 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "spellweaver.refmap.json",
   "mixins": [
-    "ChestMenuMixin"
+    "ChestMenuMixin",
+    "ItemFoilMixin",
+    "LevelMixin"
   ],
   "client": [
   ],

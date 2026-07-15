@@ -1001,5 +1001,17 @@ public class GuiUtil {
                 new HexPoint(2, -1),
                 new HexPoint(3, -2)
         ));
+
+        predefinedPatterns.add(new SpellPattern("魔源变换", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(1, -1),
+                new HexPoint(1, -2),
+                new HexPoint(0, -1),
+                new HexPoint(0, 0),
+                new HexPoint(1, 0),
+                new HexPoint(2, -1),
+                new HexPoint(2, -2),
+                new HexPoint(1, -2)
+        ));
     }
 }

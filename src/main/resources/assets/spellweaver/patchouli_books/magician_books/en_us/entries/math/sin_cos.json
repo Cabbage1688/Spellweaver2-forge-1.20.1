@@ -1,5 +1,5 @@
 {
-  "name": "三角函数运算",
+  "name": "Trigonometric",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:math",
   "pages": [
@@ -7,13 +7,13 @@
       "type": "patchouli:image",
       "title": "sin",
       "images": ["spellweaver:textures/guidebook/sin.png"],
-      "text": "弹出法术栈顶double参数，输出其sin值"
+      "text": "Pops double parameter from stack top, outputs its sin value"
     },
     {
       "type": "patchouli:image",
       "title": "cos",
       "images": ["spellweaver:textures/guidebook/cos.png"],
-      "text": "弹出法术栈顶double参数，输出其cos值"
+      "text": "Pops double parameter from stack top, outputs its cos value"
     }
   ]
 }

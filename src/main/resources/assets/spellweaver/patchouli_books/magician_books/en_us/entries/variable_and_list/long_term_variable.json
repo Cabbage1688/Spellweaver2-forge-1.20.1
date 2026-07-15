@@ -1,22 +1,22 @@
 {
-  "name": "持久变量操作",
+  "name": "Persistent Variable",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:variable_and_list",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "存储持久变量",
+      "title": "Store Persistent Variable",
       "images": ["spellweaver:textures/guidebook/store_long_term_variable.png"],
-      "text": "变量名(String)，值 -> 存储持久变量 -><<br>顺序不限，弹出变量名和值，存入玩家持久变量空间(可跨法术使用)。"
+      "text": "Variable name (String), value -> Store Persistent Variable -><br>Order doesn't matter, pops variable name and value, stores in player's persistent variable space (usable across spells)."
     },{
       "type": "patchouli:text",
-      "text": "只支持 Double、Vec3、UUID、EntityType。"
+      "text": "Only supports Double, Vec3, UUID, EntityType."
     },
     {
       "type": "patchouli:image",
-      "title": "读取持久变量",
+      "title": "Read Persistent Variable",
       "images": ["spellweaver:textures/guidebook/read_long_term_variable.png"],
-      "text": "变量名(String) -> 读取持久变量 -> 值<br>弹出变量名，若存在则压入对应值；否则无操作。"
+      "text": "Variable name (String) -> Read Persistent Variable -> value<br>Pops variable name, pushes corresponding value if exists; otherwise no operation."
     }
   ]
 }

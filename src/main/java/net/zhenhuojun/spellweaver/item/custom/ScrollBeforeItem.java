@@ -26,13 +26,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public class ScrollBeforeItem extends Item {
+public class ScrollBeforeItem extends PreScroll {
     public static final double MAX_MANA = 256.0;
     public ScrollBeforeItem(Properties pProperties) {
-        super(pProperties);
+        super(pProperties,MAX_MANA);
     }
 
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    /*public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if(player.isCrouching()){
             player.startUsingItem(hand);
@@ -103,4 +103,6 @@ public class ScrollBeforeItem extends Item {
             }
         }
     }
+
+     */
 }

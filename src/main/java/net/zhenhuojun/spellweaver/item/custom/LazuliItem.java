@@ -20,12 +20,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class LazuliItem extends Item {
+public class LazuliItem extends UsedScroll {
 
     public LazuliItem(Properties properties) {
-        super(properties.durability(512));
+        super(properties, 512);
     }
-    @Override
+    /*@Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, level, tooltip, flag);
 
@@ -108,4 +108,6 @@ public class LazuliItem extends Item {
         }
         return false;
     }
+
+     */
 }

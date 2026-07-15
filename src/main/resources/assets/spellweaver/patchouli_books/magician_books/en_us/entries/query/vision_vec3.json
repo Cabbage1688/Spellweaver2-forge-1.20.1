@@ -1,13 +1,13 @@
 {
-  "name": "视线方向",
+  "name": "Vision Direction",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:query",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "视线方向",
+      "title": "Vision Direction",
       "images": ["spellweaver:textures/guidebook/vision_vec3.png"],
-      "text": "entity->视线方向->vec3<br>从法术栈弹出一个实体，将其视线方向向量压入栈。"
+      "text": "entity -> Vision Direction -> vec3<br>Pops an entity from spell stack, pushes its line of sight direction vector."
     }
   ]
 }

@@ -21,15 +21,15 @@ import net.zhenhuojun.spellweaver.network.packet.WriteScrollC2SPacket;
 import net.zhenhuojun.spellweaver.spell.node.SequenceNode;
 import org.jetbrains.annotations.NotNull;
 
-public class LazuliBeforeItem extends Item {
+public class LazuliBeforeItem extends PreScroll {
     public static final double MAX_MANA = 512.0;
 
     public LazuliBeforeItem(Properties pProperties) {
-        super(pProperties);
+        super(pProperties,MAX_MANA);
     }
 
 
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    /*public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if(player.isCrouching()){
             player.startUsingItem(hand);
@@ -101,5 +101,7 @@ public class LazuliBeforeItem extends Item {
             }
         }
     }
+
+     */
 
 }

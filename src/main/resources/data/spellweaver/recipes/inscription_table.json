@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "spellweaver:feather_pen"
+    },
+    "b": {
+      "tag": "minecraft:planks"
+    },
+    "c": {
+      "item": "spellweaver:erasing_knife"
+    }
+  },
+  "pattern": [
+    "a c",
+    " b ",
+    "   "
+  ],
+  "result": {
+    "item": "spellweaver:inscription_table"
+  }
+}

@@ -2,7 +2,6 @@ package net.zhenhuojun.spellweaver.spell;
 
 //import com.ibm.icu.impl.Pair;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -15,7 +14,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -28,7 +26,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
 import net.minecraft.world.item.*;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
@@ -44,6 +41,7 @@ import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.items.IItemHandler;
 import net.zhenhuojun.spellweaver.Config;
 import net.zhenhuojun.spellweaver.Spellweaver;
+import net.zhenhuojun.spellweaver.block.custom.ManaPedestalBlockEntity;
 import net.zhenhuojun.spellweaver.block.custom.SpellMachineBlockEntity;
 import net.zhenhuojun.spellweaver.capability.impl.mana.ManaSource;
 import net.zhenhuojun.spellweaver.capability.impl.mana.ManaUtil;
@@ -56,6 +54,7 @@ import net.zhenhuojun.spellweaver.entity.impl.ManaBall;
 import net.zhenhuojun.spellweaver.entity.util.MagicLightUtils;
 import net.zhenhuojun.spellweaver.item.ModItems;
 import net.zhenhuojun.spellweaver.item.Util;
+import net.zhenhuojun.spellweaver.item.util.SpellBlockStorage;
 import net.zhenhuojun.spellweaver.network.ModMessage;
 import net.zhenhuojun.spellweaver.network.packet.*;
 import net.zhenhuojun.spellweaver.spell.element.Element;
@@ -68,6 +67,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+
+import static net.zhenhuojun.spellweaver.spell.util.RunesExecuteMethod.triggerSpell;
 
 public class SpellExecutorManager {
     private final Map<String, SpellExecutor> executors = new HashMap<>();
@@ -380,9 +381,11 @@ public class SpellExecutorManager {
                         try {
                             executor.execute(context);
                         } catch (SpellExecutionException e) {
-                            context.player.sendSystemMessage(
-                                    Component.literal("§c法术执行错误 [" + rune + "]: " + e.getMessage())
-                            );
+                            if (context.showErrorMessages) {
+                                context.player.sendSystemMessage(
+                                        Component.literal("§c参数错误 [" + rune + "]: " + e.getMessage())
+                                );
+                            }
                             break;
                         }
                     } else {
@@ -861,6 +864,29 @@ public class SpellExecutorManager {
                 context.push(result);
             }
         });
+        executors.put("魔源变换",context -> {
+            if(context.isTop(Player.class)){
+                context.manaSource=ManaSource.PLAYER;
+            }else if(context.isTop(Vec3.class)){
+                Vec3 vec3=context.pop(Vec3.class);
+                BlockPos pos=BlockPos.containing(vec3);
+                BlockEntity be =context.level.getBlockEntity(pos);
+                if(be instanceof ManaPedestalBlockEntity entity){
+                    context.manaSource=ManaSource.PEDESTAL;
+                    context.setPedestalPos(pos);
+                }else if(be instanceof SpellMachineBlockEntity entity){
+                    context.manaSource=ManaSource.MACHINE;
+                    context.setMachinePos(pos);
+                }
+            } else if (context.isTop(SlotReference.class)) {
+                SlotReference slotReference=context.pop(SlotReference.class);
+                ItemStack stack=slotReference.getItem();
+                if(stack.is(ModItems.MANA_BOTTLE.get())){
+                    context.manaSource=ManaSource.MANA_BOTTLE;
+                    context.setManaBottleSlot(slotReference);
+                }
+            }
+        });
 
 
         //初始化魔力相关的Runes
@@ -895,12 +921,34 @@ public class SpellExecutorManager {
                                            pos.getY()+0.5,pos.getZ()+0.5,15,0,0,0,0.03);
 
                             }
+                            //这里单独处理法术方块，因为监听不了2026.7.11
+                            if (context.level instanceof ServerLevel serverLevel) {
+                                SpellBlockStorage storage = SpellBlockStorage.get(serverLevel);
+                                CompoundTag spellData = storage.get(pos);
+                                if (spellData != null) {
+                                    Vec3 vec3 = new Vec3(pos.getX(), pos.getY(), pos.getZ());
+                                    triggerSpell((ServerPlayer) context.player, serverLevel, spellData, c -> {
+                                        c.push(vec3);
+                                    });
+                                    storage.remove(pos);
+                                    ModMessage.sendToClientsInLevel(new SpellBlockSyncS2CPacket(storage.getSpellBlockPositions()), serverLevel);
+                                }
+                            }
 
                             //destroy没法监听只能这里补个逻辑了
                             if (state.getBlock() == Blocks.LAPIS_ORE || state.getBlock() == Blocks.DEEPSLATE_LAPIS_ORE) {
-                                final float chance=0.1f;
+                                final float chance=0.005f;
                                 if(context.level.random.nextFloat()<=chance){
-                                    ItemStack pearl = new ItemStack(ModItems.MOON_PEARL.get());
+                                    ItemStack pearl = new ItemStack(ModItems.MANA_PEARL.get());
+                                    ItemEntity itemEntity = new ItemEntity(
+                                            context.level,
+                                            pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                                            pearl
+                                    );
+                                    context.level.addFreshEntity(itemEntity);
+                                }
+                                if(context.level.random.nextFloat()<=chance*10){
+                                    ItemStack pearl = new ItemStack(ModItems.DIM_MANA_PEARL.get());
                                     ItemEntity itemEntity = new ItemEntity(
                                             context.level,
                                             pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,

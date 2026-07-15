@@ -1,17 +1,17 @@
 {
-  "name": "生物判断器",
+  "name": "Is Living",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:query",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "生物判断器",
+      "title": "Is Living",
       "images": ["spellweaver:textures/guidebook/is_living.png"],
-      "text": "? -> 生物判断器 -> boolean"
+      "text": "? -> Is Living -> boolean"
     },
     {
       "type": "patchouli:text",
-      "text": "检查栈顶参数是否为 LivingEntity（生物或玩家），压入 true 或 false，不消耗原参数。"
+      "text": "Checks if stack top parameter is LivingEntity (mob or player), pushes true or false, original parameter is not consumed."
     }
   ]
 }

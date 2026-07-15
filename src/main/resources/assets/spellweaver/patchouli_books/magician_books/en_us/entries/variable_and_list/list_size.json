@@ -1,17 +1,17 @@
 {
-  "name": "表长",
+  "name": "List Size",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:variable_and_list",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "表长",
+      "title": "List Size",
       "images": ["spellweaver:textures/guidebook/list_size.png"],
-      "text": "$(l)list->表长->,list,double$()"
+      "text": "$(l)list -> List Size -> list, double$()"
     },
     {
       "type": "patchouli:text",
-      "text": "获取列表长度并压入栈，不消耗原列表"
+      "text": "Gets list length and pushes onto stack, original list is not consumed"
     }
   ]
 }

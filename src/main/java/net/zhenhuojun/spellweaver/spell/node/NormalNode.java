@@ -24,8 +24,7 @@ public class NormalNode implements Node{
         return "normal";
     }
 
-    //TODO 向客户端发送异常信息的逻辑下次更新再做吧，这个可能需要翻新一遍代码，工程量太大了
-    /// 此外，RunesExecuteMethod类中的ManaSwordSpellLogic，simpleSpellLogic方法也包含异常逻辑，到时候别忘记了
+
     public NodeResult executeSpell(SpellContext context) {
         if (context != null) {
             int i = 0;
@@ -65,9 +64,11 @@ public class NormalNode implements Node{
                     try {
                         executor.execute(context);
                     } catch (SpellExecutionException e) {
-                        //context.player.sendSystemMessage(
-                               // Component.literal("§c法术执行错误 [" + rune + "]: " + e.getMessage())
-                        //);
+                        if (context.showErrorMessages) {
+                            context.player.sendSystemMessage(
+                                    Component.literal("§c参数错误 [" + rune + "]: " + e.getMessage())
+                            );
+                        }
                         break;
                     }
                 } else {

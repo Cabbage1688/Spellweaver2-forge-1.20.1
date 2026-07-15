@@ -15,7 +15,7 @@ import net.zhenhuojun.spellweaver.spell.node.SequenceNode;
 public class ScrollEditScreen extends SpellWeavingScreen {
 
     public ScrollEditScreen(ItemStack itemStack, Level level) {
-        super(Component.literal("编辑法术"));
+        super(Component.translatable("gui.spellweaver.edit_spell"));
         CompoundTag tag=itemStack.getOrCreateTag();
         if(tag.contains("sequence")){
             this.rootNode = new SequenceNode();

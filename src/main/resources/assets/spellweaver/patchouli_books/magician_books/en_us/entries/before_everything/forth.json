@@ -1,18 +1,18 @@
 {
-  "name": "第四章：进阶功能",
+  "name": "Chapter 4: Advanced Features",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:before_everything",
   "sortnum": 4,
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "$(l)法术超载$()<br><br>法术默认每 tick 执行一个叶节点（普通节点的一次符文序列、等待节点的一帧倒计时、循环节点的一轮迭代等）。$(9)法术超载$()可以让你以倍速运行法术。<br><br>超载倍率与你的$(l)魔力等级$()挂钩：<br>·魔力等级 < 10：最大倍率 $(9)1x$()<br>·魔力等级 ≥ 10：最大倍率 = $(9)2 + 2×(魔力等级 - 10) / 5$()<br><br>魔力等级大于等于10且在非法术超载状态可以通过上下方向键调整超载倍率，M键启用/关闭法术超载。"
+      "text": "$(l)Spell Overload$()<br><br>By default, spells execute one leaf node per tick (one rune sequence in normal node, one frame of countdown in wait node, one iteration in loop node, etc.). $(9)Spell Overload$() allows you to run spells at accelerated speed.<br><br>Overload multiplier is tied to your $(l)Mana Level$():<br>·Mana Level < 10: Max multiplier $(9)1x$()<br>·Mana Level ≥ 10: Max multiplier = $(9)2 + 2×(Mana Level - 10) / 5$()<br><br>When Mana Level ≥ 10 and not in overload state, use up/down arrow keys to adjust multiplier, press M to toggle spell overload."
     },{
       "type": "patchouli:text",
-      "text": "$(l)元素反应速查表$()<br><br>$(9)感电$()：雷 + 水 → 雷元素伤害 +50%<br>$(9)传导$()：水 + 雷 → 立即造成 10 点魔法伤害<br>$(9)超载$()：雷 + 火 / 火 + 雷 → 引发爆炸但不破坏方块<br>$(9)冻结$()：冰 + 水 / 水 + 冰 → 定身数秒（连续冻结会导致抗性积累，降低冻结时间）<br>$(9)中和$()：火 + 水 / 水 + 火 → 水/火伤 -30%<br>$(9)抵消$()：火 + 冰 / 冰 + 火 → 冰/火伤 -30%<br>$(9)助燃$()：火 + 风 → 火伤 +30%，点燃目标<br>$(9)扩散(火)$()：风 + 火 → 3 格范围火伤并附着火"
+      "text": "$(l)Elemental Reaction Quick Reference$()<br><br>$(9)Electrocute$(): Lightning + Water → Lightning damage +50%<br>$(9)Conduction$(): Water + Lightning → Instant 10 magic damage<br>$(9)Overload$(): Lightning + Fire / Fire + Lightning → Explosion without block damage<br>$(9)Freeze$(): Ice + Water / Water + Ice → Stun for seconds (continuous freezing causes resistance accumulation, reducing freeze time)<br>$(9)Neutralize$(): Fire + Water / Water + Fire → Water/Fire damage -30%<br>$(9)Cancel$(): Fire + Ice / Ice + Fire → Ice/Fire damage -30%<br>$(9)Combust$(): Fire + Wind → Fire damage +30%, ignites target<br>$(9)Spread(Fire)$(): Wind + Fire → 3-block range fire damage with fire attachment"
     },{
       "type": "patchouli:text",
-      "text": "<br>$(9)扩散(冰)$()：风 + 冰 → 3 格范围冰伤并附着冰<br>$(9)扩散(水)$()：风 + 水 / 水 + 风 → 3 格范围水伤并附着水<br>$(9)风寒$()：冰 + 风 → 冰伤 +30%<br>$(9)虚空侵蚀$()：末影 + 水 / 水 + 末影 → 造成 10 点虚空伤害<br><br>$(l)提示：$()环境也会附着元素——水中得水、下界得火、雪原得冰、雨中得水。部分怪物的攻击也附带元素  "
+      "text": "<br>$(9)Spread(Ice)$(): Wind + Ice → 3-block range ice damage with ice attachment<br>$(9)Spread(Water)$(): Wind + Water / Water + Wind → 3-block range water damage with water attachment<br>$(9)Cold Wind$(): Ice + Wind → Ice damage +30%<br>$(9)Void Erosion$(): End + Water / Water + End → 10 void damage<br><br>$(l)Tip:$()Environment also applies elements — Water in rain/water, Fire in Nether, Ice in snow biomes. Some mob attacks also carry elements."
     }
   ]
 }

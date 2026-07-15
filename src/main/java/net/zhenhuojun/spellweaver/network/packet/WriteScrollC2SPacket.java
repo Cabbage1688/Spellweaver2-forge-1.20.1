@@ -39,8 +39,8 @@ public class WriteScrollC2SPacket {
             ServerPlayer player = context.getSender();
             if (player != null) {
                 ItemStack heldItem = player.getMainHandItem();
+                //TODO这个逻辑有时间可以优化一下
                 if (!heldItem.isEmpty() && heldItem.is(ModItems.SCROLL.get())) {
-
                     heldItem.shrink(1);
                     ItemStack usedScroll=new ItemStack(ModItems.USED_SCROLL.get(),1);
                     CompoundTag tag = new CompoundTag();
@@ -61,6 +61,20 @@ public class WriteScrollC2SPacket {
                     tag.putString("name", spellName);
                     tag.put("sequence",spellTag);
                     tag.putDouble("mana",512);
+                    CompoundTag scrollTag = usedScroll.getOrCreateTag();
+                    scrollTag.put("scrollSpell", tag);
+                    // 给予玩家卷轴
+                    if (!player.addItem(usedScroll)) {
+                        player.drop(usedScroll, false);
+                    }
+                    /// 钻石卷轴
+                }else if(!heldItem.isEmpty() && heldItem.is(ModItems.DIAMOND_SCROLL.get())){
+                    heldItem.shrink(1);
+                    ItemStack usedScroll=new ItemStack(ModItems.USED_DIAMOND_SCROLL.get(),1);
+                    CompoundTag tag = new CompoundTag();
+                    tag.putString("name", spellName);
+                    tag.put("sequence",spellTag);
+                    tag.putDouble("mana",1024);
                     CompoundTag scrollTag = usedScroll.getOrCreateTag();
                     scrollTag.put("scrollSpell", tag);
                     // 给予玩家卷轴

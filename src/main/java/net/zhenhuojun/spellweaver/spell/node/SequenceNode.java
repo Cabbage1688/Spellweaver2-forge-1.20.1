@@ -116,6 +116,15 @@ public class SequenceNode implements Node{
     /**
      * 它是运行法术树的方法，枚举结果决定法术树的状态
      * SUCCESS代表法术树运行圆满结束，RUNNING代表法术树还在运行中，FAULT则代表法术树运行异常
+     *
+     * 笔记：
+     * 这个方法中，或者说所有的节点运行方法里都存在一处冗余的setContext
+     * 对于基础数据类型，Java传递值的副本
+     * 但对于引用数据类型，Java传递引用（地址）的副本
+     * 通过这个引用副本修改对象的内部状态（修改字段、数组元素等），会影响原对象；但如果让这个引用副本指向新对象，外部引用不受影响。
+     * eg:
+     * 外部变量box存储A类的a对象的地址，对于方法text(A b),Java将box的值赋给b，此时b也指向对象a，所以修改会影响原对象
+     * 但如果在方法体中令b=new A(),则此时b的值变为新对象的地址，之后再通过 b 修改对象内部状态，就不会影响原来的变量 box 所指向的对象了。
      */
     public NodeResult executeSpellTree(){
         if(childrenNodeList!=null&&!childrenNodeList.isEmpty()&&index<childrenNodeList.size()){

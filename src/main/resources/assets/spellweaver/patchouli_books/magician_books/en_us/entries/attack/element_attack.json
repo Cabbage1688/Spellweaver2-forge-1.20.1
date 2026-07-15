@@ -1,51 +1,51 @@
 {
-  "name": "元素伤害",
+  "name": "Elemental Attack",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:attack",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "元素伤害",
+      "title": "Elemental Attack",
       "images": ["spellweaver:textures/guidebook/element_attack.png"],
-      "text": "弹出三个参数：目标实体（Entity）、攻击强度（double）、元素类型（ElementType）。"
+      "text": "Pops three parameters: target entity (Entity), attack power (double), element type (ElementType)."
     },{
       "type": "patchouli:text",
-      "text": "顺序任意，自动识别。对目标造成对应元素伤害并附加元素附着，可能触发元素反应。<br><br>基础伤害 = 强度 × (8~12) 依元素而定。<br>魔力消耗 = (24 + 强度)^(1 + 强度/10)"
+      "text": "Order doesn't matter, automatically recognized. Deals corresponding elemental damage to the target and applies elemental attachment, may trigger elemental reactions.<br><br>Base damage = power × (8~12) depending on element.<br>Mana cost = (24 + power)^(1 + power/10)"
     },{
       "type": "patchouli:image",
-      "title": "火元素",
+      "title": "Fire",
       "images": ["spellweaver:textures/guidebook/flame_element.png"],
-      "text": "基础伤害：12×强度<br>触发反应：超载（+雷）、中和（+水）、抵消（+冰）、助燃（+风）、扩散（风+火）"
+      "text": "Base damage: 12×power<br>Reactions: Overload (+Lightning), Neutralize (+Water), Cancel (+Ice), Combust (+Wind), Spread (Wind+Fire)"
     },
     {
       "type": "patchouli:image",
-      "title": "水元素",
+      "title": "Water",
       "images": ["spellweaver:textures/guidebook/water_element.png"],
-      "text": "基础伤害：8×强度<br>触发反应：感电（+雷）、中和（+火）、冻结（+冰）、虚空侵蚀（+末影）"
+      "text": "Base damage: 8×power<br>Reactions: Electrocute (+Lightning), Neutralize (+Fire), Freeze (+Ice), Void Erosion (+End)"
     },
     {
       "type": "patchouli:image",
-      "title": "雷元素",
+      "title": "Lightning",
       "images": ["spellweaver:textures/guidebook/lightning_element.png"],
-      "text": "基础伤害：10×强度<br>触发反应：感电（+水）、超载（+火）、传导（水+雷）"
+      "text": "Base damage: 10×power<br>Reactions: Electrocute (+Water), Overload (+Fire), Conduction (Water+Lightning)"
     },
     {
       "type": "patchouli:image",
-      "title": "冰元素",
+      "title": "Ice",
       "images": ["spellweaver:textures/guidebook/ice_element.png"],
-      "text": "基础伤害：12×强度<br>触发反应：冻结（+水）、抵消（+火）、风寒（+风）、扩散（风+冰）"
+      "text": "Base damage: 12×power<br>Reactions: Freeze (+Water), Cancel (+Fire), Cold Wind (+Wind), Spread (Wind+Ice)"
     },
     {
       "type": "patchouli:image",
-      "title": "风元素",
+      "title": "Wind",
       "images": ["spellweaver:textures/guidebook/wind_element.png"],
-      "text": "基础伤害：9×强度<br>触发反应：助燃（+火）、扩散（+火/冰/水）、风寒（+冰）"
+      "text": "Base damage: 9×power<br>Reactions: Combust (+Fire), Spread (+Fire/Ice/Water), Cold Wind (+Ice)"
     },
     {
       "type": "patchouli:image",
-      "title": "末影元素",
+      "title": "End",
       "images": ["spellweaver:textures/guidebook/end_element.png"],
-      "text": "基础伤害：10×强度<br>触发反应：虚空侵蚀（+水）"
+      "text": "Base damage: 10×power<br>Reactions: Void Erosion (+Water)"
     }
   ]
 }

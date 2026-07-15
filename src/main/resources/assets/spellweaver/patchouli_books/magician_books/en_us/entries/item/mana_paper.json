@@ -1,17 +1,17 @@
 {
-  "name": "魔法纸",
+  "name": "Mana Paper",
   "icon": "spellweaver:mana_paper",
   "category": "spellweaver:item",
   "pages": [
     {
       "type": "patchouli:spotlight",
       "item": "spellweaver:mana_paper",
-      "title": "魔法纸",
-      "text": "魔力矿物浸润后的纸，拥有一定承载法术的能力"
+      "title": "Mana Paper",
+      "text": "Paper infused with mana minerals, possesses the ability to bear spells"
     },{
       "type": "crafting",
       "recipe": "spellweaver:mana_paper",
-      "title": "魔法纸"
+      "title": "Mana Paper"
     }
   ]
 }

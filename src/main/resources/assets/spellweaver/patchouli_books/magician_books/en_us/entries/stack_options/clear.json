@@ -1,13 +1,13 @@
 {
-  "name": "栈清空",
+  "name": "Clear",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:stack_options",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "栈清空",
+      "title": "Clear",
       "images": ["spellweaver:textures/guidebook/clear.png"],
-      "text": "清空栈中所有参数"
+      "text": "Clears all parameters in the stack"
     }
   ]
 }

@@ -1,17 +1,17 @@
 {
-  "name": "物品数量",
+  "name": "Item Count",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:query",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "物品数量",
+      "title": "Item Count",
       "images": ["spellweaver:textures/guidebook/item_count.png"],
-      "text": "$(l)slotReference->物品数量->double$()"
+      "text": "$(l)slotReference -> Item Count -> double$()"
     },
     {
       "type": "patchouli:text",
-      "text": "获取指定槽位中物品的数量。"
+      "text": "Gets the number of items in the specified slot."
     }
   ]
 }

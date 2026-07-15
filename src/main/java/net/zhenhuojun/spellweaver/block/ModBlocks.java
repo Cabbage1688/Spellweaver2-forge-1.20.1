@@ -8,6 +8,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.zhenhuojun.spellweaver.Spellweaver;
+import net.zhenhuojun.spellweaver.block.custom.InscriptionTableBlock;
+import net.zhenhuojun.spellweaver.block.custom.ManaPedestalBlock;
 import net.zhenhuojun.spellweaver.block.custom.SpellMachineBlock;
 
 public class ModBlocks {
@@ -18,6 +20,20 @@ public class ModBlocks {
             BLOCKS.register("spell_machine", () -> new SpellMachineBlock(BlockBehaviour.Properties
                     .of()
                     .strength(0.5f,12)//.requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL)
+                    .noOcclusion()));
+
+    public static final RegistryObject<Block> MANA_PEDESTAL_BLOCK =
+            BLOCKS.register("mana_pedestal", () -> new ManaPedestalBlock(BlockBehaviour.Properties
+                    .of()
+                    .strength(0.5f,12)
+                    .sound(SoundType.METAL)
+                    .noOcclusion()));
+
+    public static final RegistryObject<Block> INSCRIPTION_TABLE_BLOCK =
+            BLOCKS.register("inscription_table", () -> new InscriptionTableBlock(BlockBehaviour.Properties
+                    .of()
+                    .strength(0.5f,12)
                     .sound(SoundType.METAL)
                     .noOcclusion()));
 

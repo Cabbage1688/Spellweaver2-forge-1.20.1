@@ -7,14 +7,12 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,18 +20,17 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.*;
-import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ShulkerBullet;
@@ -42,7 +39,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.piston.PistonStructureResolver;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
@@ -53,22 +54,25 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.level.PistonEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.zhenhuojun.spellweaver.Spellweaver;
+import net.zhenhuojun.spellweaver.block.custom.InscriptionTableBlock;
 import net.zhenhuojun.spellweaver.capability.impl.mana.ManaUtil;
 import net.zhenhuojun.spellweaver.capability.provider.mana.*;
 import net.zhenhuojun.spellweaver.item.ModItems;
+import net.zhenhuojun.spellweaver.item.util.SpellBlockStorage;
 import net.zhenhuojun.spellweaver.network.ModMessage;
 import net.zhenhuojun.spellweaver.network.packet.*;
 import net.zhenhuojun.spellweaver.spell.SpellTreeExecuteManager;
 import net.zhenhuojun.spellweaver.spell.element.Element;
 import net.zhenhuojun.spellweaver.spell.element.ElementType;
 
-import java.awt.event.ContainerEvent;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -77,6 +81,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static net.zhenhuojun.spellweaver.spell.element.Element.applyElement;
 import static net.zhenhuojun.spellweaver.spell.element.Element.getElementTypeFromNBT;
+import static net.zhenhuojun.spellweaver.spell.util.RunesExecuteMethod.triggerSpell;
+
 
 public class ModEvent {
     @Mod.EventBusSubscriber(modid = Spellweaver.MODID)
@@ -214,6 +220,11 @@ public class ModEvent {
                     player.getCapability(ManaShieldProvider.MANA_SHIELD).ifPresent(manaShield -> {
                         ModMessage.sendToClients(new ManaShieldChangeS2CPacket(manaShield.isActive(),manaShield.getShieldAmount()));
                     });
+
+
+                    ServerLevel level = player.serverLevel();
+                    SpellBlockStorage storage = SpellBlockStorage.get(level);
+                    ModMessage.sendToPlayer(new SpellBlockSyncS2CPacket(storage.getSpellBlockPositions()), player);
                 }
             }
         }
@@ -393,6 +404,10 @@ public class ModEvent {
                             ModMessage.sendToPlayer(new ManaShieldChangeS2CPacket(manaShield.isActive(),manaShield.getShieldAmount()),(ServerPlayer)player);
                         });
                     }
+
+                    ServerLevel newLevel = ((ServerPlayer) player).serverLevel();
+                    SpellBlockStorage newStorage = SpellBlockStorage.get(newLevel);
+                    ModMessage.sendToPlayer(new SpellBlockSyncS2CPacket(newStorage.getSpellBlockPositions()), (ServerPlayer) player);
                 }
             }
         }
@@ -542,6 +557,7 @@ public class ModEvent {
 
                         }
                     }
+                    entity.removeEffect(MobEffects.JUMP);
                     if (entity instanceof Mob mob) {
                         mob.setNoAi(false);
                     }
@@ -673,7 +689,7 @@ public class ModEvent {
             BlockPos pos=event.getPos();
             if(brokenBlock.equals(Blocks.LAPIS_ORE)||brokenBlock.equals(Blocks.DEEPSLATE_LAPIS_ORE)){
                 Level level=event.getPlayer().level();
-                final float chance=0.1f;
+                final float chance=0.005f;
                 //2026.5.26更新，如果玩家没有获得过魔珠，则必定获取
                 if(!event.getPlayer().getPersistentData().getCompound(Player.PERSISTED_NBT_TAG).getBoolean(MOON_KEY)){
                     event.getPlayer().getPersistentData().getCompound(Player.PERSISTED_NBT_TAG).putBoolean(MOON_KEY,true);
@@ -681,7 +697,7 @@ public class ModEvent {
                             pos.getX() + 0.5,
                             pos.getY() + 0.5,
                             pos.getZ() + 0.5,
-                            new ItemStack(ModItems.MOON_PEARL.get()));
+                            new ItemStack(ModItems.MANA_PEARL.get()));
                     level.addFreshEntity(itemEntity);
                     return;
                 }
@@ -690,11 +706,31 @@ public class ModEvent {
                             pos.getX() + 0.5,
                             pos.getY() + 0.5,
                             pos.getZ() + 0.5,
-                            new ItemStack(ModItems.MOON_PEARL.get()));
+                            new ItemStack(ModItems.MANA_PEARL.get()));
+                    level.addFreshEntity(itemEntity);
+                }
+                if(level.random.nextFloat()<chance*10){
+                    ItemEntity itemEntity=new ItemEntity( level,
+                            pos.getX() + 0.5,
+                            pos.getY() + 0.5,
+                            pos.getZ() + 0.5,
+                            new ItemStack(ModItems.DIM_MANA_PEARL.get()));
                     level.addFreshEntity(itemEntity);
                 }
             }
         }
+        /// 为什么跳跃事件不可取消！！！！！！！！！！我日内瓦！！！！
+        /*@SubscribeEvent
+        public static void StopJumpWhenFrozen(LivingEvent.LivingJumpEvent event){
+            LivingEntity entity=event.getEntity();
+            if(entity.getPersistentData().contains("FrozenUntil")){
+                entity.setDeltaMovement(entity.getDeltaMovement().x, 0, entity.getDeltaMovement().z);
+            }
+        }
+
+         */
+
+
 
 
 
@@ -846,6 +882,228 @@ public class ModEvent {
                    ModMessage.sendToPlayer(new ManaShieldChangeS2CPacket(manaShield.isActive(),manaShield.getShieldAmount()), (ServerPlayer) player);
                }
             });
+        }
+        //护甲法术
+        @SubscribeEvent
+        public static void onLivingWhoWearArmorWithSpellHurt(LivingHurtEvent event) {
+            LivingEntity victim = event.getEntity();
+            if (!(victim instanceof ServerPlayer player)) return;
+            if (player.isSpectator()) return;
+
+            Level level = player.level();
+            if (level.isClientSide) return;
+
+            // 遍历所有盔甲槽
+            for (ItemStack armorStack : player.getArmorSlots()) {
+                CompoundTag tag = armorStack.getOrCreateTag();
+                CompoundTag spellData = tag.getCompound("SpellData");
+                if (spellData.isEmpty()) continue;
+                triggerSpell(player, level, spellData, context -> {
+                    context.entity = event.getSource().getEntity();
+                    //context.setData("damage_source", event.getSource());
+                    if(event.getSource().getEntity()!=null){
+                        context.push(event.getSource().getEntity());
+                    }
+                });
+                // tag.remove("SpellData");
+            }
+        }
+        //写入法术的物品被使用
+        @SubscribeEvent
+        public static void onItemWithSPellUse(PlayerInteractEvent.RightClickItem event) {
+            Player player = event.getEntity();
+            if (!(player instanceof ServerPlayer serverPlayer)) return;
+            if (player.isSpectator()) return;
+
+            Level level = player.level();
+            if (level.isClientSide) return;
+
+            BlockHitResult lookingAt = (BlockHitResult) player.pick(4.5D, 0.0F, false);
+            if (lookingAt.getType() == HitResult.Type.BLOCK) {
+                BlockPos pos = lookingAt.getBlockPos();
+                BlockState state = level.getBlockState(pos);
+                if (state.getBlock() instanceof InscriptionTableBlock inscriptionTableBlock && player.isCrouching()) {
+                    Spellweaver.getLOGGER().debug("[Spellweaver:ModEvent/onItemWithSPellUse]正在与刻写台交互，跳过法术执行");
+                    /// 这里手动调用use是因为，物品的使用好像会直接截断整个流程，对着方块摁不出来use方法的
+                    /// 手持物品蹲下右键好像就是不能调用方块的use方法，我试了
+                    inscriptionTableBlock.use(state,event.getLevel(),pos,player,InteractionHand.MAIN_HAND,lookingAt);
+                    return; // 跳过法术执行
+                }
+            }
+
+            ItemStack stack = event.getItemStack();
+            CompoundTag tag = stack.getOrCreateTag();
+            CompoundTag spellData = tag.getCompound("SpellData");
+            if (spellData.isEmpty()) return;
+
+            triggerSpell(serverPlayer, level, spellData, context -> {
+                context.push(player);
+            });
+            // tag.remove("SpellData");
+        }
+
+        /*@SubscribeEvent
+        public static void onBlockWithSpellPlace(BlockEvent.EntityPlaceEvent event) {
+            if(event.getEntity() instanceof ServerPlayer player){
+                Level level = player.level();
+                if (level.isClientSide) return;
+
+                ItemStack stack = player.getItemInHand();
+                CompoundTag tag = stack.getOrCreateTag();
+                CompoundTag spellData = tag.getCompound("SpellData");
+                if (spellData.isEmpty()) return;
+
+
+                triggerSpell(player, level, spellData, context -> {
+                });
+
+                // tag.remove("SpellData");
+            }
+        }
+
+         */
+        //方块法术
+        @SubscribeEvent
+        public static void onBlockBreak(BlockEvent.BreakEvent event) {
+            Spellweaver.getLOGGER().debug("[Spellweaver:ModEvent/onBlockBreak]方块破坏事件触发？");
+            ServerPlayer player = (ServerPlayer) event.getPlayer();
+            if (player.isSpectator()) return;
+
+            ServerLevel level = (ServerLevel) event.getPlayer().level();
+            BlockPos pos = event.getPos();
+            Vec3 vec3=new Vec3(pos.getX(),pos.getY(),pos.getZ());
+
+            SpellBlockStorage storage = SpellBlockStorage.get(level);
+            CompoundTag spellData = storage.get(pos);
+            Spellweaver.getLOGGER().debug("[Spellweaver:ModEvent/onBlockBreak]法术是空的吗？");
+            if (spellData == null) return;
+            Spellweaver.getLOGGER().debug("[Spellweaver:ModEvent/onBlockBreak]法术不为空，即将执行");
+
+            triggerSpell(player, level, spellData, context -> {
+                context.push(vec3);
+            });
+
+            // 触发后，清除该坐标的绑定
+            storage.remove(pos);
+            ModMessage.sendToClientsInLevel(new SpellBlockSyncS2CPacket(storage.getSpellBlockPositions()), level);
+        }
+
+
+        //这个事件很神秘，活塞推动一次服务端客户端各触发两次
+        /*@SubscribeEvent
+        public static void onPistonMove(PistonEvent event) {
+            if (event.getLevel().isClientSide()) return;
+            Spellweaver.getLOGGER().debug("[Spellweaver:ModEvent/ForgeEvents/onPistonMove]活塞事件在服务端触发");
+            ServerLevel level = (ServerLevel) event.getLevel();
+            SpellBlockStorage storage = SpellBlockStorage.get(level);
+            Direction dir = event.getDirection();
+            //这个事件的getPos()给的居然是推动后的位置， Direction指向原坐标
+            BlockPos pos=event.getPos().relative(dir);
+            Spellweaver.getLOGGER().debug("[Spellweaver:ModEvent/ForgeEvents/onPistonMove]活塞事件触发位置{}",pos);
+            CompoundTag spell = storage.get(pos);
+            Spellweaver.getLOGGER().debug("[Spellweaver:ModEvent/ForgeEvents/onPistonMove]校验法术{}",spell);
+            if(spell!=null){
+                BlockPos newPos = event.getPos();
+                storage.put(newPos, spell.copy());
+                storage.remove(pos);
+                Spellweaver.getLOGGER().debug("[Spellweaver:活塞推动] 法术从 {} 迁移到 {}", pos, newPos);
+            }
+
+        }
+         */@SubscribeEvent
+        public static void onPistonPre(PistonEvent.Pre event) {
+            if (event.getLevel().isClientSide()) return;
+            ServerLevel level = (ServerLevel) event.getLevel();
+            SpellBlockStorage storage = SpellBlockStorage.get(level);
+            PistonStructureResolver resolver = event.getStructureHelper();
+            if (resolver == null || !resolver.resolve()) return;
+            List<BlockPos> toPush = resolver.getToPush();
+            if (toPush.isEmpty()) return;
+            Spellweaver.getLOGGER().debug("[Spellweaver:ModEvent/ForgeEvents/onPistonPre]要推动{}个方块 ",toPush.size());
+            int i=1;
+            for (BlockPos pos : toPush) {
+                Spellweaver.getLOGGER().debug("[Spellweaver:ModEvent/ForgeEvents/onPistonPre]正在检查第{}个方块 ",i++);
+                CompoundTag spellTag = storage.get(pos);
+                if (spellTag == null) continue;
+                //Spellweaver.getLOGGER().debug("[Spellweaver:ModEvent/ForgeEvents/onPistonPre]第{}个方块法术非空，try一下 ",i++);
+                //Player player = level.getNearestPlayer(pos.getX(), pos.getY(), pos.getZ(), 10.0, null);
+                //if (player instanceof ServerPlayer serverPlayer) {
+                    //triggerSpell(serverPlayer, level, spellTag, context -> {
+                     //   context.push(pos);
+                       // Spellweaver.getLOGGER().debug("[Spellweaver:ModEvent/ForgeEvents/onPistonPre]压入坐标{} ",pos);
+                //});
+                //} else {
+                  //  Spellweaver.getLOGGER().debug("[Spellweaver:ModEvent/ForgeEvents/onPistonPre]周围没用玩家，没法施法");
+               // }
+                storage.remove(pos);
+                ModMessage.sendToClientsInLevel(new SpellBlockSyncS2CPacket(storage.getSpellBlockPositions()), level);
+                //level.destroyBlock(pos, true);
+                //level.sendParticles(ParticleTypes.EXPLOSION_EMITTER,
+                      //  pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                       // 1, 0, 0, 0, 0);
+                //Spellweaver.getLOGGER().debug("[Spellweaver:ModEvent/ForgeEvents/onPistonPre] 方块 {} 上的法术因活塞推动而崩碎执行", pos);
+            }
+        }//最后还是改成了直接破坏法术更省事
+
+        //可交互方块执行法术，现在是废案
+        /*@SubscribeEvent
+        public static void onBlockInteract(PlayerInteractEvent.RightClickBlock event) {
+            Player player = event.getEntity();
+            if (!(player instanceof ServerPlayer serverPlayer)) return;
+            if (player.isSpectator()) return;
+            //防止冲突，这两一起执行会炸
+            if(player.getItemInHand(InteractionHand.MAIN_HAND).is(ModItems.ERASING_KNIFE.get())) return;
+
+            Level level = player.level();
+            if (level.isClientSide) return;
+
+            BlockPos pos = event.getPos();
+            SpellBlockStorage storage = SpellBlockStorage.get((ServerLevel) level);
+            CompoundTag spellData = storage.get(pos);
+            if (spellData == null) return;
+
+            Vec3 vec3 = new Vec3(pos.getX(), pos.getY(), pos.getZ());
+            triggerSpell(serverPlayer, (ServerLevel) level, spellData, context -> {
+                context.push(vec3);
+            });
+        }
+
+         */
+
+
+        //通过爆炸破坏带法术的方块
+        @SubscribeEvent
+        public static void onExplosionDetonate(net.minecraftforge.event.level.ExplosionEvent.Detonate event) {
+            if (event.getLevel().isClientSide) return;
+
+            ServerLevel level = (ServerLevel) event.getLevel();
+            SpellBlockStorage storage = SpellBlockStorage.get(level);
+
+            Entity exploder = event.getExplosion().getExploder();
+            ServerPlayer player = null;
+            if (exploder instanceof ServerPlayer) {
+                player = (ServerPlayer) exploder;
+            }
+            if(player==null){
+                if (exploder != null) {
+                    player= (ServerPlayer) level.getNearestPlayer(exploder,64);
+                }
+            }
+
+            for (BlockPos pos : event.getExplosion().getToBlow()) {
+                CompoundTag spellData = storage.get(pos);
+                if (spellData == null) continue;
+
+                Vec3 vec3 = new Vec3(pos.getX(), pos.getY(), pos.getZ());
+                if(player!=null){
+                   triggerSpell(player, level, spellData, context -> {
+                       context.push(vec3);
+                   });
+               }
+                storage.remove(pos);
+            }
+
+            ModMessage.sendToClientsInLevel(new SpellBlockSyncS2CPacket(storage.getSpellBlockPositions()), level);
         }
 
         /**

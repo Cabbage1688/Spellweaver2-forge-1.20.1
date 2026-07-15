@@ -13,6 +13,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Explosion;
@@ -195,10 +196,17 @@ public class Element {
                 entity.setNoGravity(false);
             }
             if(entity instanceof ServerPlayer player){
-                UUID uuid=UUID.nameUUIDFromBytes("spellweaver:frozen_speed".getBytes(StandardCharsets.UTF_8));
-                AttributeModifier frozenModifier=new AttributeModifier(uuid,"frozen",-1, AttributeModifier.Operation.MULTIPLY_TOTAL);
-                Objects.requireNonNull(player.getAttribute(Attributes.MOVEMENT_SPEED))
-                        .addTransientModifier(frozenModifier);
+                AttributeInstance speedAttr = player.getAttribute(Attributes.MOVEMENT_SPEED);
+                if(speedAttr!=null){
+                    UUID uuid=UUID.nameUUIDFromBytes("spellweaver:frozen_speed".getBytes(StandardCharsets.UTF_8));
+                    AttributeModifier frozenModifier=new AttributeModifier(uuid,"frozen",-1, AttributeModifier.Operation.MULTIPLY_TOTAL);
+                    // 如果已存在先移除,血的教训tnnd，沟槽的mojang不让同一个重复添加
+                    if (speedAttr.getModifier(uuid) != null) {
+                        speedAttr.removeModifier(uuid);
+                    }
+                    Objects.requireNonNull(player.getAttribute(Attributes.MOVEMENT_SPEED))
+                            .addTransientModifier(frozenModifier);
+                }
             }
             entity.addEffect(new MobEffectInstance(MobEffects.JUMP, freezeDuration, -7));
 

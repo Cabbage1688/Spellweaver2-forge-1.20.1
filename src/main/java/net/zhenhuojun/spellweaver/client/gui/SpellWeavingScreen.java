@@ -235,11 +235,11 @@ public class SpellWeavingScreen extends Screen {
         // 创建中心按钮
         centerButton = new NodeButton(currentNode, centerX, centerY, CENTER_SIZE, CENTER_SIZE, true);
 
-        backButton=this.addRenderableWidget(Button.builder(Component.literal("返回上层"),button -> {
+        backButton=this.addRenderableWidget(Button.builder(Component.translatable("gui.spellweaver.return_parent"),button -> {
             ReturnToParentNode();
         }).bounds(width - 60, height / 4 + 60, 50, 20).build());
 
-        killButton=this.addRenderableWidget(Button.builder(Component.literal("删除"),button -> {
+        killButton=this.addRenderableWidget(Button.builder(Component.translatable("gui.delete"),button -> {
             //killNode(currentNode);
             //2026.4.1光标更新
             if (selectedChildIndex >= 0 && selectedChildIndex < childButtons.size()) {
@@ -259,21 +259,21 @@ public class SpellWeavingScreen extends Screen {
             }
         }).bounds(width - 60, height / 4 + 30, 50, 20).build());
 
-        executeButton=this.addRenderableWidget(Button.builder(Component.literal("执行"),button->{
+        executeButton=this.addRenderableWidget(Button.builder(Component.translatable("gui.spellweaver.execute"),button->{
            executeSpell();
         }).bounds(width - 60, height / 4, 50, 20).build());
 
-        saveButton=this.addRenderableWidget(Button.builder(Component.literal("保存"),button->{
+        saveButton=this.addRenderableWidget(Button.builder(Component.translatable("gui.spellweaver.save"),button->{
                 storeCurrentSpell();
                 }).bounds(width - 60, height / 4-30, 50, 20).build());
 
-        spellBoxButton=this.addRenderableWidget(Button.builder(Component.literal("法术库"),button->{
+        spellBoxButton=this.addRenderableWidget(Button.builder(Component.translatable("gui.spellweaver.spell_library"),button->{
             Minecraft.getInstance().setScreen(new SpellStorageScreen(Minecraft.getInstance().player,this));
 
         }).bounds(width - 60, height / 4-60, 50, 20).build());
 
 
-        stickButton=this.addRenderableWidget(Button.builder(Component.literal("粘贴"),button -> {
+        stickButton=this.addRenderableWidget(Button.builder(Component.translatable("gui.spellweaver.paste"),button -> {
             Player player=Minecraft.getInstance().player;
             if(player!=null){
                 ClientPlayerSpellData playerData = ClientPlayerSpellData.get(player);
@@ -282,7 +282,7 @@ public class SpellWeavingScreen extends Screen {
                     if(playerData.getCopyTag().getString("type").equals("sequence")){
                         this.rootNode.deserializeNBT(playerData.getCopyTag());
                         Spellweaver.getLOGGER().debug("[Spellweaver/SpellWeavingScreen/stickButton]是完整法术");
-                        Minecraft.getInstance().player.sendSystemMessage(Component.literal("完整法术已粘贴！"));
+                        Minecraft.getInstance().player.sendSystemMessage(Component.translatable("gui.spellweaver.paste_full"));
                         /// 不是完整法术，将法术片段作为节点存储于可包含子节点的节点
                     } else if (currentNode instanceof SequenceNode||currentNode instanceof ConditionNode||currentNode instanceof LoopNode) {
                         //复制的法术片段类型
@@ -348,7 +348,7 @@ public class SpellWeavingScreen extends Screen {
                                 }
                             }
                         }
-                        Minecraft.getInstance().player.sendSystemMessage(Component.literal("法术片段已加入当前节点！"));
+                        Minecraft.getInstance().player.sendSystemMessage(Component.translatable("gui.spellweaver.paste_fragment"));
                         Spellweaver.getLOGGER().debug("[Spellweaver/SpellWeavingScreen/stickButton]法术片段已存储到current节点");
                     }
                 }
@@ -357,17 +357,17 @@ public class SpellWeavingScreen extends Screen {
         }).bounds(width - 60, height / 4 + 120, 50, 20).build());
 
         // 复制按钮
-        this.addRenderableWidget(Button.builder(Component.literal("复制"), button -> {
+        this.addRenderableWidget(Button.builder(Component.translatable("gui.spellweaver.copy"), button -> {
                     if(rootNode!=null&&Minecraft.getInstance().player != null){
                         ClientPlayerSpellData playerData = ClientPlayerSpellData.get(Minecraft.getInstance().player);
                         if(playerData!=null){
                             //当前节点是跟节点，复制完整法术
                             if(currentNode instanceof SequenceNode){
                                 playerData.setCopyTag(rootNode.serializeNBT());
-                                Minecraft.getInstance().player.sendSystemMessage(Component.literal("完整法术已复制！"));
+                                Minecraft.getInstance().player.sendSystemMessage(Component.translatable("gui.spellweaver.copy_full"));
                             }else{
                                 //否则只复制片段
-                                Minecraft.getInstance().player.sendSystemMessage(Component.literal("法术片段已复制！"));
+                                Minecraft.getInstance().player.sendSystemMessage(Component.translatable("gui.spellweaver.copy_fragment"));
                                 playerData.setCopyTag(currentNode.serializeNBT());
                             }
                         }
@@ -375,7 +375,7 @@ public class SpellWeavingScreen extends Screen {
                 })
                 .bounds(width - 60, height / 4 +90, 50, 20).build());
 
-        variableButton=this.addRenderableWidget(Button.builder(Component.literal("持久变量"),button -> {
+        variableButton=this.addRenderableWidget(Button.builder(Component.translatable("gui.spellweaver.persistent_variables"),button -> {
             displayLongTermVariable= !displayLongTermVariable;
         }).bounds(width - 60, height / 4 + 150, 50, 20).build());
 
@@ -863,7 +863,7 @@ public class SpellWeavingScreen extends Screen {
         public SpellNamingScreen(SpellWeavingScreen parent,
                                  String defaultName,
                                  Consumer<String> onConfirm) {
-            super(Component.literal("命名法术"));
+            super(Component.translatable("gui.spellweaver.name_spell"));
             this.parent = parent;
             this.defaultName = defaultName;
             this.onConfirm = onConfirm;
@@ -876,13 +876,13 @@ public class SpellWeavingScreen extends Screen {
 
             // 名称输入框
             nameField = new EditBox(font, centerX - 100, centerY - 20, 200, 20,
-                    Component.literal("法术名称"));
+                    Component.translatable("gui.spellweaver.spell_name"));
             nameField.setValue(defaultName);
             nameField.setResponder(text -> updateButtonState());
             addRenderableWidget(nameField);
 
             // 确认按钮
-            addRenderableWidget(Button.builder(Component.literal("确认"), button -> {
+            addRenderableWidget(Button.builder(Component.translatable("gui.confirm"), button -> {
                 onConfirm.accept(nameField.getValue().trim());
             }).pos(centerX - 50, centerY + 20).size(100, 20).build());
         }
@@ -901,7 +901,7 @@ public class SpellWeavingScreen extends Screen {
             // 绘制标题
             guiGraphics.drawCenteredString(
                     font,
-                    Component.literal("为法术命名"),
+                    Component.translatable("gui.spellweaver.name_your_spell"),
                     width / 2,
                     height / 4,
                     0xFFFFFF
@@ -943,7 +943,7 @@ public class SpellWeavingScreen extends Screen {
     private void drawPersistentVariables(GuiGraphics guiGraphics) {
         PlayerLongTermVariablesData data = ClientPlayerVariableData.getPlayerLongTermVariablesData();
         if (data == null){
-            Minecraft.getInstance().player.sendSystemMessage(Component.literal("你还没有定义持久化变量！"));
+            Minecraft.getInstance().player.sendSystemMessage(Component.translatable("gui.spellweaver.no_persistent_variables"));
             return;
         }
 

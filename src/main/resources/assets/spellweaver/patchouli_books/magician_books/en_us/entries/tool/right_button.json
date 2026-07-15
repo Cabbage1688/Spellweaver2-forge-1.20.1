@@ -1,17 +1,17 @@
 {
-  "name": "交互",
+  "name": "Interact",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:tool",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "交互",
+      "title": "Interact",
       "images": ["spellweaver:textures/guidebook/right_button.png"],
-      "text": "$(l)vec3->交互$()"
+      "text": "$(l)vec3 -> Interact$()"
     },
     {
       "type": "patchouli:text",
-      "text": "模拟右键点击指定坐标处的方块，触发该方块的交互行为（如打开箱子、激活按钮等）。<br><br>魔力消耗：1"
+      "text": "Simulates right-clicking the block at specified coordinate, triggering its interaction behavior (e.g., open chest, activate button).<br><br>Mana cost: 1"
     }
   ]
 }

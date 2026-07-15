@@ -1,47 +1,47 @@
 {
-  "name": "方块放置",
+  "name": "Place Block",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:tool",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "方块放置",
+      "title": "Place Block",
       "images": ["spellweaver:textures/guidebook/custom_cube.png"],
-      "text": "$(l)slotReference，vec3->方块放置$()<br>参数顺序任意"
+      "text": "$(l)slotReference, vec3 -> Place Block$()<br>Parameter order doesn't matter"
     },
     {
       "type": "patchouli:text",
-      "text": "从指定槽位中取出一个方块物品，尝试放置到目标坐标处。若该位置可被替换（如空气、植物等），则放置成功。$(br)$(br)魔力消耗：2"
+      "text": "Takes one block item from specified slot, attempts to place at target coordinate. If position is replaceable (air, plants, etc.), placement succeeds. $(br)$(br)Mana cost: 2"
     },
     {
       "type": "patchouli:image",
-      "title": "水",
+      "title": "Water",
       "images": ["spellweaver:textures/guidebook/water.png"],
-      "text": "vec3 -> 水 -><br>弹出坐标，在该位置放置水源方块。<br><br>魔力消耗：15<br>只能替换空气或可替换方块。"
+      "text": "vec3 -> Water -><br>Pops coordinate, places water source at that position.<br><br>Mana cost: 15<br>Can only replace air or replaceable blocks."
     },
     {
       "type": "patchouli:image",
-      "title": "泥土",
+      "title": "Dirt",
       "images": ["spellweaver:textures/guidebook/dirt.png"],
-      "text": "vec3 -> 泥土 -><br>弹出坐标，在该位置放置泥土方块。<br><br>魔力消耗：10<br>只能替换空气或可替换方块。"
+      "text": "vec3 -> Dirt -><br>Pops coordinate, places dirt at that position.<br><br>Mana cost: 10<br>Can only replace air or replaceable blocks."
     },
     {
       "type": "patchouli:image",
-      "title": "细雪",
+      "title": "Snow",
       "images": ["spellweaver:textures/guidebook/snow.png"],
-      "text": "vec3 -> 细雪 -><br>弹出坐标，在该位置放置细雪方块。<br><br>魔力消耗：20<br>只能替换空气或可替换方块。"
+      "text": "vec3 -> Snow -><br>Pops coordinate, places snow at that position.<br><br>Mana cost: 20<br>Can only replace air or replaceable blocks."
     },
     {
       "type": "patchouli:image",
-      "title": "沙",
+      "title": "Sand",
       "images": ["spellweaver:textures/guidebook/sand.png"],
-      "text": "vec3 -> 沙 -><br>弹出坐标，在该位置放置沙子方块。<br><br>魔力消耗：10<br>只能替换空气或可替换方块。"
+      "text": "vec3 -> Sand -><br>Pops coordinate, places sand at that position.<br><br>Mana cost: 10<br>Can only replace air or replaceable blocks."
     },
     {
       "type": "patchouli:image",
-      "title": "岩浆",
+      "title": "Lava",
       "images": ["spellweaver:textures/guidebook/magma.png"],
-      "text": "vec3 -> 岩浆 -><br>弹出坐标，在该位置放置岩浆源方块。<br><br>魔力消耗：10<br>只能替换空气或可替换方块。"
+      "text": "vec3 -> Lava -><br>Pops coordinate, places lava source at that position.<br><br>Mana cost: 10<br>Can only replace air or replaceable blocks."
     }
   ]
 }

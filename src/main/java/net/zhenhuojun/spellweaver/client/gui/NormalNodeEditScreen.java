@@ -99,7 +99,7 @@ public class NormalNodeEditScreen extends Screen {
 
 
     public NormalNodeEditScreen(SpellWeavingScreen parentScreen, NormalNode editingNode, Player player) {
-        super(Component.literal("符文编辑"));
+        super(Component.translatable("gui.spellweaver.rune_editor"));
         this.parentScreen = parentScreen;
         this.editingNode = editingNode;
         this.player = player;
@@ -148,11 +148,11 @@ public class NormalNodeEditScreen extends Screen {
 
     private void createButtons() {
 
-        this.addRenderableWidget(Button.builder(Component.literal("复制"), button -> {
+        this.addRenderableWidget(Button.builder(Component.translatable("gui.spellweaver.copy"), button -> {
                  if(Minecraft.getInstance().player != null){
                      ClientPlayerSpellData playerData = ClientPlayerSpellData.get(Minecraft.getInstance().player);
                      if(playerData!=null){
-                         Minecraft.getInstance().player.sendSystemMessage(Component.literal("法术片段已复制！"));
+                         Minecraft.getInstance().player.sendSystemMessage(Component.translatable("gui.spellweaver.copy_fragment"));
                          playerData.setCopyTag(editingNode.serializeNBT());
                      }
                  }
@@ -178,7 +178,7 @@ public class NormalNodeEditScreen extends Screen {
         }).bounds(width - 60, height / 4, 50, 20).build());
 
         // 清除全部按钮
-        clearButton = this.addRenderableWidget(Button.builder(Component.literal("清除全部"), button -> {
+        clearButton = this.addRenderableWidget(Button.builder(Component.translatable("gui.spellweaver.clear_all"), button -> {
             //2026.3.29光标更新
             entries.clear();
             selectedIndex = -1;
@@ -187,16 +187,16 @@ public class NormalNodeEditScreen extends Screen {
         }).bounds(width - 60, height / 4 + 30, 50, 20).build());
 
         // 返回按钮（保存并返回）
-        returnButton = this.addRenderableWidget(Button.builder(Component.literal("返回"), button -> {
+        returnButton = this.addRenderableWidget(Button.builder(Component.translatable("gui.spellweaver.return"), button -> {
             saveAndReturn();
         }).bounds(width - 60, height / 4 + 60, 50, 20).build());
 
 
-        constantInput = new EditBox(font, width - 200+25+50+50, height / 4 + 90+30, 120, 20, Component.literal("常量"));
+        constantInput = new EditBox(font, width - 200+25+50+50, height / 4 + 90+30, 120, 20, Component.translatable("gui.spellweaver.constant"));
         constantInput.setMaxLength(50-25);
         addRenderableWidget(constantInput);
 
-        addConstantButton = Button.builder(Component.literal("添加常量"), button -> {
+        addConstantButton = Button.builder(Component.translatable("gui.spellweaver.add_constant"), button -> {
             String text = constantInput.getValue().trim();
             if (!text.isEmpty()) {
                 String entryText;

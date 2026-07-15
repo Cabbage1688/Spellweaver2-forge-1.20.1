@@ -1,17 +1,17 @@
 {
-  "name": "向量分解",
+  "name": "Vector Decompose",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:math",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "向量分解",
+      "title": "Vector Decompose",
       "images": ["spellweaver:textures/guidebook/combine.png"],
-      "text": "Vec3 (a,b,c)->向量分解->Vec3 (a，0，0)，Vec3 (0，b，0)，Vec3 (0，0，c)"
+      "text": "Vec3 (a,b,c) -> Vector Decompose -> Vec3 (a,0,0), Vec3 (0,b,0), Vec3 (0,0,c)"
     },
     {
       "type": "patchouli:text",
-      "text": "从法术栈弹出向量(a,b,c),将其沿坐标轴分解后依次压入法术栈，先压入 X 分量向量，再压入 Y 分量，最后压入 Z 分量"
+      "text": "Pops vector (a,b,c) from spell stack, decomposes it along coordinate axes and pushes components onto stack in order: X component first, then Y, finally Z"
     }
   ]
 }

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:stick"
+    },
+    "b": {
+      "item": "minecraft:gold_ingot"
+    }
+  },
+  "pattern": [
+    "aaa",
+    "aaa",
+    "bbb"
+  ],
+  "result": {
+    "item": "spellweaver:mana_pedestal"
+  }
+}

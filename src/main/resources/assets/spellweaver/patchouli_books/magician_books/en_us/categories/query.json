@@ -1,6 +1,6 @@
 {
-  "name": "查询",
-  "description": "参数获取相关符文",
+  "name": "Query",
+  "description": "Parameter Query Runes",
   "icon": "minecraft:spyglass",
   "sortnum": 2
 }

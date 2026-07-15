@@ -1,6 +1,6 @@
 {
-  "name": "物品",
-  "description": "魔法物品",
+  "name": "Items",
+  "description": "Magical Items",
   "icon": "spellweaver:mana_bottle",
   "sortnum": 0
 }

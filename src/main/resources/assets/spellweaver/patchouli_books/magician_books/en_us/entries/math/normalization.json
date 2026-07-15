@@ -1,13 +1,13 @@
 {
-  "name": "向量归一化",
+  "name": "Vector Normalize",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:math",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "随机数",
+      "title": "Vector Normalize",
       "images": ["spellweaver:textures/guidebook/normalization.png"],
-      "text": "弹出栈顶Vec3参数,将归一化结果压入法术栈"
+      "text": "Pops Vec3 parameter from stack top, pushes normalized result onto spell stack"
     }
   ]
 }

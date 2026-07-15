@@ -1,13 +1,13 @@
 {
-  "name": "列表判断器",
+  "name": "Is List",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:query",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "列表判断器",
+      "title": "Is List",
       "images": ["spellweaver:textures/guidebook/is_list.png"],
-      "text": "? -> 列表判断器 -> boolean<br>检查栈顶元素是否为 List 类型，压入 true/false，不消耗原参数。"
+      "text": "? -> Is List -> boolean<br>Checks if stack top element is List type, pushes true/false, original parameter is not consumed."
     }
   ]
 }

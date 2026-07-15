@@ -1,16 +1,16 @@
 {
-  "name": "音爆",
+  "name": "Sonic Boom",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:attack",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "音爆",
+      "title": "Sonic Boom",
       "images": ["spellweaver:textures/guidebook/sonic_boom.png"],
-      "text": "起始位置（Vec3），方向（Vec3），强度（double） -> 音爆 ->"
+      "text": "Start position (Vec3), direction (Vec3), power (double) -> Sonic Boom ->"
     },{
       "type": "patchouli:text",
-      "text": "从法术栈依次弹出三个参数，第一个参数作为起始位置，第二个参数作为发射方向（其模长为攻击距离），第三个参数作为攻击强度<br>从起始位置沿方向发射音波，对路径上的生物造成伤害并产生击退。<br><br>伤害 = 45 × 强度<br>魔力消耗 = 5 × (23 + 强度)^(1 + 强度/10)<br><br>该符文由于包含重复参数类型，有严格的参数读取顺序。<br>栈的规则为先进后出，因而输入顺序应为强度（double）,方向（vec3），起始位置（vec3）"
+      "text": "Pops three parameters from the spell stack in order: first parameter as start position, second as launch direction (its magnitude is attack distance), third as attack power.<br>Launches a sonic wave from start position along direction, dealing damage and knockback to creatures in path.<br><br>Damage = 45 × power<br>Mana cost = 5 × (23 + power)^(1 + power/10)<br><br>This rune has strict parameter reading order due to duplicate parameter types.<br>Stack is LIFO, so input order should be: power (double), direction (vec3), start position (vec3)"
     }
   ]
 }

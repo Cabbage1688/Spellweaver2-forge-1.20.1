@@ -1,0 +1,17 @@
+{
+  "name": "Inscription Table",
+  "icon": "spellweaver:inscription_table",
+  "category": "spellweaver:item",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "spellweaver:inscription_table",
+      "title": "Inscription Table",
+      "text": "Combination of Erasing Knife and Feather Pen<br><br>$(l)Usage:$()<br>Right-click empty-handed to edit spells, right-click with item to write spells, Shift+right-click with item to remove spells"
+    },{
+      "type": "crafting",
+      "recipe": "spellweaver:inscription_table",
+      "title": "Inscription Table"
+    }
+  ]
+}

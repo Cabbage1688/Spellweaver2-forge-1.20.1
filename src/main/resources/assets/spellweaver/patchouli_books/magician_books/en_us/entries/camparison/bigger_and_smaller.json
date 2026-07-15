@@ -1,29 +1,29 @@
 {
-  "name": "大小比较",
+  "name": "Comparison",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:comparison",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "大于",
+      "title": "Greater Than",
       "images": ["spellweaver:textures/guidebook/bigger.png"],
-      "text": "double a,double b->大于->boolean。<br>消耗栈顶两个数并比较大小，将比较结果压回法术栈"
+      "text": "double a, double b -> Greater Than -> boolean.<br>Consumes two numbers from stack top and compares them, pushes result back"
     },
     {
       "type":"patchouli:text",
-      "text": "如果b>a，返回true，反之返回false<br><br>举例：向栈压入1，再压入2，栈先弹出2作为a,再弹出1作为b，输出1>2这一判断的布尔值"
+      "text": "Returns true if b > a, false otherwise<br><br>Example: Push 1, then push 2. Stack pops 2 as a, then pops 1 as b, outputs boolean for 1 > 2"
     },
     {
       "type": "patchouli:image",
-      "title": "小于",
+      "title": "Less Than",
       "images": [
         "spellweaver:textures/guidebook/smaller.png"
       ],
-      "text": "double a,double b->小于->boolean。<br>消耗栈顶两个数并比较大小，将比较结果压回法术栈"
+      "text": "double a, double b -> Less Than -> boolean.<br>Consumes two numbers from stack top and compares them, pushes result back"
     },
     {
       "type": "patchouli:text",
-      "text": "b<a，返回true，反之返回false<br><br>举例：向栈压入1，再压入2，栈先弹出2作为a,再弹出1作为b，输出1<2这一判断的布尔值"
+      "text": "Returns true if b < a, false otherwise<br><br>Example: Push 1, then push 2. Stack pops 2 as a, then pops 1 as b, outputs boolean for 1 < 2"
     }
   ]
 }

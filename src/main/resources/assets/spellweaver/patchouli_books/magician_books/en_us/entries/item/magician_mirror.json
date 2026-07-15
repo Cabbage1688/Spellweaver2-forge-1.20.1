@@ -1,0 +1,17 @@
+{
+  "name": "Magician's Mirror",
+  "icon": "spellweaver:magician_mirror",
+  "category": "spellweaver:item",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "spellweaver:magician_mirror",
+      "title": "Magician's Mirror",
+      "text": "A mage's good companion, provides feedback on spell errors when held while casting<br><br>$(l)Usage:$()<br>Hold in hand (main or offhand) while casting"
+    },{
+      "type": "crafting",
+      "title": "Magician's Mirror",
+      "recipe": "spellweaver:magician_mirror"
+    }
+  ]
+}

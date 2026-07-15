@@ -1,22 +1,22 @@
 {
-  "name": "第三章：节点树入门",
+  "name": "Chapter 3: Node Tree Basics",
   "icon": "minecraft:oak_sapling",
   "category": "spellweaver:before_everything",
   "sortnum": 3,
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "$(l)欢迎来到第三章！$()<br><br>前两章的法术都只有一个普通节点——符文排一排，一次性跑完。但复杂的魔法需要$(l)节奏$()：先做什么、等多久、在什么条件下触发、重复多少次。<br><br>这一章介绍三种节点：$(9)等待节点$()、$(9)条件节点$()、$(9)循环节点$()。"
+      "text": "$(l)Welcome to Chapter 3!$()<br><br>Spells in the first two chapters only had one normal node — runes lined up and executed all at once. But complex magic requires $(l)rhythm$(): what to do first, how long to wait, under what conditions to trigger, how many times to repeat.<br><br>This chapter introduces three node types: $(9)Wait Node$(), $(9)Condition Node$(), $(9)Loop Node$()."
     },
     {
       "type": "patchouli:spotlight",
       "item": "minecraft:water_bucket",
-      "title": "灭火术",
-      "text": "$(l)节点结构：$()<br>序列根节点<br>├─ $(9)普通节点$()：$(9)自我 眼坐标 复制 复制 水$()<br>├─ $(9)等待节点$()：1 tick<br>└─ $(9)普通节点$()：$(9)泥土 破坏$()<br><br>$(l)效果：$()在你眼睛位置放一桶水，等待 1 tick的时间让 水流完成灭火，放置土方块破坏水源后立即破坏方块。<br><br>$(l)核心知识：$()等待节点让法术$(l)暂停$()指定 tick 数。1 秒 = 20 tick。"
+      "title": "Extinguish",
+      "text": "$(l)Node Structure:$()<br>Sequence Root Node<br>├─ $(9)Normal Node$(): $(9)Self VisionCoordinate Copy Copy Water$()<br>├─ $(9)Wait Node$(): 1 tick<br>└─ $(9)Normal Node$(): $(9)Dirt Break$()<br><br>$(l)Effect:$()Places water at your eye position, waits 1 tick for water to extinguish fire, places dirt to remove water source, then breaks the block.<br><br>$(l)Core Knowledge:$()Wait Node makes the spell $(l)pause$() for the specified number of ticks. 1 second = 20 ticks."
     },{
       "type": "relations",
-      "title": "灭火术相关符文页面",
-      "text": "这些是该法术用到的符文",
+      "title": "Extinguish Related Rune Pages",
+      "text": "These are the runes used in this spell",
       "entries": [
         "spellweaver:query/myself",
         "spellweaver:query/vision_coordinate",
@@ -26,18 +26,18 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(l)等待节点详解$()<br><br>$(9)等待节点$()只有一个属性：等待时间（tick）。<br><br>它的工作方式：<br>·轮到它时，开始倒计时。<br>·每 tick 减 1。<br>·倒计时归零后执行完成，序列继续执行下一个节点。<br><br>$(l)典型用途：$()<br>·延时效果：先放水，等待1tick再破坏水源，水源灭火需要时间。<br>·定时触发：等待 100 tick（5 秒）后执行某个动作。<br>·配合循环：每次循环之间等待一段时间，做出脉冲效果。<br><br>在编辑器中添加等待节点：右键魔法阵 → 添加等待节点 →左键进入等待节点 →鼠标中键点击设置等待时间。"
+      "text": "$(l)Wait Node Details$()<br><br>$(9)Wait Node$() has only one property: wait time (ticks).<br><br>How it works:<br>·When it's its turn, starts counting down.<br>·Decrements by 1 each tick.<br>·When countdown reaches zero, execution completes, sequence proceeds to next node.<br><br>$(l)Typical Uses:$()<br>·Delayed effects: place water first, wait 1 tick before removing water source — water needs time to extinguish.<br>·Timed triggers: wait 100 ticks (5 seconds) before executing an action.<br>·Loop synchronization: wait between loop iterations for pulse effects.<br><br>To add wait node in editor: right-click magic circle → Add Wait Node → left-click to enter → middle-click to set wait time."
     },
     {
       "type": "patchouli:spotlight",
       "item": "minecraft:apple",
-      "title": "条件治疗",
-      "text": "$(l)节点结构：$()<br>序列根节点<br>├─ $(9)普通节点$()：$(9)自我 检测生命值 10 <$()（这个是符文“<”,不是乱码）<br>└─ $(9)条件节点$()（condition = true）<br>　　└─ $(9)普通节点$()：$(9)自我 检测生命值 20 - 自我 治疗$()<br><br>$(l)效果：$()先判断血量是否低于 10，只有低于 10 时才执行治疗，将生命补满到 20。<br><br>$(l)核心知识：$()条件节点会读取栈顶布尔值，布尔值于其预设一致时才执行子节点"
+      "title": "Conditional Heal",
+      "text": "$(l)Node Structure:$()<br>Sequence Root Node<br>├─ $(9)Normal Node$(): $(9)Self CheckHealth 10 <$() (this is rune \"<\", not garbled text)<br>└─ $(9)Condition Node$() (condition = true)<br>　　└─ $(9)Normal Node$(): $(9)Self CheckHealth 20 - Self Heal$()<br><br>$(l)Effect:$()First checks if health is below 10, only heals and fills to 20 if true.<br><br>$(l)Core Knowledge:$()Condition Node reads the top boolean value from stack, only executes child nodes when boolean matches its preset."
     },
     {
       "type": "relations",
-      "title": "条件治疗相关符文页面",
-      "text": "这些是该法术用到的符文",
+      "title": "Conditional Heal Related Rune Pages",
+      "text": "These are the runes used in this spell",
       "entries": [
         "spellweaver:query/myself",
         "spellweaver:query/check_health",
@@ -47,22 +47,22 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(l)条件节点详解$()<br><br>$(9)条件节点$()有一个预设属性：$(9)condition$()，可设为 $(2)true$() 或 $(4)false$(),通过鼠标中键点击条件节点操作。<br><br>它的工作方式：<br>·从栈顶弹出布尔值，与 condition 比较。<br>·匹配 → 执行子节点列表，直到全部完成 。<br>·不匹配，跳过子节点列表。<br><br>$(l)实用组合：$()<br>用比较符文在条件节点前的普通节点里计算条件：<br>$(9)自我 检测生命值 10 <$() → 栈顶变为 $(2)true$() 或 $(4)false$()<br>然后条件节点根据这个值决定是否治疗。<br><br>把整个判断+治疗包进一个法术，就得到了$(l)带有条件判断的治疗术$()。"
+      "text": "$(l)Condition Node Details$()<br><br>$(9)Condition Node$() has one preset property: $(9)condition$(), which can be set to $(2)true$() or $(4)false$() by middle-clicking the condition node.<br><br>How it works:<br>·Pops boolean from stack top, compares with condition.<br>·Match → execute child node list until all complete.<br>·No match → skip child node list.<br><br>$(l)Practical Combination:$()<br>Use comparison runes in normal nodes before condition node to compute conditions:<br>$(9)Self CheckHealth 10 <$() → stack top becomes $(2)true$() or $(4)false$()<br>Then condition node decides whether to heal based on this value.<br><br>Package the entire check+heal into one spell, and you get $(l)Conditional Healing$()."
     },
     {
       "type": "patchouli:spotlight",
       "item": "minecraft:dirt",
-      "title": "搭高高",
-      "text": "$(l)节点结构：$()<br>序列根节点<br>└─ $(9)循环节点$()（10 次）<br>　　└─ $(9)普通节点$()：$(9)自我 复制 眼坐标 传送 自我 脚下坐标 泥土$()<br><br>$(l)效果：$()循环 10 次，每次把自己传送到眼部位置（向上一格左右），然后在脚下放一块泥土。10 轮后脚下多了一根 10 格高的泥柱。<br><br>$(l)核心知识：$()循环节点重复执行子节点，次数由 $(9)currentTime$() 决定。"
+      "title": "Build Up",
+      "text": "$(l)Node Structure:$()<br>Sequence Root Node<br>└─ $(9)Loop Node$() (10 times)<br>　　└─ $(9)Normal Node$(): $(9)Self Copy VisionCoordinate Teleport Self FootCoordinate Dirt$()<br><br>$(l)Effect:$()Loops 10 times, each time teleporting yourself to eye position (about 1 block up), then placing dirt beneath your feet. After 10 rounds, a 10-block-high dirt pillar forms.<br><br>$(l)Core Knowledge:$()Loop Node repeatedly executes child nodes, number of times determined by $(9)currentTime$()."
     },
     {
       "type": "patchouli:text",
-      "text": "$(l)循环节点详解$()<br><br>$(9)循环节点$()的属性是 $(9)currentTime$()，可通过鼠标中键设置：<br>·正数 → 循环固定次数，每轮减 1。<br>·负数（如 -2）→ 无限循环，直到法术被中断。<br>·-1 → 从栈顶弹出数字作为循环次数（动态循环）。<br><br>$(l)搭高高是怎么工作的？$()<br>每轮执行：$(9)自我$()压入玩家 → $(9)复制$()复制一份玩家 → $(9)眼坐标$()取眼部坐标 → $(9)传送$()把玩家传送到眼部坐标→ $(9)自我$()再压入玩家 → $(9)脚下坐标$()取脚下坐标 → $(9)泥土$()在脚底放泥土。最终搭成 10 格高泥柱。"
+      "text": "$(l)Loop Node Details$()<br><br>$(9)Loop Node$() has property $(9)currentTime$(), set via middle-click:<br>·Positive → loop fixed number of times, decrement by 1 each round.<br>·Negative (e.g., -2) → infinite loop until spell interrupted.<br>·-1 → pop number from stack top as loop count (dynamic loop).<br><br>$(l)How does Build Up work?$()<br>Each iteration: $(9)Self$() pushes player → $(9)Copy$() duplicates player → $(9)VisionCoordinate$() gets eye coordinate → $(9)Teleport$() teleports player to eye coordinate → $(9)Self$() pushes player again → $(9)FootCoordinate$() gets foot coordinate → $(9)Dirt$() places dirt under feet. Results in a 10-block-high dirt pillar."
     },
     {
       "type": "relations",
-      "title": "搭高高相关符文页面",
-      "text": "这些是该法术用到的符文",
+      "title": "Build Up Related Rune Pages",
+      "text": "These are the runes used in this spell",
       "entries": [
         "spellweaver:query/myself",
         "spellweaver:stack_options/copy",
@@ -74,7 +74,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(l)三种节点的配合$()<br><br>现在你掌握了完整的控制流工具：<br><br>·$(9)等待节点$() → 控制$(l)节奏$()<br>·$(9)条件节点$() → 控制$(l)分支$()<br>·$(9)循环节点$() → 控制$(l)重复$()<br><br>它们可以嵌套组合。比如：<br>·循环里放等待 → 每轮间隔一段时间<br>·循环里放条件 → 每轮判断一次是否继续<br>·条件里放循环 → 满足条件时才启动循环<br><br>$(l)尽情设计属于你自己的法术吧！$()"
+      "text": "$(l)Combining the Three Node Types$()<br><br>Now you have complete control flow tools:<br><br>·$(9)Wait Node$() → controls $(l)rhythm$()<br>·$(9)Condition Node$() → controls $(l)branching$()<br>·$(9)Loop Node$() → controls $(l)repetition$()<br><br>They can be nested and combined. For example:<br>·Wait inside loop → interval between iterations<br>·Condition inside loop → check each iteration whether to continue<br>·Loop inside condition → only start loop when condition met<br><br>$(l)Design your own spells freely!$()"
     }
   ]
 }

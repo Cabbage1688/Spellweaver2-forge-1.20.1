@@ -12,6 +12,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.capability.impl.mana.ManaSource;
+import net.zhenhuojun.spellweaver.spell.util.SlotReference;
 import net.zhenhuojun.spellweaver.spell.node.NodeResult;
 import net.zhenhuojun.spellweaver.spell.node.SequenceNode;
 import org.jetbrains.annotations.Nullable;
@@ -28,10 +29,14 @@ public class SpellContext {
     public Map<String, Object> variables = new HashMap<>();//用于“存储变量”符文创建键值对
 
     private BlockPos machinePos;
+    private BlockPos pedestalPos;
+    private SlotReference manaBottleSlot;
 
     public int jumpTarget=-1;//用于跳转
 
     public Entity entity;
+    //是否展示法术报错，当副手装备魔法师之镜时展示
+    public boolean showErrorMessages = false;
 
     @Nullable
     private Consumer<NodeResult> onComplete;
@@ -56,6 +61,26 @@ public class SpellContext {
 
     public BlockPos getMachinePos() {
         return machinePos;
+    }
+
+    public void setMachinePos(BlockPos machinePos){
+        this.machinePos=machinePos;
+    }
+
+    public BlockPos getPedestalPos() {
+        return pedestalPos;
+    }
+
+    public void setPedestalPos(BlockPos pedestalPos) {
+        this.pedestalPos = pedestalPos;
+    }
+
+    public SlotReference getManaBottleSlot() {
+        return manaBottleSlot;
+    }
+
+    public void setManaBottleSlot(SlotReference manaBottleSlot) {
+        this.manaBottleSlot = manaBottleSlot;
     }
 
     public void setOnComplete(@Nullable Consumer<NodeResult> callback) {

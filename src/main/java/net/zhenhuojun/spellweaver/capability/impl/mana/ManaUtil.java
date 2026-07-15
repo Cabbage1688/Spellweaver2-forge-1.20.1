@@ -10,12 +10,14 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.zhenhuojun.spellweaver.block.custom.ManaPedestalBlockEntity;
 import net.zhenhuojun.spellweaver.block.custom.SpellMachineBlockEntity;
 import net.zhenhuojun.spellweaver.capability.provider.mana.PlayerManaProvider;
 import net.zhenhuojun.spellweaver.item.ModItems;
 import net.zhenhuojun.spellweaver.network.ModMessage;
 import net.zhenhuojun.spellweaver.network.packet.ManaChangeS2CPacket;
 import net.zhenhuojun.spellweaver.spell.SpellContext;
+import net.zhenhuojun.spellweaver.spell.util.SlotReference;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -98,6 +100,8 @@ public class ManaUtil {
                             ModMessage.sendToPlayer(new ManaChangeS2CPacket(playerMana.getMana(), playerMana.getMaxMana()
                                     ,playerMana.getMana_level()), player);
                             result.set(true);
+                        } else if (context.showErrorMessages) {
+                            player.sendSystemMessage(Component.translatable("message.spellweaver.not_enough_mana").withStyle(ChatFormatting.RED));
                         }
                     });
                     return result.get();
@@ -105,21 +109,38 @@ public class ManaUtil {
                 case SCROLL -> {
                     boolean result=false;
                     ItemStack scroll =player.getMainHandItem();
-                    if (!player.level().isClientSide()&&(scroll.is(ModItems.USED_SCROLL.get())||scroll.is(ModItems.USED_LAZULI_SCROLL.get()))) {
+                    if (!player.level().isClientSide()&&(scroll.is(ModItems.USED_SCROLL.get())||scroll.is(ModItems.USED_LAZULI_SCROLL.get())||scroll.is(ModItems.USED_DIAMOND_SCROLL.get()))) {
                         CompoundTag aTag = scroll.getTag();
                         if (aTag != null && aTag.contains("scrollSpell")) {
                             CompoundTag spellData = aTag.getCompound("scrollSpell");
                             if(spellData.contains("mana")){
                                 double mana= spellData.getDouble("mana");
-                                if(mana>=sub){
-                                    mana=mana-sub;
-                                    spellData.putDouble("mana",mana);
-                                    // 每点魔力消耗1点耐久
-                                    int damageAmount = (int) Math.ceil(sub);
-                                    //hurtAndBreak会自动处理耐久耗尽时的物品破碎
-                                    scroll.hurtAndBreak(damageAmount, player, (p) -> p.broadcastBreakEvent(EquipmentSlot.MAINHAND));
-                                    player.getInventory().setChanged();
-                                    result=true;
+                                /// 钻石卷轴拥有50%魔力消耗减免
+                                if(scroll.is((ModItems.USED_DIAMOND_SCROLL.get()))){
+                                    if(mana>0.5*sub){
+                                        mana=mana-0.5*sub;
+                                        spellData.putDouble("mana",mana);
+                                        // 每点魔力消耗1点耐久
+                                        int damageAmount = (int) Math.ceil(0.5*sub);
+                                        scroll.hurtAndBreak(damageAmount, player, (p) -> p.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+                                        player.getInventory().setChanged();
+                                        result=true;
+                                    } else if (context.showErrorMessages) {
+                                        player.sendSystemMessage(Component.translatable("message.spellweaver.not_enough_mana_scroll").withStyle(ChatFormatting.RED));
+                                    }
+                                }else {
+                                    if(mana>=sub){
+                                        mana=mana-sub;
+                                        spellData.putDouble("mana",mana);
+                                        // 每点魔力消耗1点耐久
+                                        int damageAmount = (int) Math.ceil(sub);
+                                        //hurtAndBreak会自动处理耐久耗尽时的物品破碎
+                                        scroll.hurtAndBreak(damageAmount, player, (p) -> p.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+                                        player.getInventory().setChanged();
+                                        result=true;
+                                    } else if (context.showErrorMessages) {
+                                        player.sendSystemMessage(Component.translatable("message.spellweaver.not_enough_mana_scroll").withStyle(ChatFormatting.RED));
+                                    }
                                 }
                             }
                         }
@@ -139,6 +160,8 @@ public class ManaUtil {
                                     ModMessage.sendToPlayer(new ManaChangeS2CPacket(playerMana.getMana(), playerMana.getMaxMana()
                                             ,playerMana.getMana_level()), player);
                                     result.set(true);
+                                } else if (context.showErrorMessages) {
+                                    player.sendSystemMessage(Component.translatable("message.spellweaver.not_enough_mana").withStyle(ChatFormatting.RED));
                                 }
                             });
                             return result.get();
@@ -156,7 +179,49 @@ public class ManaUtil {
                             machine.setChanged();
                             context.level.sendBlockUpdated(pos, machine.getBlockState(), machine.getBlockState(), Block.UPDATE_ALL);
                             return true;
+                        } else if (context.showErrorMessages) {
+                            player.sendSystemMessage(Component.translatable("message.spellweaver.not_enough_mana_machine").withStyle(ChatFormatting.RED));
                         }
+                    }
+                    return false;
+                }
+                case PEDESTAL -> {
+                    BlockPos pos = context.getPedestalPos();
+                    if (pos == null) return false;
+                    BlockEntity be = context.level.getBlockEntity(pos);
+                    if(be instanceof ManaPedestalBlockEntity pedestal){
+                        if(pedestal.getMana()>=sub){
+                            pedestal.setMana(pedestal.getMana()-sub);
+                            pedestal.setChanged();
+                            context.level.sendBlockUpdated(pos,pedestal.getBlockState(),pedestal.getBlockState(),Block.UPDATE_ALL);
+                            return true;
+                        } else if (context.showErrorMessages) {
+                            player.sendSystemMessage(Component.translatable("message.spellweaver.not_enough_mana_pedestal").withStyle(ChatFormatting.RED));
+                        }
+                    }
+                    return false;
+                }
+                case MANA_BOTTLE -> {
+                    SlotReference manaBottleSlot = context.getManaBottleSlot();
+                    if (manaBottleSlot == null || !manaBottleSlot.isValid()) {
+                        return false;
+                    }
+                    ItemStack bottle = manaBottleSlot.getItem();
+                    if (!bottle.is(ModItems.MANA_BOTTLE.get())) {
+                        return false;
+                    }
+                    CompoundTag tag = bottle.getTag();
+                    if (tag != null && tag.contains("mana")) {
+                        double mana = tag.getDouble("mana");
+                        if (mana >= sub) {
+                            mana = mana - sub;
+                            tag.putDouble("mana", mana);
+                            return true;
+                        } else if (context.showErrorMessages) {
+                            player.sendSystemMessage(Component.translatable("message.spellweaver.not_enough_mana_bottle").withStyle(ChatFormatting.RED));
+                        }
+                    } else if (context.showErrorMessages) {
+                        player.sendSystemMessage(Component.translatable("message.spellweaver.bottle_empty").withStyle(ChatFormatting.RED));
                     }
                     return false;
                 }
@@ -164,24 +229,49 @@ public class ManaUtil {
         }
         return false;
     }
-
+    //2026.7.14现在魔珠保底加1级
     public static void addManaExpOrAwakeManaByMoonPearlAndSendPacket(ServerPlayer player){
+        if(player!=null){
+            player.getCapability(PlayerManaProvider.PLAYER_MANA).ifPresent(playerMana -> {
+                if(playerMana.getMana_level()==0){
+                    playerMana.setMana_level(5);
+                    playerMana.addMana(200);
+                    player.displayClientMessage(
+                            Component.translatable("message.spellweaver.warm_current").withStyle(ChatFormatting.LIGHT_PURPLE),
+                            true
+                    );
+                    player.sendSystemMessage(Component.translatable("message.spellweaver.mana_level_up", playerMana.getMana_level()).withStyle(ChatFormatting.GREEN));
+                }else{
+                    if(playerMana.getMana_exp()-playerMana.getPresent_exp()<500){
+                        playerMana.addExp(500);
+                    }else {
+                        playerMana.setMana_level(playerMana.getMana_level()+1);
+                        player.sendSystemMessage(Component.translatable("message.spellweaver.mana_level_up", playerMana.getMana_level()).withStyle(ChatFormatting.GREEN));
+                    }
+                }
+                ModMessage.sendToPlayer(new ManaChangeS2CPacket(playerMana.getMana(), playerMana.getMaxMana()
+                        ,playerMana.getMana_level()), player);
+            });
+        }
+    }
+
+    public static void addManaExpOrAwakeManaByDimManaPearlAndSendPacket(ServerPlayer player){
         if(player!=null){
             player.getCapability(PlayerManaProvider.PLAYER_MANA).ifPresent(playerMana -> {
                 if(playerMana.getMana_level()==0){
                     playerMana.setMana_level(1);
                     playerMana.addMana(100);
                     player.displayClientMessage(
-                            Component.literal("你感觉身体的深处涌出了一股暖流。").withStyle(ChatFormatting.LIGHT_PURPLE),
+                            Component.translatable("message.spellweaver.warm_current").withStyle(ChatFormatting.LIGHT_PURPLE),
                             true
                     );
+                    player.sendSystemMessage(Component.translatable("message.spellweaver.mana_level_up", playerMana.getMana_level()).withStyle(ChatFormatting.GREEN));
                 }else{
-                    playerMana.addExp(100);
+                    playerMana.addExp((int) (100+0.2* playerMana.getMana_exp()));
                 }
                 ModMessage.sendToPlayer(new ManaChangeS2CPacket(playerMana.getMana(), playerMana.getMaxMana()
                         ,playerMana.getMana_level()), player);
             });
-
         }
     }
 }

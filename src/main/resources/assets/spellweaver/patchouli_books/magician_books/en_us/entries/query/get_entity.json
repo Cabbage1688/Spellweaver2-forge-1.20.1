@@ -1,13 +1,13 @@
 {
-  "name": "坐标实体",
+  "name": "Get Entity",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:query",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "坐标实体",
+      "title": "Get Entity",
       "images": ["spellweaver:textures/guidebook/vec3_to_entity.png"],
-      "text": "vec3 -> 坐标实体 -> entity<br>弹出坐标点，获取该点为中心的 1×1×1 区域内第一个实体。如果没有实体，则无压入。"
+      "text": "vec3 -> Get Entity -> entity<br>Pops coordinate, gets first entity within 1×1×1 area centered at that point. If no entity, nothing is pushed."
     }
   ]
 }

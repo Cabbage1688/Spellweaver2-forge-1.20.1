@@ -1,17 +1,17 @@
 {
-  "name": "幻化之弓",
+  "name": "Illusion Bow",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:attack",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "幻化之弓",
+      "title": "Illusion Bow",
       "images": ["spellweaver:textures/guidebook/mana_bow.png"],
-      "text": "符文寄存器（RuneRegister） -> 幻化之弓 -><br>弹出符文寄存器，生成一把幻化之弓"
+      "text": "RuneRegister (RuneRegister) -> Illusion Bow -><br>Pops the RuneRegister, creates an illusion bow"
     },
     {
       "type": "patchouli:text",
-      "text": "<br>召唤时魔力消耗25，每秒需要1魔力以维持形态。<br>被玩家从物品栏丢出时会立即消散。<br<br>>箭矢命中时将寄存器中符文片段作为新法术执行，在执行之前会向新法术栈压入命中实体（entity）"
+      "text": "<br>Mana cost 25 on summon, requires 1 mana per second to maintain form.<br>Disappears immediately when thrown from inventory.<br><br>On arrow hit, executes the rune fragments in the register as a new spell, pushing the hit entity onto the new spell stack before execution"
     }
   ]
 }

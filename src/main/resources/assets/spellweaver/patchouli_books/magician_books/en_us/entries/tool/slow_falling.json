@@ -1,16 +1,16 @@
 {
-  "name": "缓降",
+  "name": "Slow Fall",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:tool",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "缓降",
+      "title": "Slow Fall",
       "images": ["spellweaver:textures/guidebook/slow_falling.png"],
-      "text": "持续时间(double), entity -> 缓降 -> entity "
+      "text": "Duration (double), entity -> Slow Fall -> entity"
     },{
       "type": "patchouli:text",
-      "text": "弹出持续时间（秒）和实体，施加缓降效果。<br><br>魔力消耗 = 4 + 持续时间（秒）"
+      "text": "Pops duration (seconds) and entity, applies slow falling effect.<br><br>Mana cost = 4 + duration (seconds)"
     }
   ]
 }

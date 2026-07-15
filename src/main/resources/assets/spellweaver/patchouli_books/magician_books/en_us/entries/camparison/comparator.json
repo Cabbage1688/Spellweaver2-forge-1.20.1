@@ -1,13 +1,13 @@
 {
-  "name": "比较器",
+  "name": "Comparator",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:comparison",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "比较器",
+      "title": "Comparator",
       "images": ["spellweaver:textures/guidebook/comparator.png"],
-      "text": "object,object->比较器->boolean<br>比较栈顶两个元素，将比较结果以布尔值返回。完全一样返回true，反之返回false"
+      "text": "object, object -> Comparator -> boolean<br>Compares two elements on stack top, returns boolean result. Returns true if identical, false otherwise"
     }
   ]
 }

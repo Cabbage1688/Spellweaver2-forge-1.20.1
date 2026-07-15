@@ -1,16 +1,16 @@
 {
-  "name": "传送",
+  "name": "Teleport",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:tool",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "传送",
+      "title": "Teleport",
       "images": ["spellweaver:textures/guidebook/tp.png"],
-      "text": "支持多种用法：<br>• entity, vec3 -> 传送 -> entity"
+      "text": "Supports multiple usages:<br>• entity, vec3 -> Teleport -> entity"
     },{
       "type": "patchouli:text",
-      "text": "• entity, 距离（double）-> 传送 -> entity（沿实体视线方向移动距离）<br><br>魔力消耗 = min(3 × 传送距离, 600)。传送后原实体压回栈。"
+      "text": "• entity, distance (double) -> Teleport -> entity (moves along entity's line of sight by distance)<br><br>Mana cost = min(3 × teleport distance, 600). Original entity is pushed back onto stack after teleport."
     }
   ]
 }

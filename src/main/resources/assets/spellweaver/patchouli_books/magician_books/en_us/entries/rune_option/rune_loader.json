@@ -1,5 +1,5 @@
 {
-  "name": "符文解析器",
+  "name": "Rune Loader",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:rune_option",
   "pages": [
@@ -7,11 +7,11 @@
       "type": "patchouli:image",
       "title": "[",
       "images": ["spellweaver:textures/guidebook/rune_loader.png"],
-      "text": "RuneRegister->符文解析器->用掉其中的符文"
+      "text": "RuneRegister -> Rune Loader -> execute contained runes"
     },
     {
       "type": "patchouli:text",
-      "text": "消耗栈顶的符文寄存器，执行其中的符文"
+      "text": "Consumes the RuneRegister at stack top, executes the runes within"
     }
   ]
 }

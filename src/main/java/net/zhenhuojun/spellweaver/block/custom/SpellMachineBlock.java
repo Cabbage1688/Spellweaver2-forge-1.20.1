@@ -12,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -20,6 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.zhenhuojun.spellweaver.block.ModBlockEntities;
 import net.zhenhuojun.spellweaver.client.gui.SpellMachineEditScreen;
+import net.zhenhuojun.spellweaver.item.ModItems;
 import net.zhenhuojun.spellweaver.item.custom.ManaBottleItem;
 
 
@@ -107,5 +109,24 @@ public class SpellMachineBlock extends BaseEntityBlock {
     }
 
 
-
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!level.isClientSide && state.getBlock() != newState.getBlock()) {
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be instanceof SpellMachineBlockEntity pedestal) {
+                int count = pedestal.getCurrentManaBottle();
+                double totalMana = pedestal.getMana();
+                if(count>0){
+                    double perMana=totalMana/count;
+                    for(int i=0;i<count;i++){
+                        ItemStack bottle=new ItemStack(ModItems.MANA_BOTTLE.get());
+                        CompoundTag tag = bottle.getOrCreateTag();
+                        tag.putDouble("mana", perMana);
+                        Block.popResource(level, pos, bottle);
+                    }
+                }
+            }
+        }
+        super.onRemove(state, level, pos, newState, isMoving);
+    }
 }

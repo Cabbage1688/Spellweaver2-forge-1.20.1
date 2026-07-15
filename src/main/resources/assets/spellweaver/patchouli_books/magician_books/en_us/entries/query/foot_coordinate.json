@@ -1,13 +1,13 @@
 {
-  "name": "脚下坐标",
+  "name": "Foot Coordinate",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:query",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "脚下坐标",
+      "title": "Foot Coordinate",
       "images": ["spellweaver:textures/guidebook/foot_coordinate.png"],
-      "text": "entity->脚下坐标->vec3<br>从法术栈弹出一个实体，将其正下方方块的中心坐标压入栈。"
+      "text": "entity -> Foot Coordinate -> vec3<br>Pops an entity from spell stack, pushes center coordinate of the block directly beneath it."
     }
   ]
 }

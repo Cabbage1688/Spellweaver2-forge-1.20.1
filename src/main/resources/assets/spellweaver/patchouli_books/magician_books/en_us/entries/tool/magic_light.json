@@ -1,16 +1,16 @@
 {
-  "name": "魔法光源",
+  "name": "Magic Light",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:tool",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "魔法光源",
+      "title": "Magic Light",
       "images": ["spellweaver:textures/guidebook/magic_light.png"],
-      "text": "vec3 -> 魔法光源 ->生成光源<br>弹出坐标，在该位置生成一个永久发光的魔法光源(左键可以摧毁)。"
+      "text": "vec3 -> Magic Light -> generate light source<br>Pops coordinate, generates a permanently glowing magical light source at that position (destroyable with left-click)."
     },{
       "type": "patchouli:text",
-      "text": "魔力消耗：5"
+      "text": "Mana cost: 5"
     }
   ]
 }

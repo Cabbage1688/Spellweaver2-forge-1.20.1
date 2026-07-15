@@ -23,7 +23,7 @@ public class WaitEditScreen extends Screen {
         super(pTitle);
     }
     public WaitEditScreen(SpellWeavingScreen parent,WaitNode editNode){
-        super(Component.literal("循环次数"));
+        super(Component.translatable("gui.spellweaver.wait_count"));
         this.parent = parent;
         this.editNode=editNode;
     }
@@ -34,12 +34,12 @@ public class WaitEditScreen extends Screen {
 
 
         time = new EditBox(font, centerX - 100, centerY - 20, 200, 20,
-                Component.literal("循环次数"));
+                Component.translatable("gui.spellweaver.wait_count"));
         time.setResponder(text -> updateButtonState());
         addRenderableWidget(time);
 
         // 确认按钮
-        addRenderableWidget(Button.builder(Component.literal("确认"), button -> {
+        addRenderableWidget(Button.builder(Component.translatable("gui.confirm"), button -> {
             //WaitingTime= Integer.parseInt(time.getValue());
             if(!time.getValue().trim().isEmpty()){
                 WaitingTime= Integer.parseInt(time.getValue());
@@ -76,7 +76,7 @@ public class WaitEditScreen extends Screen {
         // 绘制标题
         guiGraphics.drawCenteredString(
                 font,
-                Component.literal("法术等待次数"),
+                Component.translatable("gui.spellweaver.spell_wait_count"),
                 width / 2,
                 height / 4,
                 0xFFFFFF

@@ -1,16 +1,16 @@
 {
-  "name": "连锁",
+  "name": "Chain",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:query",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "连锁",
+      "title": "Chain",
       "images": ["spellweaver:textures/guidebook/chain.png"],
-      "text": "$(l)double，double，vec3/entity->连锁->List$()<br>参数读取顺序：最大连锁距离，最大跳数，起点坐标或实体"
+      "text": "$(l)double, double, vec3/entity -> Chain -> List$()<br>Parameter reading order: max chain distance, max jumps, start coordinate or entity"
     }, {
       "type": "patchouli:text",
-      "text": "基于栈的先进后出规则，输入顺序应与读取顺序相反<br>根据起点类型进行连锁查询：$(br)• 若起点为坐标，则返回与该坐标处方块连通（相邻同种，此模式下最大连锁距离仅为占位）的所有方块位置列表，最多返回“最大跳数”个。$(br)• 若起点为实体，则返回以该实体为起点、在“最大连锁距离”内连跳的实体列表，忽略施法玩家和掉落物实体，最多返回“最大跳数”个实体。"
+      "text": "Based on stack LIFO rule, input order should be reversed from reading order.<br>Chain query based on start type: $(br)• If start is coordinate, returns list of all connected block positions (adjacent same type, max distance is placeholder), up to \"max jumps\" results.<br>• If start is entity, returns entity list jumping within \"max chain distance\", ignores caster and item entities, up to \"max jumps\" entities."
     }
   ]
 }

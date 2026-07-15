@@ -1,13 +1,13 @@
 {
-  "name": "自我",
+  "name": "Self",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:query",
   "pages": [
     {
       "type": "patchouli:image",
-      "title": "自我",
+      "title": "Self",
       "images": ["spellweaver:textures/guidebook/myself.png"],
-      "text": "->自我->entity<br>不需要弹出参数，直接将施法者玩家压入栈。"
+      "text": "-> Self -> entity<br>Does not pop any parameters, directly pushes the caster player onto the stack."
     }
   ]
 }

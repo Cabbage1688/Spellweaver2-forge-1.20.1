@@ -1,7 +1,9 @@
 package net.zhenhuojun.spellweaver.spell.util;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -14,6 +16,7 @@ import net.zhenhuojun.spellweaver.block.custom.SpellMachineBlockEntity;
 import net.zhenhuojun.spellweaver.capability.impl.mana.ManaSource;
 import net.zhenhuojun.spellweaver.capability.provider.mana.PlayerManaOverloadProvider;
 import net.zhenhuojun.spellweaver.capability.provider.mana.PlayerManaProvider;
+import net.zhenhuojun.spellweaver.item.ModItems;
 import net.zhenhuojun.spellweaver.spell.*;
 import net.zhenhuojun.spellweaver.spell.node.NodeResult;
 import net.zhenhuojun.spellweaver.spell.node.SequenceNode;
@@ -21,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 
 public class RunesExecuteMethod {
@@ -28,6 +32,7 @@ public class RunesExecuteMethod {
     //context直接交给SequenceNode存储，每次修改后都同步修改
     public static void spellLogic(SequenceNode sequenceNode, Level level, Player player){
         SpellContext context=new SpellContext(level,player);
+        context.showErrorMessages = player.getOffhandItem().is(ModItems.MAGICIAN_MIRROR.get()) || player.getMainHandItem().is(ModItems.MAGICIAN_MIRROR.get());
         sequenceNode.setContext(context);
         player.getCapability(PlayerManaOverloadProvider.PLAYER_MANA_OVERLOAD).ifPresent(cap -> {
             Spellweaver.getLOGGER().debug("[SPELLWEAVER:RunesExecuteMethod/spellLogic方法]魔力超载能力获取");
@@ -48,6 +53,7 @@ public class RunesExecuteMethod {
     //这个是非玩家专用的执行方法，或者干脆可以说是法术执行方法改进版？
     public static void spellLogic(SequenceNode sequenceNode, Level level, Player player,ManaSource manaSource){
         SpellContext context=new SpellContext(level,player, manaSource);
+        context.showErrorMessages = player.getOffhandItem().is(ModItems.MAGICIAN_MIRROR.get()) || player.getMainHandItem().is(ModItems.MAGICIAN_MIRROR.get());
         sequenceNode.setContext(context);
         player.getCapability(PlayerManaOverloadProvider.PLAYER_MANA_OVERLOAD).ifPresent(cap -> {
             Spellweaver.getLOGGER().debug("[SPELLWEAVER:RunesExecuteMethod/新spellLogic方法]魔力超载能力获取");
@@ -69,6 +75,7 @@ public class RunesExecuteMethod {
     //这个法术执行方法专用于施法机器
     public static void spellLogic(SequenceNode sequenceNode, Level level, Player player, ManaSource manaSource, BlockPos machinePos){
         SpellContext context=new SpellContext(level,player, manaSource,machinePos);
+        context.showErrorMessages = player.getOffhandItem().is(ModItems.MAGICIAN_MIRROR.get()) || player.getMainHandItem().is(ModItems.MAGICIAN_MIRROR.get());
         //2026.4.25
         BlockEntity be = context.level.getBlockEntity(machinePos);
         if (be instanceof SpellMachineBlockEntity machine) {
@@ -102,6 +109,7 @@ public class RunesExecuteMethod {
     //这个是给魔法飞弹专用的执行方法，或者说命中回调
     public static void simpleSpellLogic(List<String> spellList, Level level, Player player, Vec3 vec3, @Nullable Entity entity){
         SpellContext context=new SpellContext(level,player);
+        context.showErrorMessages = player.getOffhandItem().is(ModItems.MAGICIAN_MIRROR.get()) || player.getMainHandItem().is(ModItems.MAGICIAN_MIRROR.get());
         context.push(vec3);
         if(entity!=null){
             context.entity=entity;
@@ -143,9 +151,11 @@ public class RunesExecuteMethod {
                     try {
                         executor.execute(context);
                     } catch (SpellExecutionException e) {
-                        //context.player.sendSystemMessage(
-                            //    Component.literal("§c法术执行错误 [" + rune + "]: " + e.getMessage())
-                        //);
+                        if (context.showErrorMessages) {
+                            context.player.sendSystemMessage(
+                                    Component.literal("§c参数错误 [" + rune + "]: " + e.getMessage())
+                            );
+                        }
                         break;
                     }
                 } else {
@@ -173,6 +183,7 @@ public class RunesExecuteMethod {
     //幻化武器专用方法
     public static void ManaSwordSpellLogic(List<String> spellList, Level level, Player player, LivingEntity targetEntity){
         SpellContext context=new SpellContext(level,player);
+        context.showErrorMessages = player.getOffhandItem().is(ModItems.MAGICIAN_MIRROR.get()) || player.getMainHandItem().is(ModItems.MAGICIAN_MIRROR.get());
         context.push(targetEntity);
         if (context != null) {
             int i = 0;
@@ -211,9 +222,11 @@ public class RunesExecuteMethod {
                     try {
                         executor.execute(context);
                     } catch (SpellExecutionException e) {
-                       // context.player.sendSystemMessage(
-                              //  Component.literal("§c法术执行错误 [" + rune + "]: " + e.getMessage())
-                       // );
+                        if (context.showErrorMessages) {
+                            context.player.sendSystemMessage(
+                                    Component.literal("§c参数错误 [" + rune + "]: " + e.getMessage())
+                            );
+                        }
                         break;
                     }
                 } else {
@@ -237,5 +250,25 @@ public class RunesExecuteMethod {
                 i++;
             }
         }
+    }
+    //这个是被羽毛笔写入的方块、物品用的
+    public static void triggerSpell(ServerPlayer player, Level level, CompoundTag spellDataTag,
+                                    Consumer<SpellContext> contextCustomizer) {
+        if (spellDataTag == null || spellDataTag.isEmpty()) return;
+
+        SequenceNode node = new SequenceNode();
+        node.deserializeNBT(spellDataTag);
+        SpellContext context = new SpellContext (level,player);
+        context.showErrorMessages = player.getOffhandItem().is(ModItems.MAGICIAN_MIRROR.get()) || player.getMainHandItem().is(ModItems.MAGICIAN_MIRROR.get());
+
+
+        if (contextCustomizer != null) {
+            contextCustomizer.accept(context);
+        }
+
+        node.setContext(context);
+        SpellTreeExecuteManager.getInstance().addSpellTree(node);
+        Spellweaver.getLOGGER().debug("[Spellweaver/ModEvent/triggerSpell]法术已推入");
+
     }
 }

@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 import net.zhenhuojun.spellweaver.item.custom.LazuliBeforeItem;
+import net.zhenhuojun.spellweaver.item.custom.PreScroll;
 import net.zhenhuojun.spellweaver.item.custom.ScrollBeforeItem;
 
 import java.util.function.Supplier;
@@ -39,7 +40,8 @@ public class WriteSpellInScrollC2SPacket {
                   //  return;
                 //}
             //}
-            if(!(stack.getItem() instanceof LazuliBeforeItem ||stack.getItem() instanceof ScrollBeforeItem)) return;
+            //if(!(stack.getItem() instanceof LazuliBeforeItem ||stack.getItem() instanceof ScrollBeforeItem)) return;
+            if(!(stack.getItem() instanceof PreScroll)) return;
             // 将法术写入卷轴
             stack.getOrCreateTag().put("sequence", spellTag);
             player.getInventory().setChanged();  // 标记物品已更改
