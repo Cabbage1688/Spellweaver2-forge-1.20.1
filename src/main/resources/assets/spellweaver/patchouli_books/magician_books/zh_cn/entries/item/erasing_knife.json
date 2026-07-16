@@ -1,0 +1,17 @@
+{
+  "name": "刮刀",
+  "icon": "spellweaver:erasing_knife",
+  "category": "spellweaver:item",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "spellweaver:erasing_knife",
+      "title": "刮刀",
+      "text": "用于刮除羽毛笔写上的法术。<br><br>$(l)使用方法：$()<br>右键刮除副手物品上的法术，潜行右键刮除准星所指的3格内的方块中的法术"
+    },{
+      "type": "crafting",
+      "recipe": "spellweaver:erasing_knife",
+      "title": "刮刀"
+    }
+  ]
+}

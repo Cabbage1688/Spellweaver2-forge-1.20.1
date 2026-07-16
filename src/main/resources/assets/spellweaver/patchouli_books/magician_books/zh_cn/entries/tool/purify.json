@@ -1,0 +1,16 @@
+{
+  "name": "净化",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:tool",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "净化",
+      "images": ["spellweaver:textures/guidebook/purify.png"],
+      "text": "$(l)entity->净化->entity$()"
+    },{
+      "type": "patchouli:text",
+      "text": "解除生物所受的负面效果<br><br>魔力消耗：20*负面效果数"
+    }
+  ]
+}

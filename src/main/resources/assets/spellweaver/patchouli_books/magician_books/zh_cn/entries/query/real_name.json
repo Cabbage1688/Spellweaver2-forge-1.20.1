@@ -1,0 +1,17 @@
+{
+  "name": "真名",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:query",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "真名 - 双向转换",
+      "images": ["spellweaver:textures/guidebook/real_name.png"],
+      "text": "entity -> 真名 -> UUID<br>将实体转换为其唯一标识符（UUID）。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "反之亦然：<br>uuid -> 真名 -> entity<br>将 UUID 转换为同一世界中对应的实体（若存在）。<br><br>注意：实体必须仍然存在于世界中，否则压入空值。"
+    }
+  ]
+}

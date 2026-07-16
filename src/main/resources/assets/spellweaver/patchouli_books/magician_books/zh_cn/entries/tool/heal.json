@@ -1,0 +1,16 @@
+{
+  "name": "治疗",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:tool",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "治疗",
+      "images": ["spellweaver:textures/guidebook/heal.png"],
+      "text": "治疗量(double), entity -> 治疗 -> 实体"
+    },{
+      "type": "patchouli:text",
+      "text": "弹出治疗量（double）和实体，如果实体为生物为其恢复生命值。<br><br>魔力消耗 = 5 × 治疗量"
+    }
+  ]
+}

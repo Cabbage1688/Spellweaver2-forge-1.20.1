@@ -1,0 +1,29 @@
+{
+  "name": "大小比较",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:comparison",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "大于",
+      "images": ["spellweaver:textures/guidebook/bigger.png"],
+      "text": "double a,double b->大于->boolean。<br>消耗栈顶两个数并比较大小，将比较结果压回法术栈"
+    },
+    {
+      "type":"patchouli:text",
+      "text": "如果b>a，返回true，反之返回false<br><br>举例：向栈压入1，再压入2，栈先弹出2作为a,再弹出1作为b，输出1>2这一判断的布尔值"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "小于",
+      "images": [
+        "spellweaver:textures/guidebook/smaller.png"
+      ],
+      "text": "double a,double b->小于->boolean。<br>消耗栈顶两个数并比较大小，将比较结果压回法术栈"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "b<a，返回true，反之返回false<br><br>举例：向栈压入1，再压入2，栈先弹出2作为a,再弹出1作为b，输出1<2这一判断的布尔值"
+    }
+  ]
+}

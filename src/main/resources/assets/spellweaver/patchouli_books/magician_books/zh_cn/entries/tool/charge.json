@@ -1,0 +1,21 @@
+{
+  "name": "充能",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:tool",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "充能",
+      "images": ["spellweaver:textures/guidebook/charge.png"],
+      "text": "魔力提供者，期望充能数值（double），魔力接收者 -> 充能 -><br><br>顺序严格 "
+    },
+    {
+      "type": "patchouli:text",
+      "text": "【提供者类型】<br>• 槽位引用：消耗物品（见下页）或魔力瓶中的魔力。<br>• 坐标（Vec3）：从该位置的魔力基座或施法机中抽取。<br>• 玩家（Player）：从施法者自身魔力中抽取（仅限自身）。<br><br>【魔力接收者类型】<br>• 玩家：补充玩家魔力。<br>• 坐标：补充该位置机器/基座的魔力。<br>• 槽位引用：补充卷轴或魔力瓶的魔力。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "【消耗品列表】<br>• 紫水晶碎片 / 青金石：单次上限 25 魔力。<br>• 紫水晶块：单次上限 100 魔力。<br>• 青金石块：单次上限 225 魔力。<br><br>【注意事项】<br>• 实际充能值为 min(期望值, 来源可用量, 目标剩余容量)。<br>• 施法消耗：无。"
+    }
+  ]
+}

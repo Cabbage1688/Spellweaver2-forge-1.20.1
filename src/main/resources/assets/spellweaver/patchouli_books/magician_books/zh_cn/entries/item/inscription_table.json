@@ -1,0 +1,17 @@
+{
+  "name": "刻写台",
+  "icon": "spellweaver:inscription_table",
+  "category": "spellweaver:item",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "spellweaver:inscription_table",
+      "title": "刻写台",
+      "text": "刮刀与羽毛笔的结合<br><br>$(l)使用方法：$()<br>空手右键编辑法术，手持物品右键写入法术，手持物品潜行右键移除物品中的法术"
+    },{
+      "type": "crafting",
+      "recipe": "spellweaver:inscription_table",
+      "title": "刻写台"
+    }
+  ]
+}

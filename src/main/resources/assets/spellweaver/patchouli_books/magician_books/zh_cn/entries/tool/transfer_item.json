@@ -1,0 +1,16 @@
+{
+  "name": "物品转移",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:tool",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "物品转移",
+      "images": ["spellweaver:textures/guidebook/transfer_item.png"],
+      "text": "$(l)slotReference，slotReference/vec3->物品转移$()<br>参数读取顺序：源槽位，目标槽位 或 源槽位，坐标"
+    },{
+      "type": "patchouli:text",
+      "text": "基于栈的先进后出规则，输入顺序应与读取顺序相反<br>将源槽位中的所有物品转移到目标槽位或指定位置的容器中；若目标槽位无效或坐标处没有容器，则物品会掉落在地面上。<br><br>魔力消耗：转移的物品数量"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "或和与",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:comparison",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "或",
+      "images": ["spellweaver:textures/guidebook/or.png"],
+      "text": "弹出并比较栈顶两布尔值，若有一个为true则输出true,反之为false"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "与",
+      "images": ["spellweaver:textures/guidebook/and.png"],
+      "text": "弹出并比较栈顶两布尔值，仅在都为true时输出true,否则输出false"
+    }
+  ]
+}

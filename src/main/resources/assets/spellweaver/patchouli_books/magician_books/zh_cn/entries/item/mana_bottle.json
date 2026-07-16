@@ -1,0 +1,17 @@
+{
+  "name": "魔力瓶",
+  "icon": "spellweaver:mana_bottle",
+  "category": "spellweaver:item",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "spellweaver:mana_bottle",
+      "title": "魔力瓶",
+      "text": "法师的好伙伴，能存储大量魔力。<br><br>$(l)使用方法：$()<br>右键从瓶中汲取魔力，shift+右键向瓶中灌注魔力"
+    },{
+      "type": "crafting",
+      "title": "魔力瓶",
+      "recipe": "spellweaver:mana_bottle"
+    }
+  ]
+}

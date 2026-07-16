@@ -1,0 +1,16 @@
+{
+  "name": "驱动",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:tool",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "驱动",
+      "images": ["spellweaver:textures/guidebook/drive.png"],
+      "text": "entity, velocity -> 驱动 -> entity<br>弹出实体和速度向量，为该实体增加速度。"
+    },{
+      "type": "patchouli:text",
+      "text": "魔力消耗 = |(当前速度+施加速度)² - 当前速度²|，即速度增量导致的动能变化绝对值。"
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "name": "第二章：实用（？）法术",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:before_everything",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(l)欢迎来到第二章！$()<br><br>这里收集了几个个立刻就能用上的小法术。每个都很短，可以直接抄下来试试效果，顺便认识新符文。"
+    },    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:torch",
+      "title": "照明术",
+      "text": "$(l)符文序列：$()<br>$(9)$(l)自我 眼坐标 魔法光源$()<br><br>$(l)效果：$()在眼睛位置召唤一团魔法光，照亮周围。下矿懒得插火把的时候特别好用。<br><br>$(l)知识点：$()<br>·$(9)眼坐标$()与$(9)脚下坐标$()都是查询类符文，一个取眼部位置，一个取脚底位置。<br>·$(9)魔法光源$()是消耗魔力的世界交互符文——从栈顶弹出一个坐标，在那里生成光源。"
+    },{
+      "type": "relations",
+      "title": "照明术相关符文页面",
+      "text": "这些是该法术用到的符文",
+      "entries": [
+        "spellweaver:query/myself",
+        "spellweaver:query/vision_coordinate",
+        "spellweaver:tool/magic_light"
+      ]
+    }, {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:flint_and_steel",
+      "title": "点火",
+      "text": "$(l)符文序列：$()<br>$(9)$(l)5.0 射线 点燃$()<br><br>$(l)效果：$()点燃5格内视线所指的方块。<br><br>$(l)知识点：$()<br>·$(9)射线$()从栈顶弹出距离，从玩家眼睛射出一条线，碰到方块就把那个方块的坐标压入栈。<br>·$(9)点燃$()弹出坐标，在坐标上方生成火焰。<br><br>符文序列中允许插入常量"
+    },{
+      "type": "relations",
+      "title": "点火相关符文页面",
+      "text": "这些是该法术用到的符文",
+      "entries": [
+        "spellweaver:query/ray",
+        "spellweaver:tool/ignite"
+      ]
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:apple",
+      "title": "治疗术",
+      "text": "$(l)符文序列：$()<br>$(9)$(l) 20 自我 检测生命值 - 自我 治疗$()<br><br>$(l)效果：$()将你的生命值补满到 20 点。<br><br>$(l)知识点：$()<br>·$(9)检测生命值$()弹出实体，压入它的当前血量。<br>·$(9)-$()减法运算：20 - 当前血量 = 需要治疗的量。<br>·$(9)治疗$()弹出实体和数值，消耗魔力恢复生命。这里栈上有两个$(9)自我$()——第二个是为$(9)治疗$()准备的目标实体。"
+    }
+  ,{
+      "type": "relations",
+      "title": "治疗术相关符文页面",
+      "text": "这些是该法术用到的符文",
+      "entries": [
+        "spellweaver:query/myself",
+        "spellweaver:query/check_health",
+        "spellweaver:math/arithmetic_operations",
+        "spellweaver:tool/heal"
+      ]
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:ender_pearl",
+      "title": "闪现",
+      "text": "$(l)符文序列：$()<br>$(9)$(l)自我 视线方向 5 * 自我 传送$()<br><br>$(l)效果：$()沿你视线方向瞬间移动 5 格。可用于跨越峡谷等。<br><br>$(l)知识点：$()<br>·$(9)视线方向$()弹出实体，压入它正在看的方向（单位向量）。<br>·$(9)*$()向量数乘：把方向向量拉长到 5 格。<br>·$(9)传送$()弹出坐标和实体，消耗魔力将实体传送过去。注意栈上有两个$(9)自我$()——一个用来获取视线方向，一个是传送的目标实体。"
+    },
+    {
+      "type": "relations",
+      "title": "闪现相关符文页面",
+      "text": "这些是该法术用到的符文",
+      "entries": [
+        "spellweaver:query/myself",
+        "spellweaver:query/vision_vec3",
+        "spellweaver:math/arithmetic_operations",
+        "spellweaver:tool/tp"
+      ]
+    },{
+      "type": "patchouli:spotlight",
+      "item": "minecraft:fire_charge",
+      "title": "魔法飞弹",
+      "text": "$(l)符文序列：$()<br>$(9)$(l)[ 2.0 爆炸 ] 自我 眼坐标 魔法飞弹$()<br><br>$(l)效果：$()从眼睛位置发射一颗魔法飞弹，撞击方块或实体后产生半径 2 的爆炸。<br><br>$(l)知识点：$()<br>·方括号$(9)[ ... ]$()把一组符文打包成$(l)符文寄存器$()——寄存器里的符文不会立即执行，而是被当作一个“法术包”暂存起来。<br>·$(9)魔法飞弹$()生成的飞弹撞到东西后会开启新的法术栈并自动压入命中坐标（Vec3），然后执行其存储的符文。"
+    },
+    {
+      "type": "relations",
+      "title": "魔法飞弹相关符文页面",
+      "text": "这些是该法术用到的符文",
+      "entries": [
+        "spellweaver:rune_option/rune_register",
+        "spellweaver:tool/explode",
+        "spellweaver:query/myself",
+        "spellweaver:query/vision_coordinate",
+        "spellweaver:attack/mana_ball"
+      ]
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)小贴士与下一步$()<br><br>·释放法术前检查魔力——具有现实效应的法术消耗会魔力，魔力不足什么都不会发生。<br>·如果法术出现问题可以使用$(9)栈状态$()查看栈中数据情况，它是你最好的调试工具。<br>·试着修改法术逻辑——把闪现术的 5 改成 10 会怎样？在魔法飞弹的逻辑中增加爆炸前放置水，爆炸后放置方块破坏方块会怎么样？"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)常见参数类型速查$()<br><br>你已经在六个法术中接触了这些数据类型，现在我们来整理一下：<br><br>·$(9)Double$() —— 数字。如 $(9)5.0$()、$(9)20$()。用于计算、距离、治疗量等。<br>·$(9)Vec3$() —— 坐标或向量。如眼坐标、脚下坐标、视线方向。由三个数字组成 (x, y, z)。<br>·$(9)Entity$() —— 实体。$(9)自我$() 压入的就是玩家实体。<br>·$(9)Boolean$() —— 布尔值，只有 $(2)true$() 和 $(4)false$()。下一章的条件节点会用到。<br>·$(9)String$() —— 字符串。用引号包裹，如 $(9)\"0\"$()，主要用于变量名。<br>·$(9)Object$() —— 任意类型。<br><br>了解这些类型后，翻看符文字典时会更容易理解每个符文需要什么输入、会产生什么输出。"
+    }
+  ]
+}

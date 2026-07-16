@@ -1,0 +1,17 @@
+{
+  "name": "距离",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:query",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "距离",
+      "images": ["spellweaver:textures/guidebook/distance.png"],
+      "text": "entity/vec3,entity/vec3->距离->double"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "弹出两个实体，或一个实体与一个坐标点，或两个坐标点，计算结果压入 double。<br><br>支持三种组合：<br>• 实体 + 实体<br>• 实体 + 坐标 (Vec3)<br>• 坐标 + 坐标"
+    }
+  ]
+}

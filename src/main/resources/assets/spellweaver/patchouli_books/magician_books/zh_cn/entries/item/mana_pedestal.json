@@ -1,0 +1,17 @@
+{
+  "name": "魔力基座",
+  "icon": "spellweaver:mana_pedestal",
+  "category": "spellweaver:item",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "spellweaver:mana_pedestal",
+      "title": "魔力基座",
+      "text": "将魔力瓶连通作为一个魔源，最多可放置九个魔力瓶。<br><br>$(l)使用方法：$()<br>手持魔力瓶右键放入魔力瓶，空手潜行右键取出魔力瓶。通常搭配“魔源转换“符文使用"
+    },{
+      "type": "crafting",
+      "recipe": "spellweaver:mana_pedestal",
+      "title": "魔力基座"
+    }
+  ]
+}

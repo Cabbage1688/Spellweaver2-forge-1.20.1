@@ -1,0 +1,80 @@
+{
+  "name": "第三章：节点树入门",
+  "icon": "minecraft:oak_sapling",
+  "category": "spellweaver:before_everything",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(l)欢迎来到第三章！$()<br><br>前两章的法术都只有一个普通节点——符文排一排，一次性跑完。但复杂的魔法需要$(l)节奏$()：先做什么、等多久、在什么条件下触发、重复多少次。<br><br>这一章介绍三种节点：$(9)等待节点$()、$(9)条件节点$()、$(9)循环节点$()。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:water_bucket",
+      "title": "灭火术",
+      "text": "$(l)节点结构：$()<br>序列根节点<br>├─ $(9)普通节点$()：$(9)自我 眼坐标 复制 复制 水$()<br>├─ $(9)等待节点$()：1 tick<br>└─ $(9)普通节点$()：$(9)泥土 破坏$()<br><br>$(l)效果：$()在你眼睛位置放一桶水，等待 1 tick的时间让 水流完成灭火，放置土方块破坏水源后立即破坏方块。<br><br>$(l)核心知识：$()等待节点让法术$(l)暂停$()指定 tick 数。1 秒 = 20 tick。"
+    },{
+      "type": "relations",
+      "title": "灭火术相关符文页面",
+      "text": "这些是该法术用到的符文",
+      "entries": [
+        "spellweaver:query/myself",
+        "spellweaver:query/vision_coordinate",
+        "spellweaver:stack_options/copy",
+        "spellweaver:tool/cube"
+      ]
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)等待节点详解$()<br><br>$(9)等待节点$()只有一个属性：等待时间（tick）。<br><br>它的工作方式：<br>·轮到它时，开始倒计时。<br>·每 tick 减 1。<br>·倒计时归零后执行完成，序列继续执行下一个节点。<br><br>$(l)典型用途：$()<br>·延时效果：先放水，等待1tick再破坏水源，水源灭火需要时间。<br>·定时触发：等待 100 tick（5 秒）后执行某个动作。<br>·配合循环：每次循环之间等待一段时间，做出脉冲效果。<br><br>在编辑器中添加等待节点：右键魔法阵 → 添加等待节点 →左键进入等待节点 →鼠标中键点击设置等待时间。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:apple",
+      "title": "条件治疗",
+      "text": "$(l)节点结构：$()<br>序列根节点<br>├─ $(9)普通节点$()：$(9)自我 检测生命值 10 <$()（这个是符文“<”,不是乱码）<br>└─ $(9)条件节点$()（condition = true）<br>　　└─ $(9)普通节点$()：$(9)自我 检测生命值 20 - 自我 治疗$()<br><br>$(l)效果：$()先判断血量是否低于 10，只有低于 10 时才执行治疗，将生命补满到 20。<br><br>$(l)核心知识：$()条件节点会读取栈顶布尔值，布尔值于其预设一致时才执行子节点"
+    },
+    {
+      "type": "relations",
+      "title": "条件治疗相关符文页面",
+      "text": "这些是该法术用到的符文",
+      "entries": [
+        "spellweaver:query/myself",
+        "spellweaver:query/check_health",
+        "spellweaver:camparison/bigger_and_smaller",
+        "spellweaver:tool/heal"
+      ]
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)条件节点详解$()<br><br>$(9)条件节点$()有一个预设属性：$(9)condition$()，可设为 $(2)true$() 或 $(4)false$(),通过鼠标中键点击条件节点操作。<br><br>它的工作方式：<br>·从栈顶弹出布尔值，与 condition 比较。<br>·匹配 → 执行子节点列表，直到全部完成 。<br>·不匹配，跳过子节点列表。<br><br>$(l)实用组合：$()<br>用比较符文在条件节点前的普通节点里计算条件：<br>$(9)自我 检测生命值 10 <$() → 栈顶变为 $(2)true$() 或 $(4)false$()<br>然后条件节点根据这个值决定是否治疗。<br><br>把整个判断+治疗包进一个法术，就得到了$(l)带有条件判断的治疗术$()。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:dirt",
+      "title": "搭高高",
+      "text": "$(l)节点结构：$()<br>序列根节点<br>└─ $(9)循环节点$()（10 次）<br>　　└─ $(9)普通节点$()：$(9)自我 复制 眼坐标 传送 自我 脚下坐标 泥土$()<br><br>$(l)效果：$()循环 10 次，每次把自己传送到眼部位置（向上一格左右），然后在脚下放一块泥土。10 轮后脚下多了一根 10 格高的泥柱。<br><br>$(l)核心知识：$()循环节点重复执行子节点，次数由 $(9)currentTime$() 决定。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)循环节点详解$()<br><br>$(9)循环节点$()的属性是 $(9)currentTime$()，可通过鼠标中键设置：<br>·正数 → 循环固定次数，每轮减 1。<br>·负数（如 -2）→ 无限循环，直到法术被中断。<br>·-1 → 从栈顶弹出数字作为循环次数（动态循环）。<br><br>$(l)搭高高是怎么工作的？$()<br>每轮执行：$(9)自我$()压入玩家 → $(9)复制$()复制一份玩家 → $(9)眼坐标$()取眼部坐标 → $(9)传送$()把玩家传送到眼部坐标→ $(9)自我$()再压入玩家 → $(9)脚下坐标$()取脚下坐标 → $(9)泥土$()在脚底放泥土。最终搭成 10 格高泥柱。"
+    },
+    {
+      "type": "relations",
+      "title": "搭高高相关符文页面",
+      "text": "这些是该法术用到的符文",
+      "entries": [
+        "spellweaver:query/myself",
+        "spellweaver:stack_options/copy",
+        "spellweaver:query/vision_coordinate",
+        "spellweaver:tool/tp",
+        "spellweaver:query/foot_coordinate",
+        "spellweaver:tool/cube"
+      ]
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)三种节点的配合$()<br><br>现在你掌握了完整的控制流工具：<br><br>·$(9)等待节点$() → 控制$(l)节奏$()<br>·$(9)条件节点$() → 控制$(l)分支$()<br>·$(9)循环节点$() → 控制$(l)重复$()<br><br>它们可以嵌套组合。比如：<br>·循环里放等待 → 每轮间隔一段时间<br>·循环里放条件 → 每轮判断一次是否继续<br>·条件里放循环 → 满足条件时才启动循环<br><br>$(l)尽情设计属于你自己的法术吧！$()"
+    }
+  ]
+}

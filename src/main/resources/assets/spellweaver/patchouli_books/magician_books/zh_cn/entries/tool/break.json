@@ -1,0 +1,16 @@
+{
+  "name": "破坏",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:tool",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "破坏",
+      "images": ["spellweaver:textures/guidebook/break.png"],
+      "text": "vec3 -> 破坏 -><br>弹出坐标点，破坏该位置的方块。"
+    },{
+      "type": "patchouli:text",
+      "text": "魔力消耗 = min(硬度³, 100)，硬度为方块的挖掘硬度（基岩无法破坏）。"
+    }
+  ]
+}

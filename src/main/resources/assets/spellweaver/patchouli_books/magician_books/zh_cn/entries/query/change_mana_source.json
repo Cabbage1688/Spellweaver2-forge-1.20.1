@@ -1,0 +1,17 @@
+{
+  "name": "魔源转换",
+  "icon": "minecraft:book",
+  "category": "spellweaver:query",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "魔源转换",
+      "images": ["spellweaver:textures/guidebook/change_mana_source.png"],
+      "text": "player/vec3/slotReference->魔源转换"
+    }, {
+      "type": "patchouli:text",
+      "title": "魔源转换",
+      "text": "将法术魔力源由默认修改为指定的玩家/魔力基座/施法机/魔力瓶"
+    }
+  ]
+}

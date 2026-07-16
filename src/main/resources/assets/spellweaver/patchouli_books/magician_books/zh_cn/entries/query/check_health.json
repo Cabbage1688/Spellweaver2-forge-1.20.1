@@ -1,0 +1,13 @@
+{
+  "name": "检测生命值",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:query",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "检测生命值",
+      "images": ["spellweaver:textures/guidebook/check_health.png"],
+      "text": "entity->检测生命值->double<br>弹出实体，如果是生物则将其当前生命值（double）压入栈。"
+    }
+  ]
+}

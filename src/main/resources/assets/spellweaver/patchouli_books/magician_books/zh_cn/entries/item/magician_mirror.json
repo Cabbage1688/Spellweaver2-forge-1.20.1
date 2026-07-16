@@ -1,0 +1,17 @@
+{
+  "name": "魔法师之镜",
+  "icon": "spellweaver:magician_mirror",
+  "category": "spellweaver:item",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "spellweaver:magician_mirror",
+      "title": "魔法师之镜",
+      "text": "法师的好伙伴，手持其施法时可以反馈法术中的错误<br><br>$(l)使用方法：$()<br>施法时手持（主手副手均可）"
+    },{
+      "type": "crafting",
+      "title": "魔法师之镜",
+      "recipe": "spellweaver:magician_mirror"
+    }
+  ]
+}

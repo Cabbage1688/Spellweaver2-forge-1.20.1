@@ -1,0 +1,47 @@
+{
+  "name": "方块放置",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:tool",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "方块放置",
+      "images": ["spellweaver:textures/guidebook/custom_cube.png"],
+      "text": "$(l)slotReference，vec3->方块放置$()<br>参数顺序任意"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "从指定槽位中取出一个方块物品，尝试放置到目标坐标处。若该位置可被替换（如空气、植物等），则放置成功。$(br)$(br)魔力消耗：2"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "水",
+      "images": ["spellweaver:textures/guidebook/water.png"],
+      "text": "vec3 -> 水 -><br>弹出坐标，在该位置放置水源方块。<br><br>魔力消耗：15<br>只能替换空气或可替换方块。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "泥土",
+      "images": ["spellweaver:textures/guidebook/dirt.png"],
+      "text": "vec3 -> 泥土 -><br>弹出坐标，在该位置放置泥土方块。<br><br>魔力消耗：10<br>只能替换空气或可替换方块。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "细雪",
+      "images": ["spellweaver:textures/guidebook/snow.png"],
+      "text": "vec3 -> 细雪 -><br>弹出坐标，在该位置放置细雪方块。<br><br>魔力消耗：20<br>只能替换空气或可替换方块。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "沙",
+      "images": ["spellweaver:textures/guidebook/sand.png"],
+      "text": "vec3 -> 沙 -><br>弹出坐标，在该位置放置沙子方块。<br><br>魔力消耗：10<br>只能替换空气或可替换方块。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "岩浆",
+      "images": ["spellweaver:textures/guidebook/magma.png"],
+      "text": "vec3 -> 岩浆 -><br>弹出坐标，在该位置放置岩浆源方块。<br><br>魔力消耗：10<br>只能替换空气或可替换方块。"
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "name": "卷轴",
+  "icon": "spellweaver:scroll",
+  "category": "spellweaver:item",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "spellweaver:scroll",
+      "title": "卷轴",
+      "text": "能存储一道法术和 256 魔力。<br><br>$(l)使用方法：$()<br>放在主手右键打开法术编辑界面，编辑完成后shift+右键为卷轴注入魔力，注满后弹出命名窗口，命名后点击确定即将卷轴封装"
+    },{
+      "type": "crafting",
+      "title": "卷轴",
+      "recipe": "spellweaver:scroll"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "spellweaver:used_scroll",
+      "title": "封装卷轴",
+      "text": "卷轴被封装后无法再改动，但你仍然可以shift+右键打开法术查看界面查看其中封装的法术的结构，也可以再卷轴魔力充足的情况下右键释放法术，这会消耗卷轴的魔力与耐久"
+    },{
+      "type": "patchouli:spotlight",
+      "item": "spellweaver:lazuli_scroll",
+      "title": "青金石卷轴",
+      "text": "能存储一道法术和 512 魔力。<br><br>$(l)使用方法：$()<br>同卷轴"
+    },{
+      "type": "crafting",
+      "title": "青金石卷轴",
+      "recipe": "spellweaver:lazuli_scroll"
+    },{
+      "type": "patchouli:spotlight",
+      "item": "spellweaver:used_lazuli_scroll",
+      "title": "封装青金石卷轴",
+      "text": "同封装卷轴"
+    },{
+      "type": "patchouli:spotlight",
+      "item": "spellweaver:lazuli_scroll",
+      "title": "钻石卷轴",
+      "text": "能存储一道法术和 1024 魔力，且释放法术的魔力消耗为原本的50%。<br><br>$(l)使用方法：$()<br>同卷轴"
+    },{
+      "type": "crafting",
+      "title": "钻石卷轴",
+      "recipe": "spellweaver:diamond_scroll"
+    },{
+      "type": "patchouli:spotlight",
+      "item": "spellweaver:used_diamond_scroll",
+      "title": "封装钻石卷轴",
+      "text": "同封装卷轴"
+    }
+  ]
+}

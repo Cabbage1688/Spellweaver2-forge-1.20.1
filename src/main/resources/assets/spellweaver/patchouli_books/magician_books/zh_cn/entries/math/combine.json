@@ -1,0 +1,17 @@
+{
+  "name": "组合向量",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:math",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "组合向量",
+      "images": ["spellweaver:textures/guidebook/combine.png"],
+      "text": "double x,double y,double z->组合向量 -> vec3 (x,y,z)"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "从法术栈依次弹出三个数值，最先弹出的作为向量的 Z 分量，其次作为 Y 分量，最后弹出的作为 X 分量，组合成向量 (x, y, z) 后压入栈。"
+    }
+  ]
+}

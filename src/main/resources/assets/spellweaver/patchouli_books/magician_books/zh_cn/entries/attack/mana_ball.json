@@ -1,0 +1,16 @@
+{
+  "name": "魔法飞弹",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:attack",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "魔法飞弹",
+      "images": ["spellweaver:textures/guidebook/mana_ball.png"],
+      "text": "符文寄存器（RuneRegister），发射位置（Vec3） -> 魔法飞弹 -> 飞弹实体"
+    },{
+      "type": "patchouli:text",
+      "text": "<br>顺序任意,生成一颗魔法飞弹并压入其实体。<br>魔力消耗 = 符文寄存器内符文数量<br><br>命中时将寄存器中符文片段作为新法术执行，在执行之前会向新法术栈压入命中坐标（vec3）<br><br>$(6)此外,如果魔法飞弹命中了生物，则会重置其无敌帧"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "变量操作",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:variable_and_list",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "存储变量",
+      "images": ["spellweaver:textures/guidebook/store_variable.png"],
+      "text": "值，变量名(String) -> 存储变量 -><br>弹出变量名和值（顺序不限），存入变量空间。同名则覆盖。"
+    },
+    {
+      "type": "patchouli:image",
+      "title": "读取变量",
+      "images": ["spellweaver:textures/guidebook/read_variable.png"],
+      "text": "变量名(String) -> 读取变量 -> 值<br>弹出变量名，若存在则压入对应值。"
+    }
+  ]
+}

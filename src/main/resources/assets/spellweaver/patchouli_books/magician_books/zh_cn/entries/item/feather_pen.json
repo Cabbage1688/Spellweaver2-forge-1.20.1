@@ -1,0 +1,18 @@
+{
+  "name": "羽毛笔",
+  "icon": "spellweaver:feather_pen",
+  "category": "spellweaver:item",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "spellweaver:feather_pen",
+      "title": "羽毛笔",
+      "text": "用于将法术编辑界面的法术写入方块与物品。<br><br>$(l)使用方法：$()<br>右键向副手物品上写入法术，潜行右键向准星所指的3格内的方块写入法术"
+    },{
+      "type": "crafting",
+      "recipe": "spellweaver:feather_pen",
+      "title": "羽毛笔",
+      "text":"<br>特别的：护甲中的法术在受伤时触发同时自动压入攻击者（攻击者为直接伤害源时），物品中的法术右键时触发，方块中的法术在方块状态改变时触发同时自动压入方块坐标"
+    }
+  ]
+}

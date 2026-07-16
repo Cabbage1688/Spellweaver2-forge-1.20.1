@@ -1,0 +1,16 @@
+{
+  "name": "相对坐标转换",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:query",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "相对坐标转换",
+      "images": ["spellweaver:textures/guidebook/relative_coordinate.png"],
+      "text": "$(l)entity,vec3->相对坐标转换->vec3$()<br>参数顺序任意"
+    },{
+      "type": "patchouli:text",
+      "text":"将绝对坐标转换为相对于实体的相对坐标。<br><br>相对坐标系以实体的眼睛位置为原点，视线方向为y轴,右向为x轴，z轴垂直xy平面向上。"
+    }
+  ]
+}

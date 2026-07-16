@@ -1,0 +1,13 @@
+{
+  "name": "栈状态",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:stack_options",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "栈状态",
+      "images": ["spellweaver:textures/guidebook/stack_state.png"],
+      "text": "打印栈中所有参数"
+    }
+  ]
+}

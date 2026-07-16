@@ -1,0 +1,17 @@
+{
+  "name": "播种",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:tool",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "播种",
+      "images": ["spellweaver:textures/guidebook/seed.png"],
+      "text": "$(l)slotReference，vec3->播种$()<br>参数顺序任意"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "在指定坐标处种植作物或树苗。$(br)$(br)魔力消耗：1"
+    }
+  ]
+}

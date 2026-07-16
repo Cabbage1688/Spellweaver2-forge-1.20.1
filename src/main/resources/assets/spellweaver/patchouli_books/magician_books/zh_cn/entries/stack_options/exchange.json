@@ -1,0 +1,17 @@
+{
+  "name": "交换",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:stack_options",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "交换",
+      "images": ["spellweaver:textures/guidebook/exchange.png"],
+      "text": "object1，object2->交换->object2,object1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "将栈顶部两个参数位置调换"
+    }
+  ]
+}
