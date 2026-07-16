@@ -54,6 +54,7 @@ import net.zhenhuojun.spellweaver.entity.impl.ManaBall;
 import net.zhenhuojun.spellweaver.entity.util.MagicLightUtils;
 import net.zhenhuojun.spellweaver.item.ModItems;
 import net.zhenhuojun.spellweaver.item.Util;
+import net.zhenhuojun.spellweaver.item.custom.ManaBottleItem;
 import net.zhenhuojun.spellweaver.item.util.SpellBlockStorage;
 import net.zhenhuojun.spellweaver.network.ModMessage;
 import net.zhenhuojun.spellweaver.network.packet.*;
@@ -383,7 +384,7 @@ public class SpellExecutorManager {
                         } catch (SpellExecutionException e) {
                             if (context.showErrorMessages) {
                                 context.player.sendSystemMessage(
-                                        Component.literal("§c参数错误 [" + rune + "]: " + e.getMessage())
+                                        Component.translatable("message.spellweaver.rune_param_error", rune, e.getMessage())
                                 );
                             }
                             break;
@@ -401,7 +402,7 @@ public class SpellExecutorManager {
                                 context.push(number);
                             } catch (NumberFormatException ex) {
                                 context.player.sendSystemMessage(
-                                        Component.literal("§6未知符文: " + rune)
+                                        Component.translatable("message.spellweaver.unknown_rune", rune)
                                 );
                             }
                         }
@@ -1527,13 +1528,66 @@ public class SpellExecutorManager {
                       } else if (stack.is(Items.LAPIS_BLOCK)) {
                           amount =  Math.min(225, amount);
                       }
+                      //魔力瓶
+                  }else if(stack.is(ModItems.MANA_BOTTLE.get())){
+                      CompoundTag tag = stack.getTag();
+                      if (tag != null && tag.contains("mana")) {
+                          double manaInBottle = tag.getDouble("mana");
+                          amount = Math.min(amount, manaInBottle);
+                          double newMana = manaInBottle - amount;
+                          tag.putDouble("mana", newMana);
+                      } else {
+                          amount = 0;
+                      }
                   }
-              }else {
+              } else if (source instanceof Vec3 vec3) {
+                  BlockEntity blockEntity=context.level.getBlockEntity(BlockPos.containing(vec3));
+                  if(blockEntity instanceof ManaPedestalBlockEntity entity){
+                      amount=Math.min(amount,entity.getMana());
+                      entity.setMana(entity.getMana()-amount);
+                  } else if (blockEntity instanceof SpellMachineBlockEntity entity) {
+                      amount=Math.min(amount,entity.getMana());
+                      entity.setMana(entity.getMana()-amount);
+                  }
+              } else if (source instanceof Player player) {
+                  if(player==context.player){
+                      amount =  Math.min(ManaUtil.CheckMana((ServerPlayer) player), amount);
+                      ManaUtil.subManaAndAddExpAndSendPacket(amount, (ServerPlayer) player);
+                  }
+              } else {
                   //这里后续还能做抛出异常
                   amount=0;
               }
-              if(target instanceof Player player)
-                 ManaUtil.addManaAndSendPacket(amount, (ServerPlayer) player);
+              if(target instanceof Player player) {
+                  ManaUtil.addManaAndSendPacket(amount, (ServerPlayer) player);
+              } else if (target instanceof Vec3 vec3) {
+                  BlockEntity blockEntity=context.level.getBlockEntity(BlockPos.containing(vec3));
+                  if(blockEntity instanceof ManaPedestalBlockEntity entity){
+                      double gap= entity.getCurrentManaBottle()* ManaBottleItem.MAX_MANA-entity.getMana();
+                      entity.setMana(Math.min(amount,gap));
+                  } else if (blockEntity instanceof SpellMachineBlockEntity entity) {
+                      double gap= entity.getCurrentManaBottle()* ManaBottleItem.MAX_MANA-entity.getMana();
+                      entity.setMana(Math.min(amount,gap));
+                  }
+              } else if (target instanceof SlotReference slotRef) {
+                  ItemStack stack = slotRef.getItem();
+                  if (isScroll(stack)) {
+                      CompoundTag tag = stack.getOrCreateTag();
+                      CompoundTag scrollSpell = tag.getCompound("scrollSpell");
+                      double currentMana = scrollSpell.contains("mana") ? scrollSpell.getDouble("mana") : 0;
+                      double maxMana = stack.getMaxDamage();
+                      double gap = maxMana - currentMana;
+                      double actualAmount = Math.min(amount, gap);
+                      scrollSpell.putDouble("mana", currentMana + actualAmount);
+                      tag.put("scrollSpell", scrollSpell);
+                  } else if (stack.is(ModItems.MANA_BOTTLE.get())) {
+                      CompoundTag tag=stack.getOrCreateTag();
+                      if(!tag.contains("mana")){
+                          tag.putDouble("mana",0);
+                      }
+                      tag.putDouble("mana",Math.min(amount,ManaBottleItem.MAX_MANA-tag.getDouble("mana")));
+                  }
+              }
             }
         });
 
@@ -2185,5 +2239,14 @@ public class SpellExecutorManager {
                 }
             }
         }
+    }
+
+    private boolean isScroll(ItemStack stack) {
+        return stack.is(ModItems.SCROLL.get()) ||
+               stack.is(ModItems.USED_SCROLL.get()) ||
+               stack.is(ModItems.LAZULI_SCROLL.get()) ||
+               stack.is(ModItems.USED_LAZULI_SCROLL.get()) ||
+               stack.is(ModItems.DIAMOND_SCROLL.get()) ||
+               stack.is(ModItems.USED_DIAMOND_SCROLL.get());
     }
 }

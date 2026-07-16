@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -62,7 +63,7 @@ public class SpellBlockGlowRenderer {
             poseStack.translate(x, y, z);
 
             BlockState state = mc.level.getBlockState(pos);
-            renderGlowBorder(poseStack, bufferSource, time, state);
+            renderGlowBorder(poseStack, bufferSource, time, state,mc.level, pos);
 
             poseStack.popPose();
         }
@@ -70,7 +71,7 @@ public class SpellBlockGlowRenderer {
         poseStack.popPose();
     }
 
-    private static void renderGlowBorder(PoseStack poseStack, MultiBufferSource bufferSource, float time, BlockState state) {
+    private static void renderGlowBorder(PoseStack poseStack, MultiBufferSource bufferSource, float time, BlockState state, Level level, BlockPos pos) {
         RenderType renderType = RenderType.lines();
         VertexConsumer vc = bufferSource.getBuffer(renderType);
 
@@ -82,7 +83,7 @@ public class SpellBlockGlowRenderer {
         float g = GLOW_G;
         float b = GLOW_B;
 
-        VoxelShape shape = state.getShape((BlockGetter) null, null);
+        VoxelShape shape = state.getShape((BlockGetter) level, pos);
         for (AABB aabb : shape.toAabbs()) {
             float minX = (float) aabb.minX - OUTLINE_OFFSET;
             float minY = (float) aabb.minY - OUTLINE_OFFSET;

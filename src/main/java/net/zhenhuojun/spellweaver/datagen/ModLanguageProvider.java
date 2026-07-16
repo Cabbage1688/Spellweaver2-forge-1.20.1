@@ -42,7 +42,7 @@ public class ModLanguageProvider extends LanguageProvider {
         this.add("gui.name","SpellName");
         this.add("gui.confirm","Confirm");
         this.add("gui.select_slot.title","SpellBindingScreen");
-        this.add("gui.select_slot.prompt", "You can bind spells to slots and then use hotkeys to cast them. The mapping between keys and slots can be viewed in Options -> Controls -> Key Bindings.");
+        this.add("gui.select_slot.prompt", "Bind spells to slots and use hotkeys to cast. Map keys in Controls settings.");
 
         this.add("key.spellweaver.spell1", "HotKey1");
         this.add("key.spellweaver.spell2", "HotKey2");
@@ -149,6 +149,14 @@ public class ModLanguageProvider extends LanguageProvider {
         this.add("message.spellweaver.anonymous", "Anonymous");
 
         this.add("message.spellweaver.mana_level_up", "Mana Level increased to %d!");
+
+        this.add("gui.spellweaver.add_normal_node", "Add Normal Node");
+        this.add("gui.spellweaver.add_loop_node","Add Loop Node");
+        this.add("gui.spellweaver.add_condition_node", "Add Condition Node");
+        this.add( "gui.spellweaver.add_wait_node", "Add Wait Node");
+
+        this.add("message.spellweaver.rune_param_error", "§cParam Error [%s]: %s");
+        this.add("message.spellweaver.unknown_rune", "§6Unknown Rune: %s");
 
 
 

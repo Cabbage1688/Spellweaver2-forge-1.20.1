@@ -33,7 +33,7 @@ public class PlayerMana {
     }
 
     public void setMana_level(int level){
-        this.mana_level=level;
+        this.mana_level=(level<=120&&level>=0)?level:120;
     }
 
     public int getMana_level() { return mana_level; }
@@ -82,6 +82,8 @@ public class PlayerMana {
             leveledUp = false;
             if (present_exp >= getMana_exp()) {
                 present_exp -= getMana_exp();
+                //TODO 当前99满级，本来不应该限制，但我后面要改魔力体系
+                if(mana_level>=100) return;
                 mana_level++;
                 leveledUp = true;
                 // 玩家升级提示
@@ -130,9 +132,7 @@ public class PlayerMana {
         MAX_MANA = calculateMaxMana();
     }//从NBT数据中加载魔力值
 
-    //private int calculateMaxMana() {
-        //return 100 + 20 * (mana_level-1);
-   // }
+    //TODO魔力体系下次改
     private int calculateMaxMana() {
         if (mana_level <= 0) return 0;
 
@@ -144,14 +144,54 @@ public class PlayerMana {
             int increment = 20 + 10 * (tier - 1);
             maxMana += increment;
         }
-
         return maxMana;
+
     }
+
+
+/*
+    private int calculateMaxMana() {
+        if (mana_level <= 0) return 0;
+        // 先计算到 99 级（保留原线性增长）
+        int maxMana = 100;   // 1级基础
+        int levelLimit = Math.min(mana_level, 99);
+        for (int level = 2; level <= levelLimit; level++) {
+            int tier = (level - 1) / 10 + 1;
+            if (tier > 10) tier = 10;
+            int increment = 20 + 10 * (tier - 1);
+            maxMana += increment;
+        }
+        if (mana_level <= 99) return maxMana;
+        long current = maxMana;
+        for (int level = 100; level <= mana_level; level++) {
+            current *= 2;
+            if (current > Integer.MAX_VALUE) return Integer.MAX_VALUE;
+        }
+        return (int) current;
+    }
+
+ */
 
     private Long calculateManaExp() {
         //return (long) (100 + Math.pow(mana_level, 1.5));
         return (long) (100 + Math.pow(mana_level, 2.5));//2025.9.26削弱魔力成长速度
     }
+
+
+    /*private Long calculateManaExp() {
+        if (mana_level <= 99) {
+            return (long) (100 + Math.pow(mana_level, 2.5));
+        }
+        long exp = (long) (100 + Math.pow(99, 2.5));
+        for (int level = 100; level <= mana_level; level++) {
+            exp *= 2;
+            if (exp > Long.MAX_VALUE / 2) return Long.MAX_VALUE;
+        }
+        return exp;
+    }
+
+     */
+
     public CompoundTag serialize(){
         CompoundTag tag = new CompoundTag();
         saveNBTData(tag);

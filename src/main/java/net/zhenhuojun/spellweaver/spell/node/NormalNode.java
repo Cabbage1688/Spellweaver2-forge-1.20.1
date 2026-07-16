@@ -66,7 +66,7 @@ public class NormalNode implements Node{
                     } catch (SpellExecutionException e) {
                         if (context.showErrorMessages) {
                             context.player.sendSystemMessage(
-                                    Component.literal("§c参数错误 [" + rune + "]: " + e.getMessage())
+                                    Component.translatable("message.spellweaver.rune_param_error", rune, e.getMessage())
                             );
                         }
                         break;
@@ -84,7 +84,7 @@ public class NormalNode implements Node{
                             context.push(number);
                         } catch (NumberFormatException ex) {
                             context.player.sendSystemMessage(
-                                    Component.literal("§6未知符文: " + rune)
+                                    Component.translatable("message.spellweaver.unknown_rune", rune)
                             );
                         }
                     }

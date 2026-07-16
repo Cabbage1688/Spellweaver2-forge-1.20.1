@@ -7,11 +7,12 @@
       "type": "patchouli:spotlight",
       "item": "spellweaver:feather_pen",
       "title": "Feather Pen",
-      "text": "Used to write spells from the spell editing interface onto blocks and items.<br><br>$(l)Usage:$()<br>Right-click to write spell onto offhand item, Shift+right-click to write spell onto blocks within 3 blocks of crosshair.<br>Special: Spells in armor trigger when taking damage, spells in items trigger on right-click."
+      "text": "Used to write spells from the spell editing interface onto blocks and items.<br><br>$(l)Usage:$()<br>Right-click to write spell onto offhand item, Shift+right-click to write spell onto blocks within 3 blocks of crosshair."
     },{
       "type": "crafting",
       "recipe": "spellweaver:feather_pen",
-      "title": "Feather Pen"
+      "title": "Feather Pen",
+      "text":"<br>Special: Spells in armor trigger when taking damage and automatically push the attacker (when attacker is direct damage source), spells in items trigger on right-click, spells in blocks trigger when block state changes and automatically push block coordinates."
     }
   ]
 }

@@ -153,25 +153,22 @@ public class RunesExecuteMethod {
                     } catch (SpellExecutionException e) {
                         if (context.showErrorMessages) {
                             context.player.sendSystemMessage(
-                                    Component.literal("§c参数错误 [" + rune + "]: " + e.getMessage())
+                                    Component.translatable("message.spellweaver.rune_param_error", rune, e.getMessage())
                             );
                         }
                         break;
                     }
                 } else {
-                    // 尝试解析为字符串常量（带引号）
                     if (rune.startsWith("\"") && rune.endsWith("\"")) {
                         String string = rune.substring(1, rune.length() - 1);
                         context.push(string);
-                    }
-                    // 尝试解析为数字常量
-                    else {
+                    } else {
                         try {
                             double number = Double.parseDouble(rune);
                             context.push(number);
                         } catch (NumberFormatException ex) {
                             context.player.sendSystemMessage(
-                                    Component.literal("§6未知符文: " + rune)
+                                    Component.translatable("message.spellweaver.unknown_rune", rune)
                             );
                         }
                     }
@@ -224,25 +221,22 @@ public class RunesExecuteMethod {
                     } catch (SpellExecutionException e) {
                         if (context.showErrorMessages) {
                             context.player.sendSystemMessage(
-                                    Component.literal("§c参数错误 [" + rune + "]: " + e.getMessage())
+                                    Component.translatable("message.spellweaver.rune_param_error", rune, e.getMessage())
                             );
                         }
                         break;
                     }
                 } else {
-                    // 尝试解析为字符串常量（带引号）
                     if (rune.startsWith("\"") && rune.endsWith("\"")) {
                         String string = rune.substring(1, rune.length() - 1);
                         context.push(string);
-                    }
-                    // 尝试解析为数字常量
-                    else {
+                    } else {
                         try {
                             double number = Double.parseDouble(rune);
                             context.push(number);
                         } catch (NumberFormatException ex) {
                             context.player.sendSystemMessage(
-                                    Component.literal("§6未知符文: " + rune)
+                                    Component.translatable("message.spellweaver.unknown_rune", rune)
                             );
                         }
                     }

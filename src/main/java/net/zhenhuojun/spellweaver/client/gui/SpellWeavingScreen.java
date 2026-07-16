@@ -490,21 +490,22 @@ public class SpellWeavingScreen extends Screen {
 
         // 只有Sequence和Loop节点还有Condition可以添加子节点
         if (currentNode instanceof SequenceNode || currentNode instanceof LoopNode||currentNode instanceof ConditionNode) {
-            menuOptions.add(new MenuOption("添加普通节点", () -> {
+           // menuOptions.add(new MenuOption("添加普通节点", () -> {
+            menuOptions.add(new MenuOption("gui.spellweaver.add_normal_node", () -> {
                 addNodeToCurrent(new NormalNode());
                 showMenu = false;
             }));
 
-            menuOptions.add(new MenuOption("添加循环节点", () -> {
+            menuOptions.add(new MenuOption("gui.spellweaver.add_loop_node", () -> {
                 addNodeToCurrent(new LoopNode());
                 showMenu = false;
             }));
 
-            menuOptions.add(new MenuOption("添加等待节点", () -> {
+            menuOptions.add(new MenuOption("gui.spellweaver.add_wait_node", () -> {
                 addNodeToCurrent(new WaitNode());
                 showMenu = false;
             }));
-            menuOptions.add(new MenuOption("添加条件节点", () -> {
+            menuOptions.add(new MenuOption("gui.spellweaver.add_condition_node", () -> {
                 addNodeToCurrent(new ConditionNode());
                 showMenu = false;
             }));
@@ -717,7 +718,8 @@ public class SpellWeavingScreen extends Screen {
             }
 
             // 绘制选项文本
-            Component text = Component.literal(option.text);
+            //Component text = Component.literal(option.text);
+            Component text = Component.translatable(option.text);
             pGuiGraphics.drawString(this.font, text,
                     menuX + 5, optionY + 6,
                     isHovered ? 0xFFFFFF00 : 0xFFFFFFFF, false);

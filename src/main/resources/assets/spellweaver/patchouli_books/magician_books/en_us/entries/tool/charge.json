@@ -7,11 +7,15 @@
       "type": "patchouli:image",
       "title": "Charge",
       "images": ["spellweaver:textures/guidebook/charge.png"],
-      "text": "SlotReference, charge amount (double), target player (Player) -> Charge -><br>Pops three parameters in order, consumes one corresponding item to restore mana for the player."
+      "text": "Mana provider, expected charge amount (double), mana receiver -> Charge -><br><br>Order is strict."
     },
     {
       "type": "patchouli:text",
-      "text": "<br>Valid consumables: Amethyst Shard/Lapis Lazuli (max 25 mana), Amethyst Block (max 100), Lapis Lazuli Block (max 225).<br>Actual charge = min(amount, max).<br>Mana cost: None"
+      "text": "[Provider Types]<br>• Slot Reference: Consumes mana from items (see next page) or mana bottles.<br>• Coordinate (Vec3): Draws from mana pedestal or spell machine at that location.<br>• Player: Draws from caster's own mana (self only).<br><br>[Receiver Types]<br>• Player: Replenishes player's mana.<br>• Coordinate: Replenishes machine/pedestal mana at that location.<br>• Slot Reference: Replenishes scroll or mana bottle mana."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "[Consumable List]<br>• Amethyst Shard / Lapis Lazuli: Max 25 mana per use.<br>• Amethyst Block: Max 100 mana per use.<br>• Lapis Lazuli Block: Max 225 mana per use.<br><br>[Notes]<br>• Actual charge = min(expected value, source available amount, target remaining capacity).<br>• Mana cost: None."
     }
   ]
 }

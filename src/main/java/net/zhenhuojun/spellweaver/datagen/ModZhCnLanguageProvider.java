@@ -149,6 +149,14 @@ public class ModZhCnLanguageProvider extends LanguageProvider {
 
         this.add("message.spellweaver.mana_level_up", "魔力等级提升至 %d!");
 
+        this.add("message.spellweaver.rune_param_error", "§c参数错误 [%s]: %s");
+        this.add("message.spellweaver.unknown_rune", "§6未知符文: %s");
+
+        this.add("gui.spellweaver.add_normal_node", "添加普通节点");
+        this.add("gui.spellweaver.add_loop_node","添加循环节点");
+        this.add("gui.spellweaver.add_condition_node", "添加循环节点");
+        this.add( "gui.spellweaver.add_wait_node", "添加等待节点");
+
 
     }
 }
