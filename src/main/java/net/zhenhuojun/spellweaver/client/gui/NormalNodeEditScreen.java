@@ -359,13 +359,13 @@ public class NormalNodeEditScreen extends Screen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-
+        this.renderBackground(guiGraphics);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         PoseStack poseStack = guiGraphics.pose();
 
 
         // 渲染背景
-        this.renderBackground(guiGraphics);
+
         //2026.5.29背景修改
         /*if (offsetY >=this.height) {
             offsetY = 0;
@@ -390,7 +390,7 @@ public class NormalNodeEditScreen extends Screen {
 
         renderRuneEntries(poseStack,guiGraphics);
 
-        // 5. 绘制当前绘制路径
+        //绘制当前绘制路径
         renderCurrentPath(poseStack, partialTicks,mouseX,mouseY);
 
         poseStack.popPose();
