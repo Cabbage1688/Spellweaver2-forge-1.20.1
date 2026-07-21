@@ -92,7 +92,7 @@ public class FeatherPenSpellC2SPacket {
         }
     }
 
-    private void writeSpellToBlock(ServerLevel level, BlockPos pos, CompoundTag spellTag) {
+    public static void writeSpellToBlock(ServerLevel level, BlockPos pos, CompoundTag spellTag) {
         SpellBlockStorage storage = SpellBlockStorage.get(level);
         storage.put(pos, spellTag.copy());
         ModMessage.sendToClientsInLevel(new SpellBlockSyncS2CPacket(storage.getSpellBlockPositions()), level);

@@ -36,17 +36,23 @@ public class ManaBall extends AbstractHurtingProjectile {
     private Player player;
     private int time=600;
     private Entity entity;
+    private SpellContext previousContext;
 
 
     public ManaBall(EntityType<? extends AbstractHurtingProjectile> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
 
-    public ManaBall(RuneRegister runeRegister,Player player,EntityType<? extends AbstractHurtingProjectile> pEntityType, Level pLevel){
+    public ManaBall(RuneRegister runeRegister,Player player,EntityType<? extends AbstractHurtingProjectile> pEntityType, Level pLevel,SpellContext context){
         super(pEntityType, pLevel);
         this.runeRegister=runeRegister;
         this.player=player;
         this.setOwner(player);
+        this.previousContext=context;
+    }
+
+    public SpellContext getPreviousContext(){
+        return this.previousContext;
     }
 
     public Entity getEntity() {
@@ -67,8 +73,10 @@ public class ManaBall extends AbstractHurtingProjectile {
         super.onHit(result);
         if (!this.level().isClientSide) {
             if(runeRegister!=null&&runeRegister.getSpellList()!=null){
+                //防崩
+                if(this.previousContext==null) return;
                 //执行回调
-                RunesExecuteMethod.simpleSpellLogic(runeRegister.getSpellList(),level(),player,result.getLocation(),entity);
+                RunesExecuteMethod.simpleSpellLogic(runeRegister.getSpellList(),level(),player,result.getLocation(),entity,previousContext);
                 ModMessage.sendToClients(new ManaBallEffectS2CPacket(this.xo,this.yo,this.zo,0xE9FAFF));
             }
             this.discard();

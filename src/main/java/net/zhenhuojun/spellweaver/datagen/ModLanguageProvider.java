@@ -158,7 +158,13 @@ public class ModLanguageProvider extends LanguageProvider {
         this.add("message.spellweaver.rune_param_error", "§cParam Error [%s]: %s");
         this.add("message.spellweaver.unknown_rune", "§6Unknown Rune: %s");
 
+        this.add("hud.spellweaver.mana","Mana:%d");
 
+        this.add("message.spellweaver.stack_empty_pop", "Stack is empty, cannot pop element");
+        this.add("message.spellweaver.type_mismatch", "Type mismatch. Expected {0} but got {1}");
+
+        this.add("gui.spellweaver.mana_level", "Mana Level:%d");
+        this.add("gui.spellweaver.mana_exp", "Experience to next level:%d");
 
 
     }

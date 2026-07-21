@@ -42,6 +42,8 @@
   "gui.spellweaver.import": "Import",
   "gui.spellweaver.infuse_spell_staff": "Infuse Spell into Staff",
   "gui.spellweaver.loop_count": "Loop Count",
+  "gui.spellweaver.mana_exp": "Experience to next level:%d",
+  "gui.spellweaver.mana_level": "Mana Level:%d",
   "gui.spellweaver.name_spell": "Name Spell",
   "gui.spellweaver.name_your_spell": "Name Your Spell",
   "gui.spellweaver.no_note": "No Note",
@@ -63,6 +65,7 @@
   "gui.spellweaver.test": "Test",
   "gui.spellweaver.wait_count": "Wait Count",
   "gui.unbind": "Unbind Slot %d",
+  "hud.spellweaver.mana": "Mana:%d",
   "item.spellweaver.diamond_scroll": "DiamondScroll",
   "item.spellweaver.dim_mana_pearl": "DimManaPearl",
   "item.spellweaver.erasing_knife": "ErasingKnife",
@@ -125,7 +128,9 @@
   "message.spellweaver.spell_corrupted": "Spell data is corrupted!",
   "message.spellweaver.spell_exists": "Spell already exists, overwrite?",
   "message.spellweaver.spell_inventory": "Spell Inventory %d/%d",
+  "message.spellweaver.stack_empty_pop": "Stack is empty, cannot pop element",
   "message.spellweaver.storage_full": "Storage is full!",
+  "message.spellweaver.type_mismatch": "Type mismatch. Expected {0} but got {1}",
   "message.spellweaver.unknown_rune": "§6Unknown Rune: %s",
   "message.spellweaver.warm_current": "You feel a warm current surging from deep within your body."
 }

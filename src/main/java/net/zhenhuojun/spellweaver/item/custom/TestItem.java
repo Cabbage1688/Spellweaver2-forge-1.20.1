@@ -37,7 +37,7 @@ public class TestItem extends Item {
             pPlayer.getCapability(PlayerManaProvider.PLAYER_MANA).ifPresent(mana -> {
                 mana.addMana(mana.getMaxMana()-mana.getMana());
                 ModMessage.sendToPlayer(new ManaChangeS2CPacket(mana.getMana(), mana.getMaxMana()
-                        ,mana.getMana_level()), (ServerPlayer) pPlayer);
+                        ,mana.getMana_level(),mana.getMana_exp(), mana.getPresent_exp()), (ServerPlayer) pPlayer);
             });
             //测试粒子是否正常工作
             applyElement(pPlayer, ElementType.randomElement(), 100);

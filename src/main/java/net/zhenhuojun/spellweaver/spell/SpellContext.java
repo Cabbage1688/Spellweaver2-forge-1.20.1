@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -96,7 +97,10 @@ public class SpellContext {
     //弹出栈顶元素
     public <T> T pop(Class<T> type) throws SpellExecutionException {
         if (stack.isEmpty()) {
-            throw new SpellExecutionException("栈为空，无法弹出元素");
+            //throw new SpellExecutionException("栈为空，无法弹出元素");
+            throw new SpellExecutionException(
+                    Component.translatable("message.spellweaver.stack_empty_pop").getString()
+            );
         }
 
         Object obj = stack.pop();
@@ -104,11 +108,17 @@ public class SpellContext {
             return type.cast(obj);
         }
 
-        throw new SpellExecutionException("类型不匹配。期望 " +
-                type.getSimpleName() + " 但得到 " + obj.getClass().getSimpleName());
+        //throw new SpellExecutionException("类型不匹配。期望 " +
+               // type.getSimpleName() + " 但得到 " + obj.getClass().getSimpleName());
+
+        throw new SpellExecutionException(
+                Component.translatable("message.spellweaver.type_mismatch",
+                        type.getSimpleName(),
+                        obj.getClass().getSimpleName()).getString()
+        );
     }
     //查看栈顶元素
-    public <T> T peek(Class<T> type) throws SpellExecutionException {
+   /* public <T> T peek(Class<T> type) throws SpellExecutionException {
         if (stack.isEmpty()) {
             throw new SpellExecutionException("栈为空，无法查看元素");
         }
@@ -121,6 +131,8 @@ public class SpellContext {
         throw new SpellExecutionException("类型不匹配。期望 " +
                 type.getSimpleName() + " 但得到 " + obj.getClass().getSimpleName());
     }
+
+    */
     //向栈压入元素
     public void push(Object value) {
         if (stack == null) {

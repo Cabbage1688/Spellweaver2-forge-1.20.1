@@ -15,10 +15,12 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.zhenhuojun.spellweaver.Config;
 import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.capability.impl.long_term_variables.PlayerLongTermVariablesData;
 import net.zhenhuojun.spellweaver.client.gui.util.ClientPlayerSpellData;
 import net.zhenhuojun.spellweaver.client.gui.util.ClientPlayerVariableData;
+import net.zhenhuojun.spellweaver.client.gui.util.ClientPlayerManaData;
 import net.zhenhuojun.spellweaver.network.ModMessage;
 import net.zhenhuojun.spellweaver.network.packet.SpellCastingC2SPacket;
 import net.zhenhuojun.spellweaver.network.packet.SpellStorageC2SPacket;
@@ -40,6 +42,7 @@ public class SpellWeavingScreen extends Screen {
     private static final ResourceLocation CONDITION_TEXTURE=fromNamespaceAndPath(Spellweaver.MODID,"textures/gui/condition_node.png");
 
     public static final ResourceLocation STARS=fromNamespaceAndPath("minecraft","textures/entity/end_portal.png");
+    public static final ResourceLocation MANA_TOP=fromNamespaceAndPath(Spellweaver.MODID,"textures/hud/mana_top.png");
 
     // 节点当前层级和选中的节点
     public Node currentNode;
@@ -85,6 +88,9 @@ public class SpellWeavingScreen extends Screen {
     private double offsetX = 0;      // 水平偏移
     private double offsetY = 0;      // 垂直偏移
     private double offsetDiag = 0;   // 对角线偏移
+
+    private int manaTopRenderX;
+    private int manaTopRenderY;
 
 
 
@@ -613,8 +619,14 @@ public class SpellWeavingScreen extends Screen {
         if(displayLongTermVariable){
             drawPersistentVariables(pGuiGraphics);
         }
+        //魔力等级和经验显示
+        renderManaTop(pGuiGraphics);
 
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+
+        if (isMouseOverManaTop(pMouseX, pMouseY)) {
+            pGuiGraphics.renderTooltip(font, getManaTooltip(), Optional.empty(), pMouseX, pMouseY);
+        }
     }
 
     // 2026.4.1光标更新，渲染闪烁子节点（被光标选中
@@ -995,6 +1007,54 @@ public class SpellWeavingScreen extends Screen {
             String more = "… 还有 " + (totalCount - PERSISTENT_MAX_DISPLAY) + " 个变量";
             guiGraphics.drawString(font, more, panelX + 2, y, 0xAAAAAA);
         }
+    }
+
+    private void renderManaTop(GuiGraphics guiGraphics) {
+        int manaLevel = ClientPlayerManaData.getManaLevel();
+        if (manaLevel <= 0) return;
+
+        int x = width / 2;
+        int y = height;
+        switch (Config.manaBarPosition){
+            case 1->{//左下
+                manaTopRenderX = x - 208;
+                manaTopRenderY = y - 17;
+
+            }
+            case 2 -> {   // 左上
+                manaTopRenderX = x - 208;
+                manaTopRenderY = 12;
+            }
+            case 3 -> {   // 右上
+                manaTopRenderX = x +90;
+                manaTopRenderY = 12;
+            }
+            default -> {
+                manaTopRenderX = x + 90;
+                manaTopRenderY = y - 17;
+            }
+        }
+        //manaTopRenderX = x + 90;
+        //manaTopRenderY = y - 17;
+
+        guiGraphics.blit(MANA_TOP, manaTopRenderX, manaTopRenderY, 0, 0, 16, 16, 16, 16);
+    }
+
+    private boolean isMouseOverManaTop(double mouseX, double mouseY) {
+        return mouseX >= manaTopRenderX && mouseX <= manaTopRenderX + 16 &&
+               mouseY >= manaTopRenderY && mouseY <= manaTopRenderY + 16;
+    }
+
+    private List<Component> getManaTooltip() {
+        List<Component> tooltip = new ArrayList<>();
+        int manaLevel = ClientPlayerManaData.getManaLevel();
+        long currentExp=ClientPlayerManaData.getCurrentExp();
+        long maxExp=ClientPlayerManaData.getManaExp();
+        long difference=maxExp-currentExp;
+        tooltip.add(Component.translatable("gui.spellweaver.mana_level", manaLevel));
+        tooltip.add(Component.translatable("gui.spellweaver.mana_exp",difference));
+
+        return tooltip;
     }
 }
 

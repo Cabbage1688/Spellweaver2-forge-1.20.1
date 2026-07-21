@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.zhenhuojun.spellweaver.Spellweaver;
@@ -31,7 +32,9 @@ public class LevelMixin {
         if (level.isClientSide()) return;
         BlockState oldState = level.getBlockState(pos);
         Spellweaver.getLOGGER().debug("[Spellweaver:Mixin] setBlock at {}, old: {}, new: {}", pos, oldState, newState);
-        if (oldState == newState){
+        //排除方块放置
+        boolean condition=oldState.canBeReplaced()&&!newState.is(Blocks.AIR);
+        if (oldState == newState||condition){
             Spellweaver.getLOGGER().debug("[Spellweaver:Mixin] 状态无变化，跳过");
             return;
         }

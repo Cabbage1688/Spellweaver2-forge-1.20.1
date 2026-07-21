@@ -157,6 +157,13 @@ public class ModZhCnLanguageProvider extends LanguageProvider {
         this.add("gui.spellweaver.add_condition_node", "添加循环节点");
         this.add( "gui.spellweaver.add_wait_node", "添加等待节点");
 
+        this.add("hud.spellweaver.mana","魔力值:%d");
+
+        this.add("message.spellweaver.stack_empty_pop", "栈为空，无法弹出元素");
+        this.add("message.spellweaver.type_mismatch", "类型不匹配。期望 {0} 但得到 {1}");
+
+        this.add("gui.spellweaver.mana_level","魔力等级：%d");
+        this.add("gui.spellweaver.mana_exp","距离下一等级所需要的经验：%d");
 
     }
 }

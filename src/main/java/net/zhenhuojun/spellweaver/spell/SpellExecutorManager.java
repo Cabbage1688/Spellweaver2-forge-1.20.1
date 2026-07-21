@@ -1274,8 +1274,8 @@ public class SpellExecutorManager {
             if(context.isTop(RuneRegister.class)){
                 RuneRegister runeRegister=context.pop(RuneRegister.class);
                 Vec3 vec3=context.pop(Vec3.class);
-                if(shouldManaBall(vec3,runeRegister, context.player,context.level,context)){
-                    ManaBall manaBall=new ManaBall(runeRegister,context.player, ModEntities.MANA_BALL.get(),context.level);
+                if(shouldManaBall(vec3,runeRegister, context.player,context.level,context)){//这里可以直接传context，但我懒得改
+                    ManaBall manaBall=new ManaBall(runeRegister,context.player, ModEntities.MANA_BALL.get(),context.level,context);
                     manaBall.setPos(vec3);
                     context.level.addFreshEntity(manaBall);
                     context.push(manaBall);
@@ -1284,7 +1284,7 @@ public class SpellExecutorManager {
                 Vec3 vec3=context.pop(Vec3.class);
                 RuneRegister runeRegister=context.pop(RuneRegister.class);
                 if(shouldManaBall(vec3,runeRegister, context.player,context.level,context)){
-                    ManaBall manaBall=new ManaBall(runeRegister,context.player, ModEntities.MANA_BALL.get(),context.level);
+                    ManaBall manaBall=new ManaBall(runeRegister,context.player, ModEntities.MANA_BALL.get(),context.level,context);
                     manaBall.setPos(vec3);
                     context.level.addFreshEntity(manaBall);
                     context.push(manaBall);

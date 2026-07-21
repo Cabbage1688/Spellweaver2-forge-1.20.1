@@ -4,11 +4,15 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -24,7 +28,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import java.util.Set;
-import java.util.stream.Stream;
+
 
 @OnlyIn(Dist.CLIENT)
 public class SpellBlockGlowRenderer {
@@ -55,6 +59,19 @@ public class SpellBlockGlowRenderer {
         poseStack.pushPose();
 
         for (BlockPos pos : spellBlocks) {
+            //Vec3 vec3=Vec3.atCenterOf(pos);
+            //spawnEnchantSpread(mc.level, vec3.x,vec3.y , vec3.z,0xE9FAFF,1,1);
+
+            BlockState state = mc.level.getBlockState(pos);
+            VoxelShape shape = state.getShape(mc.level, pos);
+            AABB bounds = shape.isEmpty() ? new AABB(0,0,0,1,1,1) : shape.bounds();
+            double centerX = pos.getX() + (bounds.minX + bounds.maxX) / 2.0;
+            double centerY = pos.getY() + (bounds.minY + bounds.maxY) / 2.0;
+            double centerZ = pos.getZ() + (bounds.minZ + bounds.maxZ) / 2.0;
+            if (mc.level.getGameTime() % 4 == 0) {
+                spawnEnchantSpread(mc.level, centerX, centerY, centerZ, 0xE9FAFF, 1, 1);
+            }
+
             double x = pos.getX() - camPos.x;
             double y = pos.getY() - camPos.y;
             double z = pos.getZ() - camPos.z;
@@ -62,7 +79,7 @@ public class SpellBlockGlowRenderer {
             poseStack.pushPose();
             poseStack.translate(x, y, z);
 
-            BlockState state = mc.level.getBlockState(pos);
+           // BlockState state = mc.level.getBlockState(pos);
             renderGlowBorder(poseStack, bufferSource, time, state,mc.level, pos);
 
             poseStack.popPose();
@@ -125,5 +142,36 @@ public class SpellBlockGlowRenderer {
         vc.vertex(matrix, x2, y2, z2).color(r, g, b, a)
                 .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(15728880)
                 .normal(normalMatrix, direction.x(), direction.y(), direction.z()).endVertex();
+    }
+
+    public static void spawnEnchantSpread(Level level, double x, double y, double z, int color, int count, float speed) {
+        if (!level.isClientSide) return;
+        Minecraft mc = Minecraft.getInstance();
+        ParticleEngine engine = mc.particleEngine;
+        RandomSource random = level.random;
+        float r = ((color >> 16) & 0xFF) / 255.0F;
+        float g = ((color >> 8) & 0xFF) / 255.0F;
+        float b = (color & 0xFF) / 255.0F;
+
+        for (int i = 0; i < count; i++) {
+            double theta = random.nextDouble() * Math.PI * 2;
+            double phi = Math.acos(2 * random.nextDouble() - 1);
+            double baseRadius = 0.4 + random.nextDouble() * 0.6;
+            double dx = Math.sin(phi) * Math.cos(theta) * baseRadius;
+            double dy = Math.sin(phi) * Math.sin(theta) * baseRadius;
+            double dz = Math.cos(phi) * baseRadius;
+            double spd = (0.15 + random.nextDouble() * 0.3) * speed;
+            double vx = Math.sin(phi) * Math.cos(theta) * spd;
+            double vy = Math.sin(phi) * Math.sin(theta) * spd;
+            double vz = Math.cos(phi) * spd;
+
+            // ENCHANT 粒子
+            Particle particle = engine.createParticle(ParticleTypes.ENCHANT, x + dx, y + dy, z + dz, vx, vy, vz);
+            if (particle != null) {
+                float f = 0.7f + random.nextFloat() * 0.3f;
+                particle.setColor(r * f, g * f, b * f);
+                particle.setLifetime(8 + random.nextInt(8));
+            }
+        }
     }
 }

@@ -51,7 +51,7 @@ public class ManaUtil {
             player.getCapability(PlayerManaProvider.PLAYER_MANA).ifPresent(playerMana -> {
                 playerMana.addMana(add);
                 ModMessage.sendToPlayer(new ManaChangeS2CPacket(playerMana.getMana(), playerMana.getMaxMana()
-                        ,playerMana.getMana_level()), player);
+                        ,playerMana.getMana_level(),playerMana.getMana_exp(),playerMana.getPresent_exp()), player);
             });
         }
     }
@@ -63,7 +63,7 @@ public class ManaUtil {
                 if(playerMana.getMana()>=sub){
                     playerMana.subMana(sub);
                     ModMessage.sendToPlayer(new ManaChangeS2CPacket(playerMana.getMana(), playerMana.getMaxMana()
-                            ,playerMana.getMana_level()), player);
+                            ,playerMana.getMana_level(),playerMana.getMana_exp(),playerMana.getPresent_exp()), player);
                    // result.set(true);
                 }
             });
@@ -78,7 +78,7 @@ public class ManaUtil {
                 if(playerMana.getMana()>=sub){
                     playerMana.subManaAndAddExp(sub);
                     ModMessage.sendToPlayer(new ManaChangeS2CPacket(playerMana.getMana(), playerMana.getMaxMana()
-                            ,playerMana.getMana_level()), player);
+                            ,playerMana.getMana_level(),playerMana.getMana_exp(),playerMana.getPresent_exp()), player);
                     result.set(true);
                 }
             });
@@ -98,7 +98,7 @@ public class ManaUtil {
                         if(playerMana.getMana()>=sub){
                             playerMana.subManaAndAddExp(sub);
                             ModMessage.sendToPlayer(new ManaChangeS2CPacket(playerMana.getMana(), playerMana.getMaxMana()
-                                    ,playerMana.getMana_level()), player);
+                                    ,playerMana.getMana_level(),playerMana.getMana_exp(),playerMana.getPresent_exp()), player);
                             result.set(true);
                         } else if (context.showErrorMessages) {
                             player.sendSystemMessage(Component.translatable("message.spellweaver.not_enough_mana").withStyle(ChatFormatting.RED));
@@ -158,7 +158,7 @@ public class ManaUtil {
                                 if(playerMana.getMana()>=0.8*sub){
                                     playerMana.subManaAndAddExp(0.8*sub);
                                     ModMessage.sendToPlayer(new ManaChangeS2CPacket(playerMana.getMana(), playerMana.getMaxMana()
-                                            ,playerMana.getMana_level()), player);
+                                            ,playerMana.getMana_level(),playerMana.getPresent_exp(),playerMana.getMana_exp()), player);
                                     result.set(true);
                                 } else if (context.showErrorMessages) {
                                     player.sendSystemMessage(Component.translatable("message.spellweaver.not_enough_mana").withStyle(ChatFormatting.RED));
@@ -250,7 +250,7 @@ public class ManaUtil {
                     }
                 }
                 ModMessage.sendToPlayer(new ManaChangeS2CPacket(playerMana.getMana(), playerMana.getMaxMana()
-                        ,playerMana.getMana_level()), player);
+                        ,playerMana.getMana_level(),playerMana.getMana_exp(),playerMana.getPresent_exp()), player);
             });
         }
     }
@@ -270,7 +270,7 @@ public class ManaUtil {
                     playerMana.addExp((int) (100+0.2* playerMana.getMana_exp()));
                 }
                 ModMessage.sendToPlayer(new ManaChangeS2CPacket(playerMana.getMana(), playerMana.getMaxMana()
-                        ,playerMana.getMana_level()), player);
+                        ,playerMana.getMana_level(),playerMana.getMana_exp(),playerMana.getPresent_exp()), player);
             });
         }
     }

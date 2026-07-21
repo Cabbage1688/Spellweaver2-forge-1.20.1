@@ -34,6 +34,7 @@ import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ShulkerBullet;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -134,7 +135,7 @@ public class ModEvent {
                         }
                         mana.addMana(regen);
                         ModMessage.sendToPlayer(
-                                new ManaChangeS2CPacket(mana.getMana(), mana.getMaxMana(), mana.getMana_level()),
+                                new ManaChangeS2CPacket(mana.getMana(), mana.getMaxMana(), mana.getMana_level(),mana.getMana_exp(),mana.getPresent_exp()),
                                 (ServerPlayer) event.player
                         );
                     }
@@ -164,7 +165,7 @@ public class ModEvent {
                         if(mana.getMana_level()==0){
                             mana.setMana_level(1);
                             ModMessage.sendToPlayer(new ManaChangeS2CPacket(mana.getMana(), mana.getMaxMana()
-                                    ,mana.getMana_level()), player);
+                                    ,mana.getMana_level(),mana.getMana_exp(),mana.getPresent_exp()), player);
                             player.heal(10);
                             player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 600, 0, false, true, true));
                             player.addEffect(new MobEffectInstance(MobEffects.JUMP, 600, 0, false, true, true));
@@ -197,7 +198,7 @@ public class ModEvent {
                     player.getCapability(PlayerManaProvider.PLAYER_MANA).ifPresent(mana -> {
                         mana_level.set(mana.getMana_level());
                         ModMessage.sendToPlayer(new ManaChangeS2CPacket(mana.getMana(), mana.getMaxMana()
-                                ,mana.getMana_level()), player);
+                                ,mana.getMana_level(),mana.getMana_exp(),mana.getPresent_exp()), player);
                         Spellweaver.getLOGGER().debug("[Spellweaver:ModEvent/onPLayerJoinWorld]已发送魔力同步包，魔力等级{}，魔力值{}",mana.getMana_level(),mana.getMana());
                     });
                     player.getCapability(PlayerSpellStorageProvider.PLAYER_SPELL_STORAGE).ifPresent(playerSpellStorage -> {
@@ -369,7 +370,7 @@ public class ModEvent {
                             Spellweaver.getLOGGER().debug("[Spellweaver:ModEvent/onPlayerClone]" +
                                     "尝试从缓存恢复魔力数据");
                             ModMessage.sendToPlayer(new ManaChangeS2CPacket(mana.getMana(), mana.getMaxMana()
-                                    ,mana.getMana_level()), (ServerPlayer) player);
+                                    ,mana.getMana_level(),mana.getMana_exp(),mana.getPresent_exp()), (ServerPlayer) player);
                             Spellweaver.getLOGGER().debug("[Spellweaver:ModEvent/onPlayerClone]" +
                                     "已发送魔力同步包，魔力等级{}，魔力值{}",mana.getMana_level(),mana.getMana());
                         });
@@ -791,6 +792,7 @@ public class ModEvent {
                 float cost = 0.05f * bowCount;
                 deductManaForBows(player, cost);
             }
+
         }
 
 
@@ -932,6 +934,8 @@ public class ModEvent {
             }
 
             ItemStack stack = event.getItemStack();
+            //方块物品不再能直接触发法术
+            if(stack.getItem() instanceof BlockItem) return;
             CompoundTag tag = stack.getOrCreateTag();
             CompoundTag spellData = tag.getCompound("SpellData");
             if (spellData.isEmpty()) return;
@@ -947,21 +951,37 @@ public class ModEvent {
             if(event.getEntity() instanceof ServerPlayer player){
                 Level level = player.level();
                 if (level.isClientSide) return;
-
                 ItemStack stack = player.getItemInHand();
                 CompoundTag tag = stack.getOrCreateTag();
                 CompoundTag spellData = tag.getCompound("SpellData");
                 if (spellData.isEmpty()) return;
-
-
                 triggerSpell(player, level, spellData, context -> {
                 });
-
                 // tag.remove("SpellData");
             }
         }
 
          */
+        @SubscribeEvent//法术方块物品放置时，将法术写入
+        public static void onBlockWithSpellPlace(PlayerInteractEvent.RightClickBlock event) {
+            Level level = event.getLevel();
+            if (level.isClientSide) return;
+            Player player = event.getEntity();
+            InteractionHand hand = event.getHand();
+            ItemStack stack = player.getItemInHand(hand);
+            if (!(stack.getItem() instanceof BlockItem)) return;
+            CompoundTag tag = stack.getOrCreateTag();
+            CompoundTag spellData = tag.getCompound("SpellData");
+            if (spellData.isEmpty()) return;
+            // 计算新方块位置
+            BlockPos clickedPos = event.getPos();
+            BlockState clickedState = level.getBlockState(clickedPos);
+            BlockPos newPos = clickedState.canBeReplaced()
+                    ? clickedPos
+                    : clickedPos.relative(event.getHitVec().getDirection());
+            FeatherPenSpellC2SPacket.writeSpellToBlock((ServerLevel) level, newPos, spellData);
+        }
+
         //方块法术
         @SubscribeEvent
         public static void onBlockBreak(BlockEvent.BreakEvent event) {
@@ -1045,31 +1065,6 @@ public class ModEvent {
             }
         }//最后还是改成了直接破坏法术更省事
 
-        //可交互方块执行法术，现在是废案
-        /*@SubscribeEvent
-        public static void onBlockInteract(PlayerInteractEvent.RightClickBlock event) {
-            Player player = event.getEntity();
-            if (!(player instanceof ServerPlayer serverPlayer)) return;
-            if (player.isSpectator()) return;
-            //防止冲突，这两一起执行会炸
-            if(player.getItemInHand(InteractionHand.MAIN_HAND).is(ModItems.ERASING_KNIFE.get())) return;
-
-            Level level = player.level();
-            if (level.isClientSide) return;
-
-            BlockPos pos = event.getPos();
-            SpellBlockStorage storage = SpellBlockStorage.get((ServerLevel) level);
-            CompoundTag spellData = storage.get(pos);
-            if (spellData == null) return;
-
-            Vec3 vec3 = new Vec3(pos.getX(), pos.getY(), pos.getZ());
-            triggerSpell(serverPlayer, (ServerLevel) level, spellData, context -> {
-                context.push(vec3);
-            });
-        }
-
-         */
-
 
         //通过爆炸破坏带法术的方块
         @SubscribeEvent
@@ -1133,7 +1128,7 @@ public class ModEvent {
                 if (player != null) {
                     player.getCapability(PlayerManaProvider.PLAYER_MANA).ifPresent(playerMana -> {
                         playerMana.setMana_level(level);
-                        ModMessage.sendToPlayer(new ManaChangeS2CPacket(playerMana.getMana(),playerMana.getMaxMana(),playerMana.getMana_level()),player);
+                        ModMessage.sendToPlayer(new ManaChangeS2CPacket(playerMana.getMana(),playerMana.getMaxMana(),playerMana.getMana_level(),playerMana.getMana_exp(), playerMana.getPresent_exp()),player);
                         source.sendSuccess(() -> Component.literal("已设置玩家 " + player.getDisplayName().getString() + " 的魔力等级为 " + level), true);
                     });
                 }

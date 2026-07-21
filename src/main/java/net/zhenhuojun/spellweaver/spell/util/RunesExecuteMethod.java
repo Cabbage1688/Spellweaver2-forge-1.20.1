@@ -107,8 +107,27 @@ public class RunesExecuteMethod {
         Spellweaver.getLOGGER().debug("[Spellweaver:RuneExecuteMethod/新spellLogic]法术树已推入法术管理器，法术树：{}",sequenceNode.serializeNBT());
     }
     //这个是给魔法飞弹专用的执行方法，或者说命中回调
-    public static void simpleSpellLogic(List<String> spellList, Level level, Player player, Vec3 vec3, @Nullable Entity entity){
+    public static void simpleSpellLogic(List<String> spellList, Level level, Player player, Vec3 vec3, @Nullable Entity entity,SpellContext previousContext){
         SpellContext context=new SpellContext(level,player);
+        //2026.7.21现在新context会继承老context的魔力源信息，妈妈再也不怕我的魔法飞弹乱消耗魔力了
+        ManaSource source=previousContext.manaSource;
+        switch (source){
+            case MANA_BOTTLE -> {
+                context.setManaBottleSlot(previousContext.getManaBottleSlot());
+                context.manaSource=ManaSource.MANA_BOTTLE;
+            }
+            case STICK ->  context.manaSource=ManaSource.STICK;
+            case SCROLL -> //卷轴ManaUtil那边直接用的是主手，这不用写啥别的
+                    context.manaSource=ManaSource.SCROLL;
+            case MACHINE -> {
+                context.manaSource=ManaSource.MACHINE;
+                context.setMachinePos(previousContext.getMachinePos());
+            }
+            case PEDESTAL -> {
+                context.manaSource=ManaSource.PEDESTAL;
+                context.setPedestalPos(previousContext.getPedestalPos());
+            }
+        }
         context.showErrorMessages = player.getOffhandItem().is(ModItems.MAGICIAN_MIRROR.get()) || player.getMainHandItem().is(ModItems.MAGICIAN_MIRROR.get());
         context.push(vec3);
         if(entity!=null){

@@ -42,6 +42,8 @@
   "gui.spellweaver.import": "导入",
   "gui.spellweaver.infuse_spell_staff": "注入法术到法杖",
   "gui.spellweaver.loop_count": "循环次数",
+  "gui.spellweaver.mana_exp": "距离下一等级所需要的经验：%d",
+  "gui.spellweaver.mana_level": "魔力等级：%d",
   "gui.spellweaver.name_spell": "命名法术",
   "gui.spellweaver.name_your_spell": "为法术命名",
   "gui.spellweaver.no_note": "暂无备注",
@@ -63,6 +65,7 @@
   "gui.spellweaver.test": "测试",
   "gui.spellweaver.wait_count": "等待次数",
   "gui.unbind": "解绑槽位 %d",
+  "hud.spellweaver.mana": "魔力值:%d",
   "item.spellweaver.diamond_scroll": "钻石卷轴",
   "item.spellweaver.dim_mana_pearl": "黯淡的魔珠",
   "item.spellweaver.erasing_knife": "刮刀",
@@ -125,7 +128,9 @@
   "message.spellweaver.spell_corrupted": "法术数据损坏！",
   "message.spellweaver.spell_exists": "法术已存在，要覆盖吗？",
   "message.spellweaver.spell_inventory": "法术库存%d/%d",
+  "message.spellweaver.stack_empty_pop": "栈为空，无法弹出元素",
   "message.spellweaver.storage_full": "存储已满！",
+  "message.spellweaver.type_mismatch": "类型不匹配。期望 {0} 但得到 {1}",
   "message.spellweaver.unknown_rune": "§6未知符文: %s",
   "message.spellweaver.warm_current": "你感觉身体的深处涌出了一股暖流。"
 }
