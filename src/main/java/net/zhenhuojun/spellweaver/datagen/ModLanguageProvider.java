@@ -57,6 +57,7 @@ public class ModLanguageProvider extends LanguageProvider {
         this.add("key.spellweaver.overload", "SpellOverload");
         this.add("key.spellweaver.overload_up", "OverloadUp");
         this.add("key.spellweaver.overload_down", "OverloadDown");
+        this.add("key.spellweaver.cancel_spell", "Cancel Spell");
         this.add("key.spellweaver.test", "SpellWeaving");
         this.add("key.category.spellweaver.test","SpellWeaver");
         this.add("key.category.spellweaver.spell","SpellWeaver :Casting");
@@ -147,6 +148,7 @@ public class ModLanguageProvider extends LanguageProvider {
         this.add("message.spellweaver.spell_exists", "Spell already exists, overwrite?");
 
         this.add("message.spellweaver.anonymous", "Anonymous");
+        this.add("message.spellweaver.spell_canceled", "All spells canceled");
 
         this.add("message.spellweaver.mana_level_up", "Mana Level increased to %d!");
 
@@ -165,6 +167,9 @@ public class ModLanguageProvider extends LanguageProvider {
 
         this.add("gui.spellweaver.mana_level", "Mana Level:%d");
         this.add("gui.spellweaver.mana_exp", "Experience to next level:%d");
+
+        this.add("gui.edit","Edit Spell");
+        this.add("gui.spell_bound","Bound spell [%s] to slot [%d]");
 
 
     }

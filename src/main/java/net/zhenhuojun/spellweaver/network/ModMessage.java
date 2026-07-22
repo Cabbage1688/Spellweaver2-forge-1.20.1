@@ -260,6 +260,12 @@ public class ModMessage {
                 .consumerMainThread(InscriptionTableClearC2SPacket::handle)
                 .add();
 
+        net.messageBuilder(CancelAllSpellsC2SPacket.class,id(),NetworkDirection.PLAY_TO_SERVER)
+                .decoder(CancelAllSpellsC2SPacket::new)
+                .encoder(CancelAllSpellsC2SPacket::toByte)
+                .consumerMainThread(CancelAllSpellsC2SPacket::handle)
+                .add();
+
 
     }
 

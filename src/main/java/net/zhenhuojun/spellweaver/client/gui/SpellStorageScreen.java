@@ -1,5 +1,6 @@
 package net.zhenhuojun.spellweaver.client.gui;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -433,7 +434,7 @@ public class SpellStorageScreen extends Screen {
                     ModMessage.sendToServer(new BindSpellC2SPacket(slot, spell.getId()));
                     player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.5f, 1.0f);
                     player.displayClientMessage(
-                            Component.translatable("gui.spell_bound", spell.getName(), slot + 1),
+                            Component.translatable("gui.spell_bound", spell.getName(), slot + 1).withStyle(ChatFormatting.LIGHT_PURPLE),
                             true
                     );
                 },

@@ -29,6 +29,7 @@ import net.zhenhuojun.spellweaver.entity.impl.ManaArrow;
 import net.zhenhuojun.spellweaver.item.ModItems;
 import net.zhenhuojun.spellweaver.key.KeyBinding;
 import net.zhenhuojun.spellweaver.network.ModMessage;
+import net.zhenhuojun.spellweaver.network.packet.CancelAllSpellsC2SPacket;
 import net.zhenhuojun.spellweaver.network.packet.OverloadDataC2SPacket;
 import net.zhenhuojun.spellweaver.network.packet.SpellCastingC2SPacket;
 
@@ -76,14 +77,6 @@ public class ClientEvent {
                                 Component.translatable("message.spellweaver.overload_enabled", ClientPlayerOverloadData.getCurrentMultiplier()).withStyle(ChatFormatting.LIGHT_PURPLE),
                                 true
                         );
-
-                       /* if (player.level().isClientSide) {
-                            SpellEffectEntity entity = new SpellEffectEntity(ModEntities.SPELL_EFFECT.get(), player.level());
-                            entity.setPos(player.getX(), player.getY() + 1.2, player.getZ());
-                            player.level().addFreshEntity(entity);
-                        }
-
-                        */
                     }
                     ModMessage.sendToServer(new OverloadDataC2SPacket(ClientPlayerOverloadData.isEnabled(),
                             ClientPlayerOverloadData.getCurrentMultiplier(),ClientPlayerOverloadData.getMaxMultiplier()));
@@ -104,6 +97,14 @@ public class ClientEvent {
                     );
                     ModMessage.sendToServer(new OverloadDataC2SPacket(ClientPlayerOverloadData.isEnabled(),
                             ClientPlayerOverloadData.getCurrentMultiplier(),ClientPlayerOverloadData.getMaxMultiplier()));
+            }
+
+            if (CANCEL_SPELL_KEY.consumeClick()) {
+                ModMessage.sendToServer(new CancelAllSpellsC2SPacket());
+                player.displayClientMessage(
+                        Component.translatable("message.spellweaver.spell_canceled").withStyle(ChatFormatting.LIGHT_PURPLE),
+                        true
+                );
             }
         }
     }
@@ -127,6 +128,7 @@ public class ClientEvent {
             event.register(KeyBinding.OVERLOAD_KEY);
             event.register(KeyBinding.OVERLOAD_UP_KEY);
             event.register(KeyBinding.OVERLOAD_DOWN_KEY);
+            event.register(KeyBinding.CANCEL_SPELL_KEY);
             Spellweaver.getLOGGER().debug("[Spellweaver:ClientModBusEvents]按键已注册");
         }
 

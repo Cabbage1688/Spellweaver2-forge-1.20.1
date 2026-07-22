@@ -3,6 +3,7 @@ package net.zhenhuojun.spellweaver.spell;
 import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.spell.node.NodeResult;
 import net.zhenhuojun.spellweaver.spell.node.SequenceNode;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,6 +29,18 @@ public class SpellTreeExecuteManager {
         SequenceNode sequenceNode=activeSpellTree.get(uuid);
         if(sequenceNode!=null){
             activeSpellTree.remove(uuid);
+        }
+    }
+    public void cancelAllSpellsForPlayer(Player player) {
+        Iterator<Map.Entry<UUID, SequenceNode>> iterator = activeSpellTree.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<UUID, SequenceNode> entry = iterator.next();
+            SequenceNode sequenceNode = entry.getValue();
+            if (sequenceNode.getContext() != null && sequenceNode.getContext().player.getUUID().equals(player.getUUID())) {
+                sequenceNode.getContext().notifyComplete(NodeResult.FAULT);
+                iterator.remove();
+                Spellweaver.getLOGGER().debug("[SPELLWEAVER:SpellExecuteManager/cancelAllSpellsForPlayer]取消玩家{}的法术树{}", player.getName().getString(), sequenceNode.getUuid());
+            }
         }
     }
     //这个丢给ServerTickEvent

@@ -24,6 +24,7 @@ public class KeyBinding {
     public static final String KEY_OVERLOAD="key.spellweaver.overload";
     public static final String KEY_OVERLOAD_UP="key.spellweaver.overload_up";
     public static final String KEY_OVERLOAD_DOWN="key.spellweaver.overload_down";
+    public static final String KEY_CANCEL_SPELL="key.spellweaver.cancel_spell";
 
     public static final KeyMapping TEST_KEY=new KeyMapping(KEY_TEST, KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_O,KEY_CATEGORY_TEST);
@@ -67,6 +68,9 @@ public class KeyBinding {
 
     public static final KeyMapping OVERLOAD_DOWN_KEY=new KeyMapping(KEY_OVERLOAD_DOWN,KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,GLFW.GLFW_KEY_DOWN,KEY_CATEGORY_TEST);
+
+    public static final KeyMapping CANCEL_SPELL_KEY=new KeyMapping(KEY_CANCEL_SPELL,KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM,GLFW.GLFW_KEY_I,KEY_CATEGORY_TEST);
 
 
 }

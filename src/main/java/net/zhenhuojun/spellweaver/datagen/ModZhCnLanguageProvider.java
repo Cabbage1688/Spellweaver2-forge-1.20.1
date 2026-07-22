@@ -57,6 +57,7 @@ public class ModZhCnLanguageProvider extends LanguageProvider {
         this.add("key.spellweaver.overload", "法术超载");
         this.add("key.spellweaver.overload_up", "增加超载倍数");
         this.add("key.spellweaver.overload_down", "减少超载倍数");
+        this.add("key.spellweaver.cancel_spell", "终止法术");
         this.add("key.spellweaver.test", "法术编织");
         this.add("key.category.spellweaver.test", "织法者");
         this.add("key.category.spellweaver.spell", "织法者：施法快捷键");
@@ -146,6 +147,7 @@ public class ModZhCnLanguageProvider extends LanguageProvider {
         this.add("message.spellweaver.spell_exists", "法术已存在，要覆盖吗？");
 
         this.add("message.spellweaver.anonymous", "佚名");
+        this.add("message.spellweaver.spell_canceled", "已终止所有法术");
 
         this.add("message.spellweaver.mana_level_up", "魔力等级提升至 %d!");
 
@@ -154,7 +156,7 @@ public class ModZhCnLanguageProvider extends LanguageProvider {
 
         this.add("gui.spellweaver.add_normal_node", "添加普通节点");
         this.add("gui.spellweaver.add_loop_node","添加循环节点");
-        this.add("gui.spellweaver.add_condition_node", "添加循环节点");
+        this.add("gui.spellweaver.add_condition_node", "添加条件节点");
         this.add( "gui.spellweaver.add_wait_node", "添加等待节点");
 
         this.add("hud.spellweaver.mana","魔力值:%d");
@@ -164,6 +166,9 @@ public class ModZhCnLanguageProvider extends LanguageProvider {
 
         this.add("gui.spellweaver.mana_level","魔力等级：%d");
         this.add("gui.spellweaver.mana_exp","距离下一等级所需要的经验：%d");
+
+        this.add("gui.edit","编辑法术");
+        this.add("gui.spell_bound","绑定法术 [%s] 到 [%d] 槽位");
 
     }
 }
