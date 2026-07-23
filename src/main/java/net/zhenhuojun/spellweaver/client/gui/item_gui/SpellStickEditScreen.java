@@ -1,7 +1,9 @@
 package net.zhenhuojun.spellweaver.client.gui.item_gui;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
+import net.zhenhuojun.spellweaver.client.gui.SpellStorageScreen;
 import net.zhenhuojun.spellweaver.client.gui.SpellWeavingScreen;
 import net.zhenhuojun.spellweaver.network.ModMessage;
 import net.zhenhuojun.spellweaver.network.packet.WriteSpellStickC2SPacket;
@@ -27,6 +29,10 @@ public class SpellStickEditScreen extends SpellWeavingScreen {
         this.removeWidget(variableButton);
         this.historyStack.clear();
         this.push(this.rootNode);
+
+        this.spellBoxButton=this.addRenderableWidget(Button.builder(Component.translatable("gui.spellweaver.spell_library"), button->{
+            Minecraft.getInstance().setScreen(new SpellStorageScreen(Minecraft.getInstance().player,this));
+        }).bounds(width - 60, height / 4, 50, 20).build());
     }
 
     @Override

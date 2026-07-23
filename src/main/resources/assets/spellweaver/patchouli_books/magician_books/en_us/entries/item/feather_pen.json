@@ -12,7 +12,7 @@
       "type": "crafting",
       "recipe": "spellweaver:feather_pen",
       "title": "Feather Pen",
-      "text":"<br>Special: Spells in armor trigger when taking damage and automatically push the attacker (when attacker is direct damage source), spells in items trigger on right-click, spells in blocks trigger when block state changes and automatically push block coordinates."
+      "text":"<br>Special: Spells in armor trigger when taking damage and automatically push the attacker (when attacker is direct damage source), spells in items trigger on right-click，spells in blockItems is written into the newly generated block upon placement , spells in blocks trigger when block state changes and automatically push block coordinates."
     }
   ]
 }

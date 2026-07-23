@@ -47,7 +47,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(l)Condition Node Details$()<br><br>$(9)Condition Node$() has one preset property: $(9)condition$(), which can be set to $(2)true$() or $(4)false$() by middle-clicking the condition node.<br><br>How it works:<br>·Pops boolean from stack top, compares with condition.<br>·Match → execute child node list until all complete.<br>·No match → skip child node list.<br><br>$(l)Practical Combination:$()<br>Use comparison runes in normal nodes before condition node to compute conditions:<br>$(9)Self CheckHealth 10 <$() → stack top becomes $(2)true$() or $(4)false$()<br>Then condition node decides whether to heal based on this value.<br><br>Package the entire check+heal into one spell, and you get $(l)Conditional Healing$()."
+      "text": "$(l)Condition Node Details$()<br><br>$(9)Condition Node$() has one preset property: $(9)condition$(), which can be set to $(2)true$() or $(4)false$() by $(9)middle-clicking$() the condition node.<br><br>How it works:<br>·Pops boolean from stack top, compares with condition.<br>·Match → execute child node list until all complete.<br>·No match → skip child node list.<br><br>$(l)Practical Combination:$()<br>Use comparison runes in normal nodes before condition node to compute conditions:<br>$(9)Self CheckHealth 10 <$() → stack top becomes $(2)true$() or $(4)false$()<br>Then condition node decides whether to heal based on this value.<br><br>Package the entire check+heal into one spell, and you get $(l)Conditional Healing$()."
     },
     {
       "type": "patchouli:spotlight",
@@ -57,7 +57,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "$(l)Loop Node Details$()<br><br>$(9)Loop Node$() has property $(9)currentTime$(), set via middle-click:<br>·Positive → loop fixed number of times, decrement by 1 each round.<br>·Negative (e.g., -2) → infinite loop until spell interrupted.<br>·-1 → pop number from stack top as loop count (dynamic loop).<br><br>$(l)How does Build Up work?$()<br>Each iteration: $(9)Self$() pushes player → $(9)Copy$() duplicates player → $(9)VisionCoordinate$() gets eye coordinate → $(9)Teleport$() teleports player to eye coordinate → $(9)Self$() pushes player again → $(9)FootCoordinate$() gets foot coordinate → $(9)Dirt$() places dirt under feet. Results in a 10-block-high dirt pillar."
+      "text": "$(l)Loop Node Details$()<br><br>$(9)Loop Node$() has property $(9)currentTime$(), set via $(9)middle-click$():<br>·Positive → loop fixed number of times, decrement by 1 each round.<br>·Negative (e.g., -2) → infinite loop until spell interrupted.<br>·-1 → pop number from stack top as loop count (dynamic loop).<br><br>$(l)How does Build Up work?$()<br>Each iteration: $(9)Self$() pushes player → $(9)Copy$() duplicates player → $(9)VisionCoordinate$() gets eye coordinate → $(9)Teleport$() teleports player to eye coordinate → $(9)Self$() pushes player again → $(9)FootCoordinate$() gets foot coordinate → $(9)Dirt$() places dirt under feet. Results in a 10-block-high dirt pillar."
     },
     {
       "type": "relations",

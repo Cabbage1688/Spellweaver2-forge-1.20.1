@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 public class SpellContext {
     public final Deque<Object> stack = new ArrayDeque<>();//法术栈,存储法术运行时产生的数据
     public final Level level;
-    public final Player player;
+    public Player player;
     public ManaSource manaSource=ManaSource.PLAYER;
 
     public Map<String, Object> variables = new HashMap<>();//用于“存储变量”符文创建键值对

@@ -1,6 +1,7 @@
 package net.zhenhuojun.spellweaver.client.gui;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -37,6 +38,12 @@ public class SpellMachineEditScreen extends SpellWeavingScreen {
 
         this.historyStack.clear();
         this.push(this.rootNode);
+
+        this.spellBoxButton=this.addRenderableWidget(Button.builder(Component.translatable("gui.spellweaver.spell_library"), button->{
+            Minecraft.getInstance().setScreen(new SpellStorageScreen(Minecraft.getInstance().player,this));
+        }).bounds(width - 60, height / 4, 50, 20).build());
+
+
     }
 
     @Override

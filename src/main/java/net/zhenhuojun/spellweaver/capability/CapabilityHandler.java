@@ -60,7 +60,7 @@ public class CapabilityHandler {//这个类管理能力相关的东西
     public static void onItemAttachCapabilities(AttachCapabilitiesEvent<ItemStack> event){
         //条件判断一删就能跑了，神了。
         //if(!event.getObject().getCapability(ScrollSpellProvider.SCROLL_SPELL_CAPABILITY).isPresent()){
-            event.addCapability(SCROLL_SPELL_HANDLER,new ScrollSpellProvider());
+           // event.addCapability(SCROLL_SPELL_HANDLER,new ScrollSpellProvider());
        // }
     }
     @SubscribeEvent//能力注册,这个不要写成static，文档里就是这么写的

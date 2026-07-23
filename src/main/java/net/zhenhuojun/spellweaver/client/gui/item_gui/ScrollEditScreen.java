@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.zhenhuojun.spellweaver.client.gui.SpellStorageScreen;
 import net.zhenhuojun.spellweaver.client.gui.SpellWeavingScreen;
 import net.zhenhuojun.spellweaver.item.ModItems;
 import net.zhenhuojun.spellweaver.network.ModMessage;
@@ -35,6 +36,10 @@ public class ScrollEditScreen extends SpellWeavingScreen {
         this.removeWidget(saveButton);
         this.removeWidget(spellBoxButton);
         this.removeWidget(variableButton);
+
+        this.spellBoxButton=this.addRenderableWidget(Button.builder(Component.translatable("gui.spellweaver.spell_library"), button->{
+            Minecraft.getInstance().setScreen(new SpellStorageScreen(Minecraft.getInstance().player,this));
+        }).bounds(width - 60, height / 4, 50, 20).build());
     }
 
     @Override

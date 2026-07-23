@@ -37,8 +37,8 @@ public class ModItems {
 
     public static final RegistryObject<Item> DIM_MANA_PEARL=ITEMS.register("dim_mana_pearl",()->new DimManaPearlItem(new Item.Properties()));
 
-    public static final RegistryObject<Item> SCROLL=ITEMS.register("scroll",()-> new ScrollBeforeItem(new Item.Properties()));
-    public static final RegistryObject<Item>USED_SCROLL=ITEMS.register("used_scroll",()->new ScrollItem(new Item.Properties()));
+    public static final RegistryObject<Item> SCROLL=ITEMS.register("scroll",()-> new ScrollBeforeItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item>USED_SCROLL=ITEMS.register("used_scroll",()->new ScrollItem(new Item.Properties().stacksTo(1)));
 
     public static final RegistryObject<Item> SPELL_STICK=ITEMS.register("spell_stick",
             ()->new SpellStickItem(SpellStickItem.STAFF_TIER,1,-2.4f,new Item.Properties()));
@@ -53,13 +53,13 @@ public class ModItems {
     public static final RegistryObject<Item>  INSCRIPTION_TABLE_ITEM=
             ITEMS.register("inscription_table",()->new BlockItem(INSCRIPTION_TABLE_BLOCK.get(),new Item.Properties()));
     //青金石卷轴
-    public static final RegistryObject<Item> LAZULI_SCROLL=ITEMS.register("lazuli_scroll",()->new LazuliBeforeItem(new Item.Properties()));
+    public static final RegistryObject<Item> LAZULI_SCROLL=ITEMS.register("lazuli_scroll",()->new LazuliBeforeItem(new Item.Properties().stacksTo(1)));
 
-    public static final RegistryObject<Item> USED_LAZULI_SCROLL=ITEMS.register("used_lazuli_scroll",()->new LazuliItem(new Item.Properties()));
+    public static final RegistryObject<Item> USED_LAZULI_SCROLL=ITEMS.register("used_lazuli_scroll",()->new LazuliItem(new Item.Properties().stacksTo(1)));
 
-    public static final RegistryObject<Item> DIAMOND_SCROLL=ITEMS.register("diamond_scroll",()->new DiamondBeforeScroll(new Item.Properties()));
+    public static final RegistryObject<Item> DIAMOND_SCROLL=ITEMS.register("diamond_scroll",()->new DiamondBeforeScroll(new Item.Properties().stacksTo(1)));
 
-    public static final  RegistryObject<Item> USED_DIAMOND_SCROLL=ITEMS.register("used_diamond_scroll",()->new DiamondScroll(new Item.Properties()));
+    public static final  RegistryObject<Item> USED_DIAMOND_SCROLL=ITEMS.register("used_diamond_scroll",()->new DiamondScroll(new Item.Properties().stacksTo(1)));
 
     public static final RegistryObject<Item> FEATHER_PEN=ITEMS.register("feather_pen",()->new FeatherPen(new Item.Properties()));
 

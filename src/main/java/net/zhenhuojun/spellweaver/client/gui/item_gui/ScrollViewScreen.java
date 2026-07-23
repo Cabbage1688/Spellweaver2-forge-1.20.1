@@ -3,9 +3,11 @@ package net.zhenhuojun.spellweaver.client.gui.item_gui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.zhenhuojun.spellweaver.Spellweaver;
+import net.zhenhuojun.spellweaver.client.gui.SpellStorageScreen;
 import org.lwjgl.glfw.GLFW;
 
 public class ScrollViewScreen extends ScrollEditScreen {
@@ -30,6 +32,11 @@ public class ScrollViewScreen extends ScrollEditScreen {
          super.init();
          this.removeWidget(stickButton);
          this.removeWidget(killButton);
+
+        this.spellBoxButton=this.addRenderableWidget(Button.builder(Component.translatable("gui.spellweaver.spell_library"), button->{
+            Minecraft.getInstance().setScreen(new SpellStorageScreen(Minecraft.getInstance().player,this));
+        }).bounds(width - 60, height / 4 + 30, 50, 20).build());
+
     }
 
 

@@ -13,6 +13,10 @@
     },{
       "type": "patchouli:text",
       "text": "<br>$(9)Spread(Ice)$(): Wind + Ice → 3-block range ice damage with ice attachment<br>$(9)Spread(Water)$(): Wind + Water / Water + Wind → 3-block range water damage with water attachment<br>$(9)Cold Wind$(): Ice + Wind → Ice damage +30%<br>$(9)Void Erosion$(): End + Water / Water + End → 10 void damage<br><br>$(l)Tip:$()Environment also applies elements — Water in rain/water, Fire in Nether, Ice in snow biomes. Some mob attacks also carry elements."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)SpellTermination$()<br><br>You may encounter situations where you need to end a spell early. In that case, simply press the default $(9)I$() key to terminate all spells under your control."
     }
   ]
 }

@@ -1002,7 +1002,7 @@ public class GuiUtil {
                 new HexPoint(3, -2)
         ));
 
-        predefinedPatterns.add(new SpellPattern("魔源变换", 0XFF0000FF,
+        predefinedPatterns.add(new SpellPattern("魔源转换", 0XFF0000FF,
                 new HexPoint(0, 0),
                 new HexPoint(1, -1),
                 new HexPoint(1, -2),

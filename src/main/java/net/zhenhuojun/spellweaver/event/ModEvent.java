@@ -937,6 +937,10 @@ public class ModEvent {
             //方块物品不再能直接触发法术
             if(stack.getItem() instanceof BlockItem) return;
             CompoundTag tag = stack.getOrCreateTag();
+            if(tag.isEmpty()){
+                stack.setTag(null);
+                return;
+            }
             CompoundTag spellData = tag.getCompound("SpellData");
             if (spellData.isEmpty()) return;
 
@@ -971,6 +975,10 @@ public class ModEvent {
             ItemStack stack = player.getItemInHand(hand);
             if (!(stack.getItem() instanceof BlockItem)) return;
             CompoundTag tag = stack.getOrCreateTag();
+            if(tag.isEmpty()){
+                stack.setTag(null);
+                return;
+            }
             CompoundTag spellData = tag.getCompound("SpellData");
             if (spellData.isEmpty()) return;
             // 计算新方块位置

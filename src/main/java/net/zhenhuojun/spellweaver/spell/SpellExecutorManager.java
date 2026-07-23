@@ -865,9 +865,11 @@ public class SpellExecutorManager {
                 context.push(result);
             }
         });
-        executors.put("魔源变换",context -> {
+        executors.put("魔源转换",context -> {
             if(context.isTop(Player.class)){
+                Player player=context.pop(Player.class);
                 context.manaSource=ManaSource.PLAYER;
+                context.player=player;
             }else if(context.isTop(Vec3.class)){
                 Vec3 vec3=context.pop(Vec3.class);
                 BlockPos pos=BlockPos.containing(vec3);
@@ -1585,7 +1587,8 @@ public class SpellExecutorManager {
                       if(!tag.contains("mana")){
                           tag.putDouble("mana",0);
                       }
-                      tag.putDouble("mana",Math.min(amount,ManaBottleItem.MAX_MANA-tag.getDouble("mana")));
+                      double manaInBottle=tag.getDouble("mana");
+                      tag.putDouble("mana",manaInBottle+Math.min(amount,ManaBottleItem.MAX_MANA-manaInBottle));
                   }
               }
             }
