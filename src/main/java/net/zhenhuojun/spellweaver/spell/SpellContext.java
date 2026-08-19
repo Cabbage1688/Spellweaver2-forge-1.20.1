@@ -13,6 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.capability.impl.mana.ManaSource;
+import net.zhenhuojun.spellweaver.entity.impl.MagicStarEntity;
 import net.zhenhuojun.spellweaver.spell.util.SlotReference;
 import net.zhenhuojun.spellweaver.spell.node.NodeResult;
 import net.zhenhuojun.spellweaver.spell.node.SequenceNode;
@@ -25,6 +26,9 @@ public class SpellContext {
     public final Deque<Object> stack = new ArrayDeque<>();//法术栈,存储法术运行时产生的数据
     public final Level level;
     public Player player;
+    ///这个改动是为了支持魔法之星正确使用"自我"符文，而不是向法术栈压入主人
+    public MagicStarEntity magicStarEntity;
+    public boolean castByMagicStar;
     public ManaSource manaSource=ManaSource.PLAYER;
 
     public Map<String, Object> variables = new HashMap<>();//用于“存储变量”符文创建键值对
@@ -45,12 +49,14 @@ public class SpellContext {
     public SpellContext(Level level,Player player){
         this.level=level;
         this.player=player;
+        this.castByMagicStar=false;
     }
 
     public SpellContext(Level level,Player player,ManaSource manaSource){
         this.level=level;
         this.player=player;
         this.manaSource=manaSource;
+        this.castByMagicStar=false;
     }
    //这个专用于机器
     public SpellContext(Level level,Player player,ManaSource manaSource,BlockPos machinePos){
@@ -58,6 +64,7 @@ public class SpellContext {
         this.player=player;
         this.manaSource=manaSource;
         this.machinePos=machinePos;
+        this.castByMagicStar=false;
     }
 
     public BlockPos getMachinePos() {

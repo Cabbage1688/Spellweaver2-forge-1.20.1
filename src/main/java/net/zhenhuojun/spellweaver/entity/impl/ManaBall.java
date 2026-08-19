@@ -5,6 +5,7 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -88,6 +89,10 @@ public class ManaBall extends AbstractHurtingProjectile {
         // 忽略所有者和魔法飞弹
         if (target == getOwner()||target instanceof ManaBall) {
             return false;
+        }else if(target instanceof MagicStarEntity magicStarEntity){
+            if(magicStarEntity.getOwner()==getOwner()){
+                return false;//忽略同一主人的魔法之星
+            }
         }
         return super.canHitEntity(target);
     }
@@ -114,7 +119,6 @@ public class ManaBall extends AbstractHurtingProjectile {
 
     @Override
     protected ParticleOptions getTrailParticle() {
-        // 返回 null 以完全禁用轨迹粒子
         return ParticleTypes.INSTANT_EFFECT;
     }
 
@@ -124,6 +128,27 @@ public class ManaBall extends AbstractHurtingProjectile {
             this.discard();
         }
         super.tick();
+    }
+
+    @Override
+    public boolean hurt(DamageSource pSource, float pAmount){
+        if (this.isInvulnerableTo(pSource)) {
+            return false;
+        }else if(player!=null&&pSource.getEntity()!=null){
+            Entity entity=pSource.getEntity();
+            if(entity==player){
+                this.markHurt();
+                if (!this.level().isClientSide) {
+                    Vec3 vec3 = entity.getLookAngle();
+                    this.setDeltaMovement(vec3);
+                    this.xPower = vec3.x * 0.1D;
+                    this.yPower = vec3.y * 0.1D;
+                    this.zPower = vec3.z * 0.1D;
+                }
+                return true;
+            }
+        }
+        return false;
     }
     //保存自定义实体的数据到游戏世界文件
     /*public void addAdditionalSaveData(CompoundTag compound) {

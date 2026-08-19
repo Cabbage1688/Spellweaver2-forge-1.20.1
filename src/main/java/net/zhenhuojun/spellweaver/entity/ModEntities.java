@@ -5,7 +5,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
@@ -62,6 +64,20 @@ public class ModEntities {
                             .updateInterval(2)
                             .build("spell_effect_entity")
             );
+
+    public static final RegistryObject<EntityType<MagicStarEntity>> MAGIC_STAR=
+            ENTITY_DEFERRED_REGISTER.register("magic_star",
+                    ()->EntityType.Builder.<MagicStarEntity>of(MagicStarEntity::new,MobCategory.MONSTER)
+                            .sized(0.5f,0.5f)
+                            .clientTrackingRange(10)
+                            .updateInterval(2)
+                            .build("magic_star")
+            );
+
+    @SubscribeEvent
+    public static void registerAttributes(EntityAttributeCreationEvent event) {
+        event.put(MAGIC_STAR.get(),MagicStarEntity.createAttributes().build());
+    }
 
 
 }

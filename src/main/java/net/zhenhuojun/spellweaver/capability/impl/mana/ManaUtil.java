@@ -5,11 +5,13 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.block.custom.ManaPedestalBlockEntity;
 import net.zhenhuojun.spellweaver.block.custom.SpellMachineBlockEntity;
 import net.zhenhuojun.spellweaver.capability.provider.mana.PlayerManaProvider;
@@ -20,6 +22,7 @@ import net.zhenhuojun.spellweaver.spell.SpellContext;
 import net.zhenhuojun.spellweaver.spell.util.SlotReference;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 //封装一些逻辑
 public class ManaUtil {
@@ -44,6 +47,17 @@ public class ManaUtil {
             });
         }
         return mana.get();
+    }
+
+    public static int CheckLevel(ServerPlayer player){
+        AtomicInteger level = new AtomicInteger();
+        level.set(0);
+        if(player!=null){
+            player.getCapability(PlayerManaProvider.PLAYER_MANA).ifPresent(playerMana -> {
+               level.set(playerMana.getMana_level());
+            });
+        }
+        return level.get();
     }
 
     public static void addManaAndSendPacket(double add, ServerPlayer player){
@@ -233,45 +247,113 @@ public class ManaUtil {
     public static void addManaExpOrAwakeManaByMoonPearlAndSendPacket(ServerPlayer player){
         if(player!=null){
             player.getCapability(PlayerManaProvider.PLAYER_MANA).ifPresent(playerMana -> {
-                if(playerMana.getMana_level()==0){
-                    playerMana.setMana_level(5);
-                    playerMana.addMana(200);
-                    player.displayClientMessage(
-                            Component.translatable("message.spellweaver.warm_current").withStyle(ChatFormatting.LIGHT_PURPLE),
-                            true
-                    );
-                    player.sendSystemMessage(Component.translatable("message.spellweaver.mana_level_up", playerMana.getMana_level()).withStyle(ChatFormatting.GREEN));
-                }else{
-                    if(playerMana.getMana_exp()-playerMana.getPresent_exp()<500){
-                        playerMana.addExp(500);
-                    }else {
-                        playerMana.setMana_level(playerMana.getMana_level()+1);
+                if(playerMana.getMana_level()<100){
+                    if(playerMana.getMana_level()==0){
+                        playerMana.setMana_level(5);
+                        playerMana.addMana(200);
+                        player.displayClientMessage(
+                                Component.translatable("message.spellweaver.warm_current").withStyle(ChatFormatting.LIGHT_PURPLE),
+                                true
+                        );
                         player.sendSystemMessage(Component.translatable("message.spellweaver.mana_level_up", playerMana.getMana_level()).withStyle(ChatFormatting.GREEN));
+                    }else{
+                        if(playerMana.getMana_exp()-playerMana.getPresent_exp()<500){
+                            playerMana.addExp(500);
+                        }else {
+                            playerMana.setMana_level(playerMana.getMana_level()+1);
+                            playerMana.addExp(0);
+                            player.sendSystemMessage(Component.translatable("message.spellweaver.mana_level_up", playerMana.getMana_level()).withStyle(ChatFormatting.GREEN));
+                        }
                     }
+                }else {
+                    playerMana.addExp((long) (playerMana.getMana_exp()*0.1));
                 }
                 ModMessage.sendToPlayer(new ManaChangeS2CPacket(playerMana.getMana(), playerMana.getMaxMana()
                         ,playerMana.getMana_level(),playerMana.getMana_exp(),playerMana.getPresent_exp()), player);
             });
+
+            tryUnlockManaLevel99(player);
         }
     }
 
     public static void addManaExpOrAwakeManaByDimManaPearlAndSendPacket(ServerPlayer player){
         if(player!=null){
             player.getCapability(PlayerManaProvider.PLAYER_MANA).ifPresent(playerMana -> {
-                if(playerMana.getMana_level()==0){
-                    playerMana.setMana_level(1);
-                    playerMana.addMana(100);
+                if(playerMana.getMana_level()<100){
+                    if(playerMana.getMana_level()==0){
+                        playerMana.setMana_level(1);
+                        playerMana.addMana(100);
+                        player.displayClientMessage(
+                                Component.translatable("message.spellweaver.warm_current").withStyle(ChatFormatting.LIGHT_PURPLE),
+                                true
+                        );
+                        player.sendSystemMessage(Component.translatable("message.spellweaver.mana_level_up", playerMana.getMana_level()).withStyle(ChatFormatting.GREEN));
+                    }else{
+                        playerMana.addExp((long) (100+0.2* playerMana.getMana_exp()));
+                    }
+                }else {
                     player.displayClientMessage(
-                            Component.translatable("message.spellweaver.warm_current").withStyle(ChatFormatting.LIGHT_PURPLE),
+                            Component.translatable("message.spellweaver.dim_not_work").withStyle(ChatFormatting.LIGHT_PURPLE),
                             true
                     );
-                    player.sendSystemMessage(Component.translatable("message.spellweaver.mana_level_up", playerMana.getMana_level()).withStyle(ChatFormatting.GREEN));
-                }else{
-                    playerMana.addExp((int) (100+0.2* playerMana.getMana_exp()));
                 }
                 ModMessage.sendToPlayer(new ManaChangeS2CPacket(playerMana.getMana(), playerMana.getMaxMana()
                         ,playerMana.getMana_level(),playerMana.getMana_exp(),playerMana.getPresent_exp()), player);
             });
+
+            tryUnlockManaLevel99(player);
+        }
+    }
+
+    //龙蛋/下界星突破：将魔力等级直接提升至100
+    public static void upManaLevelTo100AndSendPacket(ServerPlayer player){
+        if(player!=null){
+            player.getCapability(PlayerManaProvider.PLAYER_MANA).ifPresent(playerMana -> {
+                playerMana.setMana_level(100);
+                ModMessage.sendToPlayer(new ManaChangeS2CPacket(playerMana.getMana(), playerMana.getMaxMana()
+                        ,playerMana.getMana_level(),playerMana.getMana_exp(),playerMana.getPresent_exp()), player);
+                player.sendSystemMessage(Component.translatable("message.spellweaver.mana_level_up", playerMana.getMana_level()).withStyle(ChatFormatting.GREEN));
+            });
+        }
+    }
+
+
+    public static void tryUnlockManaLevel99(ServerPlayer player) {
+        // 先检查魔力等级是否达到99级
+        Spellweaver.getLOGGER().debug("[Spellweaver]调用了tryUnlockManaLevel99");
+        if (CheckLevel(player) < 99) return;
+        if (player.getServer() == null) return;
+        var advancement = player.getServer().getAdvancements()
+                .getAdvancement(ResourceLocation.fromNamespaceAndPath("spellweaver", "mana_level_99"));
+        if (advancement != null) {
+            player.getAdvancements().award(advancement, "mana_level_99");
+            Spellweaver.getLOGGER().debug("[Spellweaver]已解锁进度");
+        }
+    }
+
+    public static String formatMana(long amount) {
+        if (amount < 0) return "-" + formatMana(-amount);
+        if (amount < 1_000_000) return String.valueOf(amount);
+
+
+        String[] units = {"M", "B", "T", "P", "E"};
+        double scaled = amount;
+        int unitIndex = 0;
+
+
+        scaled /= 1_000_000;
+        unitIndex = 0;
+
+        // 如果 M 值 >= 1000，再继续进位到 B、T...
+        while (scaled >= 1000 && unitIndex < units.length - 1) {
+            scaled /= 1000;
+            unitIndex++;
+        }
+
+        if (scaled % 1 == 0) {
+            return String.format("%.0f%s", scaled, units[unitIndex]);
+        } else {
+            return String.format("%.1f%s", scaled, units[unitIndex]);
         }
     }
 }

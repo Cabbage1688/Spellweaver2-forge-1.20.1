@@ -8,12 +8,12 @@ import net.zhenhuojun.spellweaver.client.gui.util.ClientPlayerManaData;
 import java.util.function.Supplier;
 public class ManaChangeS2CPacket {
     private double mana;
-    private int maxMana;
+    private long maxMana;
     private int manaLevel;
     private long manaExp;
     private long currentExp;
 
-    public ManaChangeS2CPacket(double mana,int maxMana,int manaLevel,long manaExp,long currentExp){
+    public ManaChangeS2CPacket(double mana,long maxMana,int manaLevel,long manaExp,long currentExp){
         this.mana=mana;
         this.maxMana=maxMana;
         this.manaLevel=manaLevel;
@@ -22,14 +22,14 @@ public class ManaChangeS2CPacket {
     }
     public ManaChangeS2CPacket(FriendlyByteBuf buf){
         this.mana=buf.readDouble();
-        this.maxMana=buf.readInt();
+        this.maxMana=buf.readLong();
         this.manaLevel=buf.readInt();
         this.manaExp=buf.readLong();
         this.currentExp=buf.readLong();
     }
     public void toByte(FriendlyByteBuf buf){
          buf.writeDouble(mana);
-         buf.writeInt(maxMana);
+         buf.writeLong(maxMana);
          buf.writeInt(manaLevel);
          buf.writeLong(manaExp);
          buf.writeLong(currentExp);

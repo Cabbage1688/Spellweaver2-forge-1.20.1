@@ -41,6 +41,7 @@ import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.items.IItemHandler;
 import net.zhenhuojun.spellweaver.Config;
 import net.zhenhuojun.spellweaver.Spellweaver;
+import net.zhenhuojun.spellweaver.block.ModBlocks;
 import net.zhenhuojun.spellweaver.block.custom.ManaPedestalBlockEntity;
 import net.zhenhuojun.spellweaver.block.custom.SpellMachineBlockEntity;
 import net.zhenhuojun.spellweaver.capability.impl.mana.ManaSource;
@@ -100,7 +101,11 @@ public class SpellExecutorManager {
             context.push(b);
         });
         executors.put("自我", context -> {
+            if(context.castByMagicStar){
+                context.push(context.magicStarEntity);
+            }else {
                 context.push(context.player);
+            }
         });
         executors.put("脚下坐标",context -> {
             Entity entity = context.pop(Entity.class);
@@ -160,7 +165,8 @@ public class SpellExecutorManager {
         //眼部坐标
         executors.put("眼坐标",context -> {
             Entity entity = context.pop(Entity.class);
-            Vec3 vecEyePos=entity.blockPosition().above().getCenter();
+            //Vec3 vecEyePos=entity.blockPosition().above().getCenter();
+            Vec3 vecEyePos=entity.getEyePosition();
             context.push(vecEyePos);
         });
         //弹出实体，获取其生命值，将数值压入栈
@@ -889,6 +895,14 @@ public class SpellExecutorManager {
                     context.setManaBottleSlot(slotReference);
                 }
             }
+        });
+
+        //TODO
+        executors.put("亮度", context -> {
+            Vec3 vec3 = context.pop(Vec3.class);
+            BlockPos pos = BlockPos.containing(vec3);
+            int light = context.level.getLightEmission(pos);
+            context.push((double) light);
         });
 
 
@@ -1823,6 +1837,16 @@ public class SpellExecutorManager {
               Vec3 vec3=context.pop(Vec3.class);
               cultivate(slotReference,vec3,context);
           }
+        });
+        //TODO
+        executors.put("幽焰",context -> {
+            Vec3 vec3=context.pop(Vec3.class);
+            if(ManaUtil.subManaAndAddExpAndSendPacket(Config.magicFireCost,context)){
+                BlockPos pos = BlockPos.containing(vec3);
+                Block block = ModBlocks.MAGIC_SOUL_FIRE_BLOCK.get();
+                BlockState state = block.defaultBlockState();
+                context.level.setBlock(pos,state,3);
+            }
         });
     }
     //这些方法传入的context仅用把于信息传递到魔力消耗方法

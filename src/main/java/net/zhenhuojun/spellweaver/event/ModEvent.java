@@ -13,6 +13,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,6 +37,7 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
@@ -62,8 +64,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.block.custom.InscriptionTableBlock;
+import net.zhenhuojun.spellweaver.block.custom.MagicSoulFireBlock;
 import net.zhenhuojun.spellweaver.capability.impl.mana.ManaUtil;
 import net.zhenhuojun.spellweaver.capability.provider.mana.*;
 import net.zhenhuojun.spellweaver.item.ModItems;
@@ -93,6 +97,10 @@ public class ModEvent {
 
         private static final String KEY = "spellweaver_has_book";
         private static final String MOON_KEY="spellweaver_gotten_moon_pearl";
+
+        // 反射获取 LivingEntity.DATA_HEALTH_ID (SRG: f_20961_)，用于绕过setHealth重写
+        private static final EntityDataAccessor<Float> HEALTH_ACCESSOR =
+                ObfuscationReflectionHelper.getPrivateValue(LivingEntity.class, null, "f_20961_");
 
         @SubscribeEvent//这byd事件会在玩家加入世界之前就执行，如果要进行玩家相关操作一定要记得空值检查
         public static void onServerTick(TickEvent.ServerTickEvent event){
@@ -138,6 +146,25 @@ public class ModEvent {
                                 new ManaChangeS2CPacket(mana.getMana(), mana.getMaxMana(), mana.getMana_level(),mana.getMana_exp(),mana.getPresent_exp()),
                                 (ServerPlayer) event.player
                         );
+                    }
+                    //魔力修正
+                    if(mana.getMana() > mana.getMaxMana() && event.player.getHealth() > 0){
+                        mana.setMana(mana.getMaxMana());
+                        ModMessage.sendToPlayer(
+                                new ManaChangeS2CPacket(mana.getMana(), mana.getMaxMana(), mana.getMana_level(),mana.getMana_exp(),mana.getPresent_exp()),
+                                (ServerPlayer) event.player
+                        );
+                    }//飞行许可以及生命恢复
+                    if(mana.getMana_level()>=100){
+                        event.player.getAbilities().mayfly = true;
+                        event.player.onUpdateAbilities();
+                        float healAmount=mana.getMana_level()-99;
+                        if(event.player.tickCount%20==0){
+                            if(event.player.getMaxHealth()>event.player.getHealth()){
+                                float difference=event.player.getMaxHealth()-event.player.getHealth();
+                                event.player.heal(Math.min(difference, healAmount));
+                            }
+                        }
                     }
                 });
             }
@@ -602,6 +629,45 @@ public class ModEvent {
             Element.handleAmplificationMarkers(entity);
         }
 
+        @SubscribeEvent//魔法灵魂火灼烧
+        public static void onSoulBurnTick(LivingEvent.LivingTickEvent event) {
+            LivingEntity entity = event.getEntity();
+            if (entity.level().isClientSide) return;
+
+            CompoundTag persistentData = entity.getPersistentData();
+            if (!persistentData.contains(MagicSoulFireBlock.SOUL_BURN_TAG)) return;
+
+            if (entity.tickCount % 4 != 0) return;
+
+            float maxHealth = entity.getMaxHealth();
+            float damage = maxHealth * 0.02f;
+            Spellweaver.getLOGGER().debug("[SpellWeaver:ModEvent/onSoulBurnTick]生命{}",entity.getHealth());
+
+            // setHealth
+            entity.setHealth(entity.getHealth() - damage);
+            Spellweaver.getLOGGER().debug("[SpellWeaver:ModEvent/onSoulBurnTick]第一次灼烧后的生命{}",entity.getHealth());
+            //反射直接写entityData
+            float currentHealth = entity.getEntityData().get(HEALTH_ACCESSOR);
+            entity.getEntityData().set(HEALTH_ACCESSOR, currentHealth - damage);
+            Spellweaver.getLOGGER().debug("[SpellWeaver:ModEvent/onSoulBurnTick]第二次灼烧后的生命{}",entity.getHealth());
+            ModMessage.sendToTrackingEntity(entity, new SoulFireBurnS2CPacket(
+                    entity.getX(), entity.getY() + entity.getBbHeight() / 2.0, entity.getZ()));
+            // 死亡处理
+            if (entity.getEntityData().get(HEALTH_ACCESSOR) <= 0) {
+                persistentData.remove(MagicSoulFireBlock.SOUL_BURN_TAG);
+                entity.die(entity.damageSources().magic());
+                if (!entity.isRemoved() && !(entity instanceof Player)) {
+                    entity.remove(Entity.RemovalReason.KILLED);
+                }
+            }
+            int remaining = persistentData.getInt(MagicSoulFireBlock.SOUL_BURN_TAG) - 1;
+            if (remaining <= 0) {
+                persistentData.remove(MagicSoulFireBlock.SOUL_BURN_TAG);
+            } else {
+                persistentData.putInt(MagicSoulFireBlock.SOUL_BURN_TAG, remaining);
+            }
+        }
+
         @SubscribeEvent//闪电的感电反应，一道存在时间较长的闪电好像会劈两到三下，不过一般是一下。这应该就是原版机制，跟我没关系
         public static void onLightningBoltHurt(LivingHurtEvent event){
             if(event.getSource().is(DamageTypeTags.IS_LIGHTNING)){
@@ -865,6 +931,20 @@ public class ModEvent {
         @SubscribeEvent
         public  static void onShieldProtected(LivingHurtEvent event){
             if(!(event.getEntity() instanceof Player player)) return;
+            //先等级限伤
+            int manaLevel=ManaUtil.CheckLevel((ServerPlayer) player);
+            if (manaLevel >= 100) {
+                if (manaLevel >= 115) {
+                    event.setAmount(0);
+                } else {
+                    float maxDamage = 5.0f - (manaLevel - 100) * (5.0f / 15.0f);
+                    float original = event.getAmount();
+                    if (original > maxDamage) {
+                        event.setAmount(maxDamage);
+                    }
+                }
+            }
+            //后检查护盾
             player.getCapability(ManaShieldProvider.MANA_SHIELD).ifPresent(manaShield -> {
                if(manaShield.isActive()){
                    double shieldAmount=manaShield.getShieldAmount();
@@ -1108,6 +1188,89 @@ public class ModEvent {
 
             ModMessage.sendToClientsInLevel(new SpellBlockSyncS2CPacket(storage.getSpellBlockPositions()), level);
         }
+        @SubscribeEvent
+        public static void onDragonEggOrStarUsedToUpManaLevel(PlayerInteractEvent.RightClickItem event){
+            Player player = event.getEntity();
+            if (!(player instanceof ServerPlayer serverPlayer)) return;
+            if (player.isSpectator()) return;
+            if(ManaUtil.CheckLevel(serverPlayer)!=99) return;
+
+            Level level = player.level();
+            if (level.isClientSide) return;
+
+            ItemStack itemStack=event.getItemStack();
+            if(itemStack.is(Items.DRAGON_EGG)||itemStack.is(Items.NETHER_STAR)){
+                if (level instanceof ServerLevel serverLevel) {
+                    if (itemStack.is(Items.DRAGON_EGG)) {
+                        serverLevel.playSound(null, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(),
+                                SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 1.0F, 1.0F);
+                    } else {
+                        serverLevel.playSound(null, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(),
+                                SoundEvents.TOTEM_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
+                    }
+                }
+                itemStack.shrink(1);
+                // 突破计时标签
+                serverPlayer.getPersistentData().putInt("spellweaver_breakthrough_timer", 60);
+            }
+        }
+
+        //玩家登录时检查魔力等级成就（用于帕秋莉手册"新生"分类解锁）
+        @SubscribeEvent
+        public static void onPlayerLoginForManaLevel(PlayerEvent.PlayerLoggedInEvent event){
+            if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+                ManaUtil.tryUnlockManaLevel99(serverPlayer);
+            }
+        }
+
+        //龙蛋/下界之星突破：持续3秒粒子效果，结束后提升魔力等级到100
+        @SubscribeEvent
+        public static void onBreakthroughTick(TickEvent.PlayerTickEvent event){
+            if (event.phase != TickEvent.Phase.END || event.side != LogicalSide.SERVER) return;
+            if (!(event.player instanceof ServerPlayer serverPlayer)) return;
+
+            CompoundTag persistentData = serverPlayer.getPersistentData();
+            if (!persistentData.contains("spellweaver_breakthrough_timer")) return;
+
+            int timer = persistentData.getInt("spellweaver_breakthrough_timer");
+            ServerLevel serverLevel = (ServerLevel) serverPlayer.level();
+            Vec3 pos = serverPlayer.position();
+            // FLASH粒子
+            serverLevel.sendParticles(ParticleTypes.FLASH,
+                    pos.x, pos.y + 1.0, pos.z, 1,
+                    0.0, 0.0, 0.0, 0.0);
+            // 不死图腾粒子向四周喷射
+            serverLevel.sendParticles(ParticleTypes.TOTEM_OF_UNDYING,
+                    pos.x, pos.y + 1.0, pos.z, 20,
+                    0.3, 0.5, 0.3, 0.8);
+
+            timer--;
+            if (timer <= 0) {
+                persistentData.remove("spellweaver_breakthrough_timer");
+                ManaUtil.upManaLevelTo100AndSendPacket(serverPlayer);
+            } else {
+                persistentData.putInt("spellweaver_breakthrough_timer", timer);
+            }
+        }
+        /*@SubscribeEvent
+        public static void onHighLevelPlayerHurt(LivingHurtEvent event){
+            if(!(event.getEntity() instanceof Player player)) return;
+            if(player.level().isClientSide)return;
+            int manaLevel=ManaUtil.CheckLevel((ServerPlayer) player);
+            if(manaLevel>=100){
+                if (manaLevel >= 105) {
+                    event.setAmount(0);
+                }else {
+                    int maxDamage = 5 - (manaLevel - 100);
+                    float original = event.getAmount();
+                    if (original > maxDamage) {
+                        event.setAmount(maxDamage);
+                    }
+                }
+            }
+        }
+
+         */
 
         /**
          * 通过反射调用 Patchouli API 获取书本
@@ -1139,6 +1302,7 @@ public class ModEvent {
                         ModMessage.sendToPlayer(new ManaChangeS2CPacket(playerMana.getMana(),playerMana.getMaxMana(),playerMana.getMana_level(),playerMana.getMana_exp(), playerMana.getPresent_exp()),player);
                         source.sendSuccess(() -> Component.literal("已设置玩家 " + player.getDisplayName().getString() + " 的魔力等级为 " + level), true);
                     });
+                    ManaUtil.tryUnlockManaLevel99(player);
                 }
             }
             return targets.size();

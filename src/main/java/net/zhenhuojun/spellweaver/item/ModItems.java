@@ -52,6 +52,9 @@ public class ModItems {
             ITEMS.register("mana_pedestal",()->new BlockItem(MANA_PEDESTAL_BLOCK.get(),new Item.Properties()));
     public static final RegistryObject<Item>  INSCRIPTION_TABLE_ITEM=
             ITEMS.register("inscription_table",()->new BlockItem(INSCRIPTION_TABLE_BLOCK.get(),new Item.Properties()));
+
+    public static final RegistryObject<Item> MAGIC_SOUL_FIRE_ITEM=
+            ITEMS.register("magic_soul_fire",()->new BlockItem(MAGIC_SOUL_FIRE_BLOCK.get(),new Item.Properties()));
     //青金石卷轴
     public static final RegistryObject<Item> LAZULI_SCROLL=ITEMS.register("lazuli_scroll",()->new LazuliBeforeItem(new Item.Properties().stacksTo(1)));
 
@@ -66,6 +69,9 @@ public class ModItems {
     public static final RegistryObject<Item> ERASING_KNIFE =ITEMS.register("erasing_knife",()->new ErasingKnifeItem(new Item.Properties()));
     //魔法师之镜
     public static final RegistryObject<Item> MAGICIAN_MIRROR =ITEMS.register("magician_mirror",()->new Item(new Item.Properties().stacksTo(1)));
+
+    public static final RegistryObject<Item> MAGIC_STAR_ITEM =
+            ITEMS.register("magic_star", () -> new MagicStarItem(new Item.Properties().stacksTo(1)));
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

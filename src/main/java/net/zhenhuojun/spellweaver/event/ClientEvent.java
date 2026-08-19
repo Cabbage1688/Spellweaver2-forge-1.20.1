@@ -2,8 +2,12 @@ package net.zhenhuojun.spellweaver.event;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ArrowRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -16,6 +20,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.block.ModBlockEntities;
+import net.zhenhuojun.spellweaver.block.ModBlocks;
+import net.zhenhuojun.spellweaver.block.model.CutoutBakedModel;
 import net.zhenhuojun.spellweaver.capability.impl.spell_storage.StoredSpell;
 import net.zhenhuojun.spellweaver.client.data_util.ClientPlayerOverloadData;
 import net.zhenhuojun.spellweaver.client.gui.SpellWeavingScreen;
@@ -26,6 +32,7 @@ import net.zhenhuojun.spellweaver.client.hud.ShieldHud;
 import net.zhenhuojun.spellweaver.client.render.impl.*;
 import net.zhenhuojun.spellweaver.entity.ModEntities;
 import net.zhenhuojun.spellweaver.entity.impl.ManaArrow;
+import net.zhenhuojun.spellweaver.entity.model.MagicStarModel;
 import net.zhenhuojun.spellweaver.item.ModItems;
 import net.zhenhuojun.spellweaver.key.KeyBinding;
 import net.zhenhuojun.spellweaver.network.ModMessage;
@@ -157,6 +164,9 @@ public class ClientEvent {
                     });
             event.registerEntityRenderer(ModEntities.SPELL_EFFECT.get(), SpellEffectRenderer::new);
 
+            // 魔法之星实体渲染器
+            event.registerEntityRenderer(ModEntities.MAGIC_STAR.get(), MagicStarRenderer::new);
+
 
             event.registerBlockEntityRenderer(
                     ModBlockEntities.SPELL_MACHINE_BLOCK_ENTITY.get(),
@@ -171,8 +181,19 @@ public class ClientEvent {
         }
 
         @SubscribeEvent
+        public static void onRegisterLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
+            // 魔法之星模型层注册
+            event.registerLayerDefinition(MagicStarModel.LAYER_LOCATION, MagicStarModel::createBodyLayer);
+        }
+
+        @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
             event.enqueueWork(() -> {
+                //该方法弃用于1.20.4
+                //说是以后直接在json里写cutout，但我用的就是原版json
+                //只能希望它的json到时候也有吧
+                //ItemBlockRenderTypes.setRenderLayer(ModBlocks.MAGIC_SOUL_FIRE_BLOCK.get(), RenderType.cutout());
+
                 Item testBow = ModItems.TEST_BOW.get();
                 Item manaBow=ModItems.MANA_BOW.get();
                 ResourceLocation PULL =  ResourceLocation.fromNamespaceAndPath("minecraft","pull");
@@ -204,6 +225,20 @@ public class ClientEvent {
 
                 MinecraftForge.EVENT_BUS.addListener(SpellBlockGlowRenderer::onRenderLevelStage);
             });
+        }
+
+        @SubscribeEvent
+        public static void onBakingCompleted(ModelEvent.ModifyBakingResult event) {
+            ModelResourceLocation blockModel = new ModelResourceLocation(Spellweaver.MODID,"magic_soul_fire" , "");
+            BakedModel originalBlock = event.getModels().get(blockModel);
+            if (originalBlock != null) {
+                event.getModels().put(blockModel, new CutoutBakedModel(originalBlock));
+            }
+            ModelResourceLocation invModel = new ModelResourceLocation(Spellweaver.MODID,"magic_soul_fire", "inventory");
+            BakedModel originalInv = event.getModels().get(invModel);
+            if (originalInv != null) {
+                event.getModels().put(invModel, new CutoutBakedModel(originalInv));
+            }
         }
     }
 }

@@ -2,6 +2,7 @@ package net.zhenhuojun.spellweaver.network;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
@@ -266,6 +267,30 @@ public class ModMessage {
                 .consumerMainThread(CancelAllSpellsC2SPacket::handle)
                 .add();
 
+        // 魔法之星实体相关
+        net.messageBuilder(MagicStarSyncS2CPacket.class,id(),NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(MagicStarSyncS2CPacket::new)
+                .encoder(MagicStarSyncS2CPacket::toByte)
+                .consumerMainThread(MagicStarSyncS2CPacket::handle)
+                .add();
+
+        net.messageBuilder(MagicStarActionC2SPacket.class,id(),NetworkDirection.PLAY_TO_SERVER)
+                .decoder(MagicStarActionC2SPacket::new)
+                .encoder(MagicStarActionC2SPacket::toByte)
+                .consumerMainThread(MagicStarActionC2SPacket::handle)
+                .add();
+
+        net.messageBuilder(SoulFireBurnS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(SoulFireBurnS2CPacket::new)
+                .encoder(SoulFireBurnS2CPacket::toBytes)
+                .consumerMainThread(SoulFireBurnS2CPacket::handle)
+                .add();
+
+        net.messageBuilder(SummonMagicStarC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(SummonMagicStarC2SPacket::new)
+                .encoder(SummonMagicStarC2SPacket::toByte)
+                .consumerMainThread(SummonMagicStarC2SPacket::handle)
+                .add();
 
     }
 
@@ -287,5 +312,9 @@ public class ModMessage {
                 INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
             }
         }
+    }
+
+    public static <MSG> void sendToTrackingEntity(Entity entity, MSG message) {
+        INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), message);
     }
 }

@@ -1013,5 +1013,40 @@ public class GuiUtil {
                 new HexPoint(2, -2),
                 new HexPoint(1, -2)
         ));
+
+
+        predefinedPatterns.add(new SpellPattern("幽焰", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(1, -1),
+                new HexPoint(1, -2),
+                new HexPoint(0, -1),
+                new HexPoint(0, 0),
+                new HexPoint(0, 1),
+                new HexPoint(1, 0),
+                new HexPoint(2, -1),
+                new HexPoint(2, -2),
+                new HexPoint(2, -3),
+                new HexPoint(1, -2),
+                new HexPoint(0, -2),
+                new HexPoint(-1, -1),
+                new HexPoint(-1, 0),
+                new HexPoint(0, 0),
+                new HexPoint(1, 0),
+                new HexPoint(2, 0),
+                new HexPoint(3, -1),
+                new HexPoint(3, -2),
+                new HexPoint(2, -2),
+                new HexPoint(1, -1),
+                new HexPoint(1, 0)
+        ));
+
+
+        predefinedPatterns.add(new SpellPattern("亮度", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(0, -1),
+                new HexPoint(0, -2),
+                new HexPoint(1, -2),
+                new HexPoint(0, -1)
+        ));
     }
 }

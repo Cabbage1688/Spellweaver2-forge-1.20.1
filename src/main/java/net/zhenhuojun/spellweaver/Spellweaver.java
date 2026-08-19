@@ -11,11 +11,13 @@ import net.zhenhuojun.spellweaver.block.ModBlocks;
 import net.zhenhuojun.spellweaver.capability.provider.mana.ScrollSpellProvider;
 import net.zhenhuojun.spellweaver.damage_type.ModDamageTypes;
 import net.zhenhuojun.spellweaver.entity.ModEntities;
+import net.zhenhuojun.spellweaver.entity.ai.ModActivities;
+import net.zhenhuojun.spellweaver.entity.ai.ModSensors;
 import net.zhenhuojun.spellweaver.item.ModCreativeTable;
 import net.zhenhuojun.spellweaver.item.ModItems;
 import net.zhenhuojun.spellweaver.network.ModMessage;
 import org.slf4j.Logger;
-/// 致读我的代码的人：如果莫名其妙的遇到模块冲突，可以在cmd里面跑一边，跑完可能就好了（如果cmd运行没问题的话）
+/// 致读我的代码的人：如果莫名其妙的遇到模块冲突，可以在cmd里面跑一遍（gradlew clean runClient），跑完可能就好了（如果cmd运行没问题的话）
 @Mod(Spellweaver.MODID)
 public class Spellweaver {
     public static final String MODID="spellweaver";
@@ -39,6 +41,8 @@ public class Spellweaver {
         ModEntities.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModBlockEntities.register(modEventBus);
+        ModActivities.register(modEventBus);
+        ModSensors.register(modEventBus);
 
         ModCreativeTable.register(modEventBus);
 

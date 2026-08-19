@@ -6,7 +6,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class ClientPlayerManaData {
     private static double playerMana;
-    private static int maxMana =100;
+    private static long maxMana =100;
     private static int manaLevel;
     private static long manaExp;
     private static long currentExp;
@@ -15,7 +15,7 @@ public class ClientPlayerManaData {
     public static void set(double mana){
         ClientPlayerManaData.playerMana=mana;
     }
-    public static void setMaxMana(int maxMana) {
+    public static void setMaxMana(long maxMana) {
         ClientPlayerManaData.maxMana = maxMana;
     }
     public static void setManaLevel(int manaLevel) {
@@ -27,7 +27,7 @@ public class ClientPlayerManaData {
         return  playerMana;
     }
 
-    public static int getMaxMana(){
+    public static long getMaxMana(){
         return maxMana;
     }
     public static  int getManaLevel(){

@@ -3,12 +3,15 @@ package net.zhenhuojun.spellweaver.block;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.block.custom.InscriptionTableBlock;
+import net.zhenhuojun.spellweaver.block.custom.MagicSoulFireBlock;
 import net.zhenhuojun.spellweaver.block.custom.ManaPedestalBlock;
 import net.zhenhuojun.spellweaver.block.custom.SpellMachineBlock;
 
@@ -36,6 +39,16 @@ public class ModBlocks {
                     .strength(0.5f,12)
                     .sound(SoundType.METAL)
                     .noOcclusion()));
+
+    public static final RegistryObject<Block> MAGIC_SOUL_FIRE_BLOCK =
+            BLOCKS.register("magic_soul_fire",()->new MagicSoulFireBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_LIGHT_BLUE)
+                    .replaceable()
+                    .noCollission()
+                    .instabreak()
+                    .lightLevel((state) -> 15)
+                    .sound(SoundType.WOOL)
+                    .pushReaction(PushReaction.DESTROY),20));
 
 
 

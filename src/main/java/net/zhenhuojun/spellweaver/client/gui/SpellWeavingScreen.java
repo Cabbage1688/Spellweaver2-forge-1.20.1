@@ -18,11 +18,13 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.zhenhuojun.spellweaver.Config;
 import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.capability.impl.long_term_variables.PlayerLongTermVariablesData;
+import net.zhenhuojun.spellweaver.capability.impl.mana.ManaUtil;
 import net.zhenhuojun.spellweaver.client.gui.util.ClientPlayerSpellData;
 import net.zhenhuojun.spellweaver.client.gui.util.ClientPlayerVariableData;
 import net.zhenhuojun.spellweaver.client.gui.util.ClientPlayerManaData;
 import net.zhenhuojun.spellweaver.network.ModMessage;
 import net.zhenhuojun.spellweaver.network.packet.SpellCastingC2SPacket;
+import net.zhenhuojun.spellweaver.network.packet.SummonMagicStarC2SPacket;
 import net.zhenhuojun.spellweaver.network.packet.SpellStorageC2SPacket;
 import net.zhenhuojun.spellweaver.spell.node.*;
 import org.checkerframework.checker.units.qual.C;
@@ -43,6 +45,7 @@ public class SpellWeavingScreen extends Screen {
 
     public static final ResourceLocation STARS=fromNamespaceAndPath("minecraft","textures/entity/end_portal.png");
     public static final ResourceLocation MANA_TOP=fromNamespaceAndPath(Spellweaver.MODID,"textures/hud/mana_top.png");
+    public static final ResourceLocation MANA_TOP2=fromNamespaceAndPath(Spellweaver.MODID,"textures/item/magic_star.png");
 
     // 节点当前层级和选中的节点
     public Node currentNode;
@@ -91,6 +94,12 @@ public class SpellWeavingScreen extends Screen {
 
     private int manaTopRenderX;
     private int manaTopRenderY;
+    private int manaTop2RenderX;
+    private int manaTop2RenderY;
+    private static final int MANA_TOP2_SIZE = 16;
+    private static final int MANA_TOP2_GAP = 4;
+    private static final int MANA_STAR_SUMMON_COST = 5000;
+    private static final int MANA_STAR_REQUIRED_LEVEL = 100;
 
 
 
@@ -627,6 +636,9 @@ public class SpellWeavingScreen extends Screen {
         if (isMouseOverManaTop(pMouseX, pMouseY)) {
             pGuiGraphics.renderTooltip(font, getManaTooltip(), Optional.empty(), pMouseX, pMouseY);
         }
+        if (isMouseOverManaTop2(pMouseX, pMouseY)) {
+            pGuiGraphics.renderTooltip(font, getMagicStarTooltip(), Optional.empty(), pMouseX, pMouseY);
+        }
     }
 
     // 2026.4.1光标更新，渲染闪烁子节点（被光标选中
@@ -740,6 +752,11 @@ public class SpellWeavingScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+        // 检查是否点击了魔法之星召唤图标（左键）
+        if (pButton == 0 && isMouseOverManaTop2(pMouseX, pMouseY)) {
+            summonMagicStar();
+            return true;
+        }
         // 检查是否点击了中心节点
         if (centerButton.isMouseOver(pMouseX, pMouseY)) {
             if (pButton == 1) { // 右键
@@ -1038,11 +1055,29 @@ public class SpellWeavingScreen extends Screen {
         //manaTopRenderY = y - 17;
 
         guiGraphics.blit(MANA_TOP, manaTopRenderX, manaTopRenderY, 0, 0, 16, 16, 16, 16);
+
+        // 魔力等级>=100时，在ManaTop右侧渲染魔法之星召唤图标
+        if (manaLevel >= MANA_STAR_REQUIRED_LEVEL) {
+            manaTop2RenderX = manaTopRenderX + 16 + MANA_TOP2_GAP;
+            manaTop2RenderY = manaTopRenderY;
+            guiGraphics.blit(MANA_TOP2, manaTop2RenderX, manaTop2RenderY, 0, 0,
+                    MANA_TOP2_SIZE, MANA_TOP2_SIZE, MANA_TOP2_SIZE, MANA_TOP2_SIZE);
+        } else {
+            // 未达标时将渲染位置设为屏幕外，避免误判点击
+            manaTop2RenderX = -1;
+            manaTop2RenderY = -1;
+        }
     }
 
     private boolean isMouseOverManaTop(double mouseX, double mouseY) {
         return mouseX >= manaTopRenderX && mouseX <= manaTopRenderX + 16 &&
                mouseY >= manaTopRenderY && mouseY <= manaTopRenderY + 16;
+    }
+
+    private boolean isMouseOverManaTop2(double mouseX, double mouseY) {
+        if (manaTop2RenderX < 0) return false;
+        return mouseX >= manaTop2RenderX && mouseX <= manaTop2RenderX + MANA_TOP2_SIZE &&
+               mouseY >= manaTop2RenderY && mouseY <= manaTop2RenderY + MANA_TOP2_SIZE;
     }
 
     private List<Component> getManaTooltip() {
@@ -1052,9 +1087,21 @@ public class SpellWeavingScreen extends Screen {
         long maxExp=ClientPlayerManaData.getManaExp();
         long difference=maxExp-currentExp;
         tooltip.add(Component.translatable("gui.spellweaver.mana_level", manaLevel));
-        tooltip.add(Component.translatable("gui.spellweaver.mana_exp",difference));
-
+       //tooltip.add(Component.translatable("gui.spellweaver.mana_exp",difference));
+        tooltip.add(Component.translatable("gui.spellweaver.mana_exp", ManaUtil.formatMana(difference)));
         return tooltip;
+    }
+
+    private List<Component> getMagicStarTooltip() {
+        List<Component> tooltip = new ArrayList<>();
+        tooltip.add(Component.translatable("gui.spellweaver.magic_star.summon_tooltip"));
+        tooltip.add(Component.translatable("gui.spellweaver.magic_star.summon_cost", MANA_STAR_SUMMON_COST)
+                .withStyle(net.minecraft.ChatFormatting.GRAY));
+        return tooltip;
+    }
+
+    private void summonMagicStar() {
+        ModMessage.sendToServer(new SummonMagicStarC2SPacket());
     }
 }
 

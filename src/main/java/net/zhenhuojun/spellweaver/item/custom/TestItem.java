@@ -10,6 +10,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.capability.provider.mana.PlayerManaProvider;
+import net.zhenhuojun.spellweaver.entity.ModEntities;
+import net.zhenhuojun.spellweaver.entity.impl.MagicStarEntity;
 import net.zhenhuojun.spellweaver.network.ModMessage;
 import net.zhenhuojun.spellweaver.network.packet.ManaChangeS2CPacket;
 import net.zhenhuojun.spellweaver.spell.element.ElementType;
@@ -41,6 +43,10 @@ public class TestItem extends Item {
             });
             //测试粒子是否正常工作
             applyElement(pPlayer, ElementType.randomElement(), 100);
+
+            MagicStarEntity magicStarEntity=new MagicStarEntity(ModEntities.MAGIC_STAR.get(),pLevel,(ServerPlayer) pPlayer);
+            magicStarEntity.setPos(pPlayer.getEyePosition());
+            pLevel.addFreshEntity(magicStarEntity);
 
         }/*else{
             Spellweaver.getLOGGER().debug("[Spellweaver]坏了，怎么是客户端");

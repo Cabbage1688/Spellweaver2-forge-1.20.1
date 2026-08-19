@@ -1,0 +1,18 @@
+{
+  "name": "幽焰",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:attack",
+  "advancement": "spellweaver:mana_level_99",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "幽焰",
+      "images": ["spellweaver:textures/guidebook/magic_fire.png"],
+      "text": "$(l)[Vec3]->幽焰$()<br>"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "消耗栈顶Vec3,在指定坐标召唤出幽蓝的火焰，对接触到的生物每秒造成16%最大生命的伤害，即使离开火源也会继续灼烧5秒<br><br>魔力消耗：10000"
+    }
+  ]
+}

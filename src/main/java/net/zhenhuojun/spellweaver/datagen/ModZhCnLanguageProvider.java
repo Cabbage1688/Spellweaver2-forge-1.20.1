@@ -32,6 +32,7 @@ public class ModZhCnLanguageProvider extends LanguageProvider {
         this.add(ModItems.MANA_PEDESTAL_ITEM.get(), "基座");
         this.add(ModItems.MAGICIAN_MIRROR.get(), "魔法师之镜");
         this.add(ModItems.DIM_MANA_PEARL.get(), "黯淡的魔珠");
+        this.add(ModItems.MAGIC_STAR_ITEM.get(), "魔法之星");
 
         this.add("gui.spellweaver.spell_storage.title","法术库");
         this.add("gui.cast","释放");
@@ -169,6 +170,45 @@ public class ModZhCnLanguageProvider extends LanguageProvider {
 
         this.add("gui.edit","编辑法术");
         this.add("gui.spell_bound","绑定法术 [%s] 到 [%d] 槽位");
+
+        // ===== 魔法之星 =====
+        this.add("gui.spellweaver.magic_star.title", "魔法之星控制");
+        this.add("gui.spellweaver.magic_star.current_mode", "当前模式：%s");
+        this.add("gui.spellweaver.magic_star.mode.follow", "跟随");
+        this.add("gui.spellweaver.magic_star.mode.stop", "定点");
+        this.add("gui.spellweaver.magic_star.mode.sleep", "待机");
+        this.add("gui.spellweaver.magic_star.mode.patrol", "巡逻");
+        this.add("gui.spellweaver.magic_star.list.attack", "攻击法术");
+        this.add("gui.spellweaver.magic_star.list.shield", "自保法术");
+        this.add("gui.spellweaver.magic_star.list.protect_master", "护主法术");
+        this.add("gui.spellweaver.magic_star.list.routine", "日常法术");
+        this.add("gui.spellweaver.magic_star.list.title.0", "攻击法术列表");
+        this.add("gui.spellweaver.magic_star.list.title.1", "自保法术列表");
+        this.add("gui.spellweaver.magic_star.list.title.2", "护主法术列表");
+        this.add("gui.spellweaver.magic_star.list.title.3", "日常法术列表");
+        this.add("gui.spellweaver.magic_star.up", "上移");
+        this.add("gui.spellweaver.magic_star.down", "下移");
+        this.add("gui.spellweaver.magic_star.disable", "禁用");
+        this.add("gui.spellweaver.magic_star.note_label", "备注：");
+        this.add("gui.spellweaver.add", "添加");
+        this.add("gui.spellweaver.magic_star.add.title.0", "从法术库添加 - 攻击");
+        this.add("gui.spellweaver.magic_star.add.title.1", "从法术库添加 - 自保");
+        this.add("gui.spellweaver.magic_star.add.title.2", "从法术库添加 - 护主");
+        this.add("gui.spellweaver.magic_star.add.title.3", "从法术库添加 - 日常");
+        this.add("gui.spellweaver.magic_star.add.tip", "点击法术添加，可多选，按返回结束");
+        this.add("gui.spellweaver.magic_star.add.added", "已添加法术 '%s'");
+        this.add("gui.spellweaver.magic_star.add.already_added", "法术 '%s' 已在列表中");
+        this.add("gui.spellweaver.magic_star.add_delay", "延迟");
+        this.add("gui.spellweaver.magic_star.delay_display", "延迟%d刻");
+        this.add("gui.spellweaver.magic_star.delay_input.title", "输入延迟tick数");
+        this.add("gui.spellweaver.magic_star.delay_input.tip", "下一法术延迟释放的tick数");
+        this.add("gui.spellweaver.magic_star.delay_input.placeholder", "tick数");
+        this.add("gui.spellweaver.magic_star.itemize", "物品化");
+        this.add("gui.spellweaver.magic_star.summon_tooltip", "点击以创造魔法之星");
+        this.add("gui.spellweaver.magic_star.summon_cost", "消耗魔力：%d");
+        this.add("message.spellweaver.magic_star.level_too_low", "魔力等级不足100级，无法召唤魔法之星");
+
+        this.add("message.spellweaver.dim_not_work","黯淡的魔珠已无法为你提供帮助");
 
     }
 }

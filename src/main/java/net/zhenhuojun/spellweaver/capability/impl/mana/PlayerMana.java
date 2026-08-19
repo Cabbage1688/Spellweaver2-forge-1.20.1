@@ -20,7 +20,7 @@ public class PlayerMana {
     private Long mana_exp;//提升魔力等级需要的魔力经验值,数据较大用长整型
     private Long present_exp;//当前经验值
     private final int MIN_MANA = 0;
-    private int MAX_MANA;//=100+20*(mana_level);
+    private long MAX_MANA;//=100+20*(mana_level);
 
     public PlayerMana(Player player) {
         this.player = player;
@@ -38,7 +38,7 @@ public class PlayerMana {
 
     public int getMana_level() { return mana_level; }
 
-    public int getMaxMana() {
+    public long getMaxMana() {
         MAX_MANA = calculateMaxMana();
         return MAX_MANA;
     }
@@ -62,15 +62,21 @@ public class PlayerMana {
         this.mana = Math.max(mana - sub, MIN_MANA);//消耗魔力，不低于最小值
     }
     //理论上来说现在应该不需要再额外发包了，直接用这个
+
+
+    public void setMana(double mana) {
+        this.mana = mana;
+    }
+
     public void subManaAndAddExp(double count){
         subMana(count);
-        addExp((int)count);
+        addExp((long)count);
     }
 
     public void clearMana() { this.mana = 0; }//清空魔力值
 
     // 修改 addExp 方法，确保经验值可以正确累积并触发升级
-    public void addExp(int add) {
+    public void addExp(long add) {
         this.present_exp += add;
         checkLevelUp();
     }
@@ -81,13 +87,16 @@ public class PlayerMana {
         do {
             leveledUp = false;
             if (present_exp >= getMana_exp()) {
+                if(mana_level>119) return;
+                if(mana_level==99||mana_level==119){
+                    present_exp=getMana_exp()-1;
+                    return;
+                }
                 present_exp -= getMana_exp();
-                //TODO 当前99满级，本来不应该限制，但我后面要改魔力体系
-                if(mana_level>=100) return;
+
                 mana_level++;
                 leveledUp = true;
                 // 玩家升级提示
-
                 // 同步更新超载上限2026.4.13更新
                 player.getCapability(PlayerManaOverloadProvider.PLAYER_MANA_OVERLOAD).ifPresent(playerManaOverload -> {
                     playerManaOverload.updateMaxMultiplier(mana_level);
@@ -99,6 +108,7 @@ public class PlayerMana {
 
                 if (player instanceof ServerPlayer serverPlayer) {
                     serverPlayer.sendSystemMessage(Component.literal("§a魔力等级提升至 " + mana_level + "!"));
+                    ManaUtil.tryUnlockManaLevel99(serverPlayer);
                 }
             }
         } while (leveledUp);
@@ -132,65 +142,38 @@ public class PlayerMana {
         MAX_MANA = calculateMaxMana();
     }//从NBT数据中加载魔力值
 
-    //TODO魔力体系下次改
-    private int calculateMaxMana() {
+
+    private long calculateMaxMana() {
         if (mana_level <= 0) return 0;
 
-        int maxMana = 100;   // 1级基础
+        long maxMana = 100;   // 1级基础
 
-        for (int level = 2; level <= mana_level; level++) {
-            int tier = (level - 1) / 10 + 1;
-            if (tier > 10) tier = 10;          // 100级后增量不再增加
-            int increment = 20 + 10 * (tier - 1);
-            maxMana += increment;
+        if(mana_level<=99){
+            for (int level = 2; level <= mana_level; level++) {
+                int tier = (level - 1) / 10 + 1;
+                if (tier > 10) tier = 10;          // 100级后增量不再增加
+                int increment = 20 + 10 * (tier - 1);
+                maxMana += increment;
+            }
+        }else if(mana_level<120) {
+            //maxMana= (long) (6470*Math.pow(2,mana_level-99));
+            maxMana = 6470L * (1L << (mana_level - 99));
+            ///
+        }else {
+            maxMana=Long.MAX_VALUE;
         }
         return maxMana;
-
     }
 
 
-/*
-    private int calculateMaxMana() {
-        if (mana_level <= 0) return 0;
-        // 先计算到 99 级（保留原线性增长）
-        int maxMana = 100;   // 1级基础
-        int levelLimit = Math.min(mana_level, 99);
-        for (int level = 2; level <= levelLimit; level++) {
-            int tier = (level - 1) / 10 + 1;
-            if (tier > 10) tier = 10;
-            int increment = 20 + 10 * (tier - 1);
-            maxMana += increment;
-        }
-        if (mana_level <= 99) return maxMana;
-        long current = maxMana;
-        for (int level = 100; level <= mana_level; level++) {
-            current *= 2;
-            if (current > Integer.MAX_VALUE) return Integer.MAX_VALUE;
-        }
-        return (int) current;
-    }
-
- */
 
     private Long calculateManaExp() {
         //return (long) (100 + Math.pow(mana_level, 1.5));
-        return (long) (100 + Math.pow(mana_level, 2.5));//2025.9.26削弱魔力成长速度
+        return mana_level<100?(long) (100 + Math.pow(mana_level, 2.5)):getMaxMana()*1000*(mana_level-99);//2025.9.26削弱魔力成长速度
+        //2026.8.15削弱100级以上的成长速度
     }
 
 
-    /*private Long calculateManaExp() {
-        if (mana_level <= 99) {
-            return (long) (100 + Math.pow(mana_level, 2.5));
-        }
-        long exp = (long) (100 + Math.pow(99, 2.5));
-        for (int level = 100; level <= mana_level; level++) {
-            exp *= 2;
-            if (exp > Long.MAX_VALUE / 2) return Long.MAX_VALUE;
-        }
-        return exp;
-    }
-
-     */
 
     public CompoundTag serialize(){
         CompoundTag tag = new CompoundTag();

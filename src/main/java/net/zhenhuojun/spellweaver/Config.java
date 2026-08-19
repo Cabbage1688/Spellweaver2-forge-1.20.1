@@ -142,6 +142,10 @@ public class Config
             .comment("“播种”法术的法力消耗倍率，原消耗 = 1")
             .defineInRange("cultivateManaMultiplier", 1.0, 0.0, Double.MAX_VALUE);
 
+    private static final ForgeConfigSpec.DoubleValue MAGIC_FIRE_COSt=BUILDER
+            .comment("幽焰符文魔力消耗，默认10000")
+            .defineInRange("magicFireCost",10000,0.0,Double.MAX_VALUE);
+
     private static final ForgeConfigSpec.IntValue MANA_BAR_POSITION=BUILDER
             .comment("魔力条的位置，0，1，2，3分别代表右下，左下，左上，右上")
             .defineInRange("manaBarPosition",0,0,Integer.MAX_VALUE);
@@ -193,6 +197,8 @@ public class Config
     public static double cultivateManaMultiplier;
 
     public static int manaBarPosition;
+
+    public static double magicFireCost;
 
     static final ForgeConfigSpec SPEC = BUILDER.build();
     ///Forge 的 ModConfigEvent 分为 Loading（游戏启动或进入世界时触发）
@@ -253,6 +259,7 @@ public class Config
         interactManaMultiplier = INTERACT_MANA_MULTIPLIER.get();
         cultivateManaMultiplier = CULTIVATE_MANA_MULTIPLIER.get();
         manaBarPosition=MANA_BAR_POSITION.get();
+        magicFireCost=MAGIC_FIRE_COSt.get();
     }
 }
 

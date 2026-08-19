@@ -32,6 +32,7 @@ public class ModLanguageProvider extends LanguageProvider {
         this.add(ModItems.MANA_PEDESTAL_ITEM.get(), "ManaPedestal");
         this.add(ModItems.MAGICIAN_MIRROR.get(), "MagicianMirror");
         this.add(ModItems.DIM_MANA_PEARL.get(), "DimManaPearl");
+        this.add(ModItems.MAGIC_STAR_ITEM.get(), "MagicStar");
 
         this.add("gui.spellweaver.spell_storage.title","SpellBox");
         this.add("gui.cast","Cast");
@@ -171,6 +172,44 @@ public class ModLanguageProvider extends LanguageProvider {
         this.add("gui.edit","Edit Spell");
         this.add("gui.spell_bound","Bound spell [%s] to slot [%d]");
 
+        // ===== Magic Star =====
+        this.add("gui.spellweaver.magic_star.title", "Magic Star Control");
+        this.add("gui.spellweaver.magic_star.current_mode", "Current Mode: %s");
+        this.add("gui.spellweaver.magic_star.mode.follow", "Follow");
+        this.add("gui.spellweaver.magic_star.mode.stop", "Stop");
+        this.add("gui.spellweaver.magic_star.mode.sleep", "Sleep");
+        this.add("gui.spellweaver.magic_star.mode.patrol", "Patrol");
+        this.add("gui.spellweaver.magic_star.list.attack", "Attack Spells");
+        this.add("gui.spellweaver.magic_star.list.shield", "Self-Protection Spells");
+        this.add("gui.spellweaver.magic_star.list.protect_master", "Protect Master");
+        this.add("gui.spellweaver.magic_star.list.routine", "Routine Spells");
+        this.add("gui.spellweaver.magic_star.list.title.0", "Attack Spell List");
+        this.add("gui.spellweaver.magic_star.list.title.1", "Self-Protection Spell List");
+        this.add("gui.spellweaver.magic_star.list.title.2", "Protect Master Spell List");
+        this.add("gui.spellweaver.magic_star.list.title.3", "Routine Spell List");
+        this.add("gui.spellweaver.magic_star.up", "Up");
+        this.add("gui.spellweaver.magic_star.down", "Down");
+        this.add("gui.spellweaver.magic_star.disable", "Toggle");
+        this.add("gui.spellweaver.magic_star.note_label", "Note:");
+        this.add("gui.spellweaver.add", "Add");
+        this.add("gui.spellweaver.magic_star.add.title.0", "Add from Library - Attack");
+        this.add("gui.spellweaver.magic_star.add.title.1", "Add from Library - Self-Protection");
+        this.add("gui.spellweaver.magic_star.add.title.2", "Add from Library - Protect");
+        this.add("gui.spellweaver.magic_star.add.title.3", "Add from Library - Routine");
+        this.add("gui.spellweaver.magic_star.add.tip", "Click a spell to add, multi-select allowed, press Return to finish");
+        this.add("gui.spellweaver.magic_star.add.added", "Added spell '%s'");
+        this.add("gui.spellweaver.magic_star.add.already_added", "Spell '%s' is already in the list");
+        this.add("gui.spellweaver.magic_star.add_delay", "Delay");
+        this.add("gui.spellweaver.magic_star.delay_display", "Delay %d ticks");
+        this.add("gui.spellweaver.magic_star.delay_input.title", "Enter Delay Ticks");
+        this.add("gui.spellweaver.magic_star.delay_input.tip", "Delay ticks before next spell");
+        this.add("gui.spellweaver.magic_star.delay_input.placeholder", "ticks");
+        this.add("gui.spellweaver.magic_star.itemize", "Itemize");
+        this.add("gui.spellweaver.magic_star.summon_tooltip", "Click to create Magic Star");
+        this.add("gui.spellweaver.magic_star.summon_cost", "Mana Cost: %d");
+        this.add("message.spellweaver.magic_star.level_too_low", "Mana level below 100, cannot summon Magic Star");
+
+        this.add("message.spellweaver.dim_not_work","DimManaPearl could not help you now.");
 
     }
 }

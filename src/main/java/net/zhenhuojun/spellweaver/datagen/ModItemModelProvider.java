@@ -71,6 +71,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         this.basicItem(ModItems.ERASING_KNIFE.get());
         this.basicItem(ModItems.MAGICIAN_MIRROR.get());
         this.basicItem(ModItems.DIM_MANA_PEARL.get());
+        this.basicItem(ModItems.MAGIC_STAR_ITEM.get());
 
 
 

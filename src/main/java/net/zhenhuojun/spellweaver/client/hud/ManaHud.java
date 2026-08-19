@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.zhenhuojun.spellweaver.Config;
 import net.zhenhuojun.spellweaver.Spellweaver;
+import net.zhenhuojun.spellweaver.capability.impl.mana.ManaUtil;
 import net.zhenhuojun.spellweaver.client.gui.util.ClientPlayerManaData;
 
 public class ManaHud {
@@ -83,10 +84,12 @@ public class ManaHud {
            guiGraphics.blit(MANA_TOP,manaTopX,manaAndManaTopY,2,0,0,16,16,16,16);
 
            Font font= Minecraft.getInstance().font;
-           //MutableComponent text= net.minecraft.network.chat.Component.literal("魔力值："+(int)ClientPlayerManaData.getPlayerMana());
-           MutableComponent text= net.minecraft.network.chat.Component.translatable("hud.spellweaver.mana",(int)ClientPlayerManaData.getPlayerMana());
+           //MutableComponent text= net.minecraft.network.chat.Component.translatable("hud.spellweaver.mana",(long)ClientPlayerManaData.getPlayerMana());
+           MutableComponent text= net.minecraft.network.chat.Component.translatable("hud.spellweaver.mana", ManaUtil.formatMana((long) ClientPlayerManaData.getPlayerMana()));
            int color=0x477CFF;
            guiGraphics.drawString(font,text,fontX,fontY,color);
        }
     };
+
+
 }

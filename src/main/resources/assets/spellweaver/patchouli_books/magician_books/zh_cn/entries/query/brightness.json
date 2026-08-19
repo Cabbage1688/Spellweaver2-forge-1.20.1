@@ -1,0 +1,13 @@
+{
+  "name": "亮度",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:query",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "亮度",
+      "images": ["spellweaver:textures/guidebook/brightness.png"],
+      "text": "Vec3->亮度->double<br>弹出坐标，将该坐标的亮度压入栈。"
+    }
+  ]
+}
