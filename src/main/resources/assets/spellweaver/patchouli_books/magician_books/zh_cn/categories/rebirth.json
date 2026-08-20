@@ -1,0 +1,7 @@
+{
+  "name": "新生",
+  "description": "新的旅程",
+  "icon": "minecraft:dragon_egg",
+  "advancement": "spellweaver:mana_level_99",
+  "sortnum": 6
+}

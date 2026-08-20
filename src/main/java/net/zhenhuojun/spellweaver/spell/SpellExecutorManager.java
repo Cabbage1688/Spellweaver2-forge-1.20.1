@@ -42,6 +42,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.zhenhuojun.spellweaver.Config;
 import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.block.ModBlocks;
+import net.zhenhuojun.spellweaver.block.custom.MagicSoulFireBlock;
 import net.zhenhuojun.spellweaver.block.custom.ManaPedestalBlockEntity;
 import net.zhenhuojun.spellweaver.block.custom.SpellMachineBlockEntity;
 import net.zhenhuojun.spellweaver.capability.impl.mana.ManaSource;
@@ -897,7 +898,7 @@ public class SpellExecutorManager {
             }
         });
 
-        //TODO
+
         executors.put("亮度", context -> {
             Vec3 vec3 = context.pop(Vec3.class);
             BlockPos pos = BlockPos.containing(vec3);
@@ -1840,13 +1841,20 @@ public class SpellExecutorManager {
         });
         //TODO
         executors.put("幽焰",context -> {
-            Vec3 vec3=context.pop(Vec3.class);
-            if(ManaUtil.subManaAndAddExpAndSendPacket(Config.magicFireCost,context)){
-                BlockPos pos = BlockPos.containing(vec3);
-                Block block = ModBlocks.MAGIC_SOUL_FIRE_BLOCK.get();
-                BlockState state = block.defaultBlockState();
-                context.level.setBlock(pos,state,3);
-            }
+           if(context.isTop(Vec3.class)){
+               Vec3 vec3=context.pop(Vec3.class);
+               if(ManaUtil.subManaAndAddExpAndSendPacket(Config.magicFireCost,context)){
+                   BlockPos pos = BlockPos.containing(vec3);
+                   Block block = ModBlocks.MAGIC_SOUL_FIRE_BLOCK.get();
+                   BlockState state = block.defaultBlockState();
+                   context.level.setBlock(pos,state,3);
+               }
+           }else if(context.isTop(Entity.class)){
+               if(ManaUtil.subManaAndAddExpAndSendPacket(Config.magicFireCost,context)) {
+                   Entity entity = context.pop(Entity.class);
+                   entity.getPersistentData().putInt(MagicSoulFireBlock.SOUL_BURN_TAG, 15);
+               }
+           }
         });
     }
     //这些方法传入的context仅用把于信息传递到魔力消耗方法

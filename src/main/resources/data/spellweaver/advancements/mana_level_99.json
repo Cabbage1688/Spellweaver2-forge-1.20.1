@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:dragon_egg"
+    },
+    "title": {
+      "text": "新生"
+    },
+    "description": {
+      "text": "魔力等级达到99"
+    },
+    "frame": "goal",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": true
+  },
+  "criteria": {
+    "mana_level_99": {
+      "trigger": "minecraft:impossible",
+      "conditions": {}
+    }
+  },
+  "requirements": [
+    [
+      "mana_level_99"
+    ]
+  ]
+}

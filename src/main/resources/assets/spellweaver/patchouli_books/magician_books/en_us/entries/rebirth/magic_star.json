@@ -1,0 +1,35 @@
+{
+  "name": "Magic Star",
+  "icon": "spellweaver:magic_star",
+  "category": "spellweaver:rebirth",
+  "sortnum": 1,
+  "advancement": "spellweaver:mana_level_99",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "  The $(l)Magic Star$() is a flying companion that casts spells automatically, available after reaching $(9)level 100$().<br><br>It has its own independent spell lists and can automatically cast spells in different modes — attacking enemies, protecting itself, guarding its owner, or executing a routine spell cycle. You can think of it as a \"fully automated mage companion.\""
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)How to Create?$()<br><br>After reaching level 100, a magic star icon will appear at the bottom-right of the mana bar in the $(9)Spell Weaving Screen$(). $(l)Left-click$() the icon to summon — consuming $(9)5000 mana$() — and the Magic Star will appear above your head.<br><br>Make sure you have enough mana before summoning, otherwise nothing will happen."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Four Action Modes$()<br><br>Open the Magic Star's interaction screen (right-click the entity) to switch between action modes:<br><br>·$(9)$(l)Follow$(): Follows the owner, hovering about 2 blocks above.<br>·$(9)$(l)Stay$(): Stays in place, does not move.<br>·$(9)$(l)Patrol$(): Patrols a small area centered on the current position.<br>·$(9)$(l)Sleep$(): Stops all behavior, including spellcasting and targeting. Suitable for when you need quiet."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Four Spell Lists$()<br><br>The Magic Star has four independent spell lists, each triggered at different occasions:<br><br>·$(9)$(l)Attack Spells$(): Cast when an enemy is locked on.<br>·$(9)$(l)Self-Defense Spells$(): Cast when threatened (automatically pushes the star's own entity onto the stack when casting).<br>·$(9)$(l)Guardian Spells$(): Cast when the owner takes damage (automatically pushes the owner entity onto the stack when casting).<br>·$(9)$(l)Routine Spells$(): Cast in rotation every 20 ticks (automatically pushes the casting coordinate onto the stack when casting).<br><br>Spells in each list can be individually $(l)moved up, moved down, disabled, or deleted$(). Disable states are saved per list — disabling a spell in the attack list doesn't affect its state in the self-defense list.<br><br>Additionally, spell lists support $(9)delay entries$(): insert a \"delay x ticks\" entry to control the interval before the next spell is cast."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "spellweaver:magic_star",
+      "title": "Itemize and Restore",
+      "text": "$(l)Itemize:$()<br>Click the $(9)Itemize$() button at the bottom of the Magic Star interaction screen, and the entity will turn into a $(9)Magic Star Item$() and drop on the spot.<br><br>$(l)Restore:$()<br>Hold the Magic Star item and right-click a block to spawn the entity above it; right-click the air to spawn it above your head. $(l)Only the original owner$() can use it."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Miscellaneous$()<br><br>The Magic Star consumes the player's mana when casting, but when using the [Self] rune, it pushes itself onto the stack rather than the player entity."
+    }
+  ]
+}

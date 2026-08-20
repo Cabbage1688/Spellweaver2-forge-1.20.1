@@ -1,0 +1,29 @@
+{
+  "name": "Life Leap",
+  "icon": "minecraft:dragon_egg",
+  "category": "spellweaver:rebirth",
+  "sortnum": 0,
+  "advancement": "spellweaver:mana_level_99",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "  When your mana level reaches $(9)level 99$(), you'll find that mana growth has completely stagnated.<br><br>This is because you've hit a $(l)shackle$() — the boundary between ordinary life and legend. Ordinary mana training can no longer advance you further; you need a $(l)breakthrough$().<br><br>Breakthrough requires items related to legendary creatures, borrowing their power to shatter the bottleneck and complete a life-level leap."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:dragon_egg",
+      "title": "Dragon Egg Breakthrough",
+      "text": "$(l)Usage:$()<br>At mana level 99, hold a $(9)Dragon Egg$() and right-click to trigger the breakthrough."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:nether_star",
+      "title": "Nether Star Breakthrough",
+      "text": "$(l)Usage:$()<br>Same as the dragon egg — at level 99, hold a $(9)Nether Star$() and right-click."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)What does level 100 mean?$()<br><br>First, after breaking through to level 100, your mana cap will increase significantly and you'll gain the ability to fly. The mana cap from levels 1-99 grows linearly, but from level 100 onward it $(9)doubles$() with each level — meaning that from level 100, your mana reserves will far exceed the sum of everything before.<br><br>Second, you'll gain the trait of $(9)damage cap$() — a single instance of regular damage dealt to you cannot exceed a certain value, no matter how high it should be. This trait is one of the key distinctions between legendary and ordinary beings. The trait is a derivative of rules, a gift the world presents to newly born legends.<br><br>Additionally, level 100 unlocks the $(l)Magic Star$() — a flying companion that can cast spells automatically. See the next page for details."
+    }
+  ]
+}

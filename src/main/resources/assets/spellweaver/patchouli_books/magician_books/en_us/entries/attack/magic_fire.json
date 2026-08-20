@@ -1,0 +1,18 @@
+{
+  "name": "GloomFire",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:attack",
+  "advancement": "spellweaver:mana_level_99",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "GloomFire",
+      "images": ["spellweaver:textures/guidebook/magic_fire.png"],
+      "text": "$(l)[Vec3]->GloomFire$()<br>"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Consume the Vec3 and summons ghostly blue flames at the specified coordinate, dealing 16% of max health as damage per second to creatures in contact. Even after leaving the fire source, burning continues for 5 seconds.<br><br>Mana cost: 10000"
+    }
+  ]
+}
