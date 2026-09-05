@@ -17,6 +17,7 @@ import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.capability.impl.mana.ManaUtil;
 import net.zhenhuojun.spellweaver.entity.ModEntities;
 import net.zhenhuojun.spellweaver.entity.impl.ManaArrow;
+import org.jetbrains.annotations.NotNull;
 
 public class ManaBowItem extends BowItem {
     private static final int MANA_COST_PER_SHOT = 5;          // 每次射击消耗魔力

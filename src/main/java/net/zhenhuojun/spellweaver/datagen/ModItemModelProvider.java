@@ -29,7 +29,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         ItemModelBuilder pulling1 = getBuilder("mana_bow_pulling_1");
         ItemModelBuilder pulling2 = getBuilder("mana_bow_pulling_2");
         getBuilder("mana_bow")
-                .parent(getExistingFile(mcLoc("item/generated")))
+                .parent(getExistingFile(mcLoc("item/bow")))
                 .texture("layer0", modLoc("item/mana_bow"))
                 .override()
                 .predicate(mcLoc("pulling"), 1)
