@@ -1,0 +1,6 @@
+{
+  "name": "药水效果",
+  "description": "药水效果相关符文<br><br>提示：条目中给出的是参数读取顺序，而栈遵循先进后出的规则，你的输入顺序应与条目中顺序相反",
+  "icon": "minecraft:glass_bottle",
+  "sortnum": 2
+}

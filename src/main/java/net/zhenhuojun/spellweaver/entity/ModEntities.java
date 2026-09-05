@@ -67,12 +67,45 @@ public class ModEntities {
 
     public static final RegistryObject<EntityType<MagicStarEntity>> MAGIC_STAR=
             ENTITY_DEFERRED_REGISTER.register("magic_star",
-                    ()->EntityType.Builder.<MagicStarEntity>of(MagicStarEntity::new,MobCategory.MONSTER)
+                    ()->EntityType.Builder.<MagicStarEntity>of(MagicStarEntity::new,MobCategory.CREATURE)
                             .sized(0.5f,0.5f)
                             .clientTrackingRange(10)
                             .updateInterval(2)
                             .build("magic_star")
             );
+
+    public static final RegistryObject<EntityType<ManaSlashEntity>> MANA_SLASH =
+            ENTITY_DEFERRED_REGISTER.register("mana_slash",
+                    ()->EntityType.Builder.<ManaSlashEntity>of(ManaSlashEntity::new,MobCategory.MISC)
+                            .sized(1f,0.1f)
+                            .clientTrackingRange(10)
+                            .updateInterval(1)
+                            .build("mana_slash")
+            );
+
+
+    public static final RegistryObject<EntityType<ManaSlashEntity>> MANA_SLASH_MEDIUM =
+            ENTITY_DEFERRED_REGISTER.register("mana_slash_medium",
+                    () -> EntityType.Builder.<ManaSlashEntity>of(ManaSlashEntity::new, MobCategory.MISC)
+                            .sized(2.0f, 0.1f)
+                            .clientTrackingRange(10)
+                            .updateInterval(1)
+                            .build("mana_slash_medium")
+            );
+
+    // 大剑气
+    public static final RegistryObject<EntityType<ManaSlashEntity>> MANA_SLASH_LARGE =
+            ENTITY_DEFERRED_REGISTER.register("mana_slash_large",
+                    () -> EntityType.Builder.<ManaSlashEntity>of(ManaSlashEntity::new, MobCategory.MISC)
+                            .sized(3.0f, 0.1f)
+                            .clientTrackingRange(10)
+                            .updateInterval(1)
+                            .build("mana_slash_large")
+            );
+
+
+
+
 
     @SubscribeEvent
     public static void registerAttributes(EntityAttributeCreationEvent event) {

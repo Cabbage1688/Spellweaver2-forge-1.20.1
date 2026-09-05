@@ -1,0 +1,17 @@
+{
+  "name": "Strength",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:mob_effect",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "Strength",
+      "images": ["spellweaver:textures/guidebook/strength.png"],
+      "text": "$(l)double$() level, $(l)Entity$() target, $(l)double$() duration -> Strength -> $(l)Entity$() target<br>This rune sequence is order-sensitive"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Applies Strength effect to the entity.<br>Mana cost: duration * (level + 1)^2"
+    }
+  ]
+}

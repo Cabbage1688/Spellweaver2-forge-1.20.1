@@ -1,0 +1,17 @@
+{
+  "name": "Night Vision",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:mob_effect",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "Night Vision",
+      "images": ["spellweaver:textures/guidebook/night_vision.png"],
+      "text": "$(l)double$() level, $(l)Entity$() target, $(l)double$() duration -> Night Vision -> $(l)Entity$() target<br>This rune sequence is order-sensitive"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Applies Night Vision effect to the entity.<br>Mana cost: duration * (level + 1)^2"
+    }
+  ]
+}

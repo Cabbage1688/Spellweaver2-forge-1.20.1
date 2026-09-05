@@ -26,4 +26,7 @@ public class ModDamageTypes {
 
     public static final ResourceKey<DamageType> ELEMENT_WIND=
             ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(Spellweaver.MODID, "element_wind"));
+
+    public static final ResourceKey<DamageType> MANA_SLASH=
+            ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(Spellweaver.MODID, "mana_slash"));
 }

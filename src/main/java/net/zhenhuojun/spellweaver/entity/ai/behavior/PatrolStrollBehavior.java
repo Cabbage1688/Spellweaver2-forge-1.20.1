@@ -6,6 +6,10 @@ import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.zhenhuojun.spellweaver.entity.impl.MagicStarEntity;
 
 import java.util.Map;
@@ -46,11 +50,26 @@ public class PatrolStrollBehavior extends Behavior<MagicStarEntity> {
     private void pickNewStrollTarget(MagicStarEntity entity) {
         BlockPos center = entity.getPatrolCenter();
         if (center == null) return;
+
+        //计算巡逻中心与地面/水面的距离
+        Vec3 vec3=new Vec3(center.getX(),center.getY(),center.getZ());
+        BlockHitResult hitResult = entity.level().clip(new ClipContext(
+                vec3,
+                vec3.subtract(0, 16, 0),
+                ClipContext.Block.COLLIDER,
+                ClipContext.Fluid.ANY,
+                entity
+        ));
+        double distance=16;
+        if (hitResult.getType() == HitResult.Type.BLOCK) {
+             distance = vec3.y - hitResult.getLocation().y;
+        }
+
         int x = center.getX() + entity.getRandom().nextInt(PATROL_HALF * 2 + 1) - PATROL_HALF;
-        int y = center.getY() + entity.getRandom().nextInt(7) - 3;
+        int y =distance>5? center.getY() + entity.getRandom().nextInt(7) - 3:center.getY() + entity.getRandom().nextInt(4)+2;
         int z = center.getZ() + entity.getRandom().nextInt(PATROL_HALF * 2 + 1) - PATROL_HALF;
         entity.getBrain().setMemory(MemoryModuleType.WALK_TARGET,
-                new WalkTarget(new BlockPos(x, y, z), 1.0F, 1));
+                new WalkTarget(new BlockPos(x, y, z), FollowOwnerBehavior.WALK_SPEED, 1));
         // 2~5秒后选下一个巡逻点
         strollCooldown = 40 + entity.getRandom().nextInt(60);
     }

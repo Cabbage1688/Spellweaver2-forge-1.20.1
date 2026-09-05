@@ -44,10 +44,12 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.piston.PistonStructureResolver;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -444,7 +446,36 @@ public class ModEvent {
         @SubscribeEvent
         public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
             DIMENSION_TRANSFER_DATA.remove(event.getEntity().getUUID());
+            net.zhenhuojun.spellweaver.loot.LanguageTracker.removeLanguage(event.getEntity().getUUID());
             Spellweaver.getLOGGER().debug("[Spellweaver:ModEvent/onPlayerLogout]数据缓存清理完成");
+        }
+
+        // 法术书页注入的原版结构战利品表列表
+        private static final Set<ResourceLocation> SPELL_PAGE_TABLES = Set.of(
+                net.minecraft.world.level.storage.loot.BuiltInLootTables.ANCIENT_CITY,
+                net.minecraft.world.level.storage.loot.BuiltInLootTables.ANCIENT_CITY_ICE_BOX,
+                net.minecraft.world.level.storage.loot.BuiltInLootTables.SIMPLE_DUNGEON,
+                net.minecraft.world.level.storage.loot.BuiltInLootTables.DESERT_PYRAMID,
+                net.minecraft.world.level.storage.loot.BuiltInLootTables.JUNGLE_TEMPLE,
+                net.minecraft.world.level.storage.loot.BuiltInLootTables.WOODLAND_MANSION,
+                net.minecraft.world.level.storage.loot.BuiltInLootTables.STRONGHOLD_LIBRARY,
+                net.minecraft.world.level.storage.loot.BuiltInLootTables.END_CITY_TREASURE,
+                net.minecraft.world.level.storage.loot.BuiltInLootTables.BASTION_TREASURE,
+                net.minecraft.world.level.storage.loot.BuiltInLootTables.SHIPWRECK_TREASURE,
+                net.minecraft.world.level.storage.loot.BuiltInLootTables.BURIED_TREASURE
+        );
+
+        // 向原版结构战利品表注入法术书页战利品池
+        @SubscribeEvent
+        public static void onLootTableLoad(LootTableLoadEvent event) {
+            if (!SPELL_PAGE_TABLES.contains(event.getName())) return;
+            LootPool pool = LootPool.lootPool()
+                    .name("spellweaver_magic_page_pool")
+                    .setRolls(net.minecraft.world.level.storage.loot.providers.number.ConstantValue.exactly(1.0F))
+                    .add(net.minecraft.world.level.storage.loot.entries.LootTableReference.lootTableReference(
+                            ResourceLocation.fromNamespaceAndPath(Spellweaver.MODID, "chests/magic_page_chest")))
+                    .build();
+            event.getTable().addPool(pool);
         }
 
 
@@ -776,7 +807,7 @@ public class ModEvent {
                             new ItemStack(ModItems.MANA_PEARL.get()));
                     level.addFreshEntity(itemEntity);
                 }
-                if(level.random.nextFloat()<chance*10){
+                if(level.random.nextFloat()<chance*100){
                     ItemEntity itemEntity=new ItemEntity( level,
                             pos.getX() + 0.5,
                             pos.getY() + 0.5,

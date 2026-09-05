@@ -1,0 +1,17 @@
+{
+  "name": "缓慢",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:mob_effect",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "缓慢",
+      "images": ["spellweaver:textures/guidebook/slow.png"],
+      "text": "$(l)double$() level,$(l)Entity$() target,$(l)double$() duration->缓慢->$(l)Entity$() target<br>该符文顺序敏感"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "为实体施加缓慢效果<br>魔力消耗：duration*(level+1)^2"
+    }
+  ]
+}

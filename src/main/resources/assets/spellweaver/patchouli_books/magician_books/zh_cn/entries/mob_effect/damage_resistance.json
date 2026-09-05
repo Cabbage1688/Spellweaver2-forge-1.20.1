@@ -1,0 +1,17 @@
+{
+  "name": "伤害吸收",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:mob_effect",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "伤害吸收",
+      "images": ["spellweaver:textures/guidebook/damage_resistance.png"],
+      "text": "$(l)double$() level,$(l)Entity$() target,$(l)double$() duration->伤害吸收->$(l)Entity$() target<br>该符文顺序敏感"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "为实体施加伤害吸收效果<br>魔力消耗：duration*(level+1)*5"
+    }
+  ]
+}

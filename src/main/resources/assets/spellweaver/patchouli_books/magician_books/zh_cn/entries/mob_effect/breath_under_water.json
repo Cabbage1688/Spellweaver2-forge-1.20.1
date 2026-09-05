@@ -1,0 +1,17 @@
+{
+  "name": "水下呼吸",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:mob_effect",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "水下呼吸",
+      "images": ["spellweaver:textures/guidebook/breath_under_water.png"],
+      "text": "$(l)double$() level,$(l)Entity$() target,$(l)double$() duration->水下呼吸->$(l)Entity$() target<br>该符文顺序敏感"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "为实体施加水下呼吸效果<br>魔力消耗：duration*(level+1)^2"
+    }
+  ]
+}

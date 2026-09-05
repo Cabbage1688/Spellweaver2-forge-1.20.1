@@ -1048,5 +1048,251 @@ public class GuiUtil {
                 new HexPoint(1, -2),
                 new HexPoint(0, -1)
         ));
+
+        predefinedPatterns.add(new SpellPattern("迅捷", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(0, -1),
+                new HexPoint(-1, 0),
+                new HexPoint(-1, 1),
+                new HexPoint(0, 0),
+                new HexPoint(1, 0),
+                new HexPoint(2, 0),
+                new HexPoint(2, -1),
+                new HexPoint(1, -1),
+                new HexPoint(1, 0),
+                new HexPoint(0, 1),
+                new HexPoint(1, 1),
+                new HexPoint(2, 0)
+        ));
+
+        predefinedPatterns.add(new SpellPattern("缓慢", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(1, -1),
+                new HexPoint(1, 0),
+                new HexPoint(0, 1),
+                new HexPoint(0, 0),
+                new HexPoint(-1, 0),
+                new HexPoint(-2, 0),
+                new HexPoint(-1, -1),
+                new HexPoint(0, -1),
+                new HexPoint(-1, 0),
+                new HexPoint(-1, 1),
+                new HexPoint(-2, 1),
+                new HexPoint(-2, 0)
+        ));
+
+        predefinedPatterns.add(new SpellPattern("急迫", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(0, -1),
+                new HexPoint(-1, 0),
+                new HexPoint(-1, 1),
+                new HexPoint(0, 0),
+                new HexPoint(1, 0),
+                new HexPoint(2, -1),
+                new HexPoint(2, 0),
+                new HexPoint(1, 1)
+        ));
+
+
+        predefinedPatterns.add(new SpellPattern("力量", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(0, -1),
+                new HexPoint(-1, 0),
+                new HexPoint(-1, 1),
+                new HexPoint(0, 0),
+                new HexPoint(1, -1),
+                new HexPoint(2, -2),
+                new HexPoint(2, -1),
+                new HexPoint(1, 0),
+                new HexPoint(1, -1)
+        ));
+
+        predefinedPatterns.add(new SpellPattern("跳跃提升", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(1, -1),
+                new HexPoint(1, -2),
+                new HexPoint(0, -1),
+                new HexPoint(0, 0),
+                new HexPoint(1, 0),
+                new HexPoint(1, 1),
+                new HexPoint(0, 1),
+                new HexPoint(-1, 1),
+                new HexPoint(-2, 1),
+                new HexPoint(-1, 0),
+                new HexPoint(0, 0)
+        ));
+
+        predefinedPatterns.add(new SpellPattern("生命恢复", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(0, -1),
+                new HexPoint(-1, 0),
+                new HexPoint(-1, 1),
+                new HexPoint(0, 0),
+                new HexPoint(1, -1),
+                new HexPoint(1, 0),
+                new HexPoint(2, -1),
+                new HexPoint(2, 0),
+                new HexPoint(1, 1),
+                new HexPoint(0, 2),
+                new HexPoint(0, 1),
+                new HexPoint(0, 0)
+        ));
+
+        predefinedPatterns.add(new SpellPattern("抗火", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(-1, 1),
+                new HexPoint(0, 1),
+                new HexPoint(1, 1),
+                new HexPoint(1, 0),
+                new HexPoint(0, 0),
+                new HexPoint(1, -1),
+                new HexPoint(1, 0),
+                new HexPoint(2, -1),
+                new HexPoint(2, 0),
+                new HexPoint(1, 1)
+        ));
+
+        predefinedPatterns.add(new SpellPattern("水下呼吸", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(0, -1),
+                new HexPoint(-1, 0),
+                new HexPoint(-1, 1),
+                new HexPoint(0, 0),
+                new HexPoint(1, -1),
+                new HexPoint(2, -2),
+                new HexPoint(1, -2),
+                new HexPoint(1, -1)
+        ));
+        //隐身有两种重载
+        predefinedPatterns.add(new SpellPattern("隐身", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(1, -1),
+                new HexPoint(1, -2),
+                new HexPoint(0, -1),
+                new HexPoint(0, 0),
+                new HexPoint(1, 0),
+                new HexPoint(2, -1),
+                new HexPoint(1, -1),
+                new HexPoint(0, -1),
+                new HexPoint(-1, -1),
+                new HexPoint(0, -2),
+                new HexPoint(1, -2),
+                new HexPoint(2, -2),
+                new HexPoint(2, -1)
+        ));
+        predefinedPatterns.add(new SpellPattern("隐身", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(1, -1),
+                new HexPoint(1, -2),
+                new HexPoint(0, -1),
+                new HexPoint(0, 0),
+                new HexPoint(1, 0),
+                new HexPoint(2, -1),
+                new HexPoint(2, -2),
+                new HexPoint(1, -2),
+                new HexPoint(0, -2),
+                new HexPoint(-1, -1),
+                new HexPoint(0, -1),
+                new HexPoint(1, -1),
+                new HexPoint(2, -1)
+        ));
+
+        predefinedPatterns.add(new SpellPattern("夜视", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(1, -1),
+                new HexPoint(1, -2),
+                new HexPoint(0, -1),
+                new HexPoint(0, 0),
+                new HexPoint(1, 0),
+                new HexPoint(2, -1),
+                new HexPoint(2, -2),
+                new HexPoint(1, -2),
+                new HexPoint(0, -2),
+                new HexPoint(-1, -1),
+                new HexPoint(-1, 0),
+                new HexPoint(0, 0),
+                new HexPoint(0, 1),
+                new HexPoint(-1, 2),
+                new HexPoint(-1, 1),
+                new HexPoint(0, 0)
+        ));
+
+        predefinedPatterns.add(new SpellPattern("剧毒", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(0, 1),
+                new HexPoint(1, 0),
+                new HexPoint(1, 1),
+                new HexPoint(2, 0),
+                new HexPoint(2, -1),
+                new HexPoint(2, -2),
+                new HexPoint(1, -1),
+                new HexPoint(0, 0)
+        ));
+
+        predefinedPatterns.add(new SpellPattern("虚弱", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(0, -1),
+                new HexPoint(-1, 0),
+                new HexPoint(-1, 1),
+                new HexPoint(0, 0),
+                new HexPoint(0, 1),
+                new HexPoint(0, 2),
+                new HexPoint(1, 1),
+                new HexPoint(1, 0),
+                new HexPoint(0, 1)
+        ));
+
+        predefinedPatterns.add(new SpellPattern("生命提升", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(1, -1),
+                new HexPoint(1, 0),
+                new HexPoint(2, -1),
+                new HexPoint(2, 0),
+                new HexPoint(1, 1),
+                new HexPoint(0, 2),
+                new HexPoint(0, 1),
+                new HexPoint(0, 0),
+                new HexPoint(0, -1),
+                new HexPoint(-1, 0),
+                new HexPoint(-1, -1),
+                new HexPoint(-2, 0),
+                new HexPoint(-2, 1),
+                new HexPoint(-2, 2),
+                new HexPoint(-1, 1),
+                new HexPoint(0, 0)
+        ));
+        predefinedPatterns.add(new SpellPattern("伤害吸收", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(1, -1),
+                new HexPoint(2, -1),
+                new HexPoint(2, 0),
+                new HexPoint(1, 1),
+                new HexPoint(0, 2),
+                new HexPoint(0, 1),
+                new HexPoint(0, 0)
+        ));
+        predefinedPatterns.add(new SpellPattern("漂浮", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(1, 0),
+                new HexPoint(1, 1),
+                new HexPoint(0, 1),
+                new HexPoint(0, 0),
+                new HexPoint(-1, 0),
+                new HexPoint(-2, 1),
+                new HexPoint(-1, 1),
+                new HexPoint(0, 0)
+        ));
+        predefinedPatterns.add(new SpellPattern("发光", 0XFF0000FF,
+                new HexPoint(0, 0),
+                new HexPoint(0, -1),
+                new HexPoint(-1, 0),
+                new HexPoint(-1, 1),
+                new HexPoint(0, 0),
+                new HexPoint(1, 0),
+                new HexPoint(2, -1),
+                new HexPoint(3, -2),
+                new HexPoint(2, -2),
+                new HexPoint(2, -1)
+        ));
     }
 }

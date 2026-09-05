@@ -15,7 +15,9 @@ import net.zhenhuojun.spellweaver.entity.ai.ModActivities;
 import net.zhenhuojun.spellweaver.entity.ai.ModSensors;
 import net.zhenhuojun.spellweaver.item.ModCreativeTable;
 import net.zhenhuojun.spellweaver.item.ModItems;
+import net.zhenhuojun.spellweaver.loot.ModLootPoolEntries;
 import net.zhenhuojun.spellweaver.network.ModMessage;
+import net.zhenhuojun.spellweaver.particle.ModParticle;
 import org.slf4j.Logger;
 /// 致读我的代码的人：如果莫名其妙的遇到模块冲突，可以在cmd里面跑一遍（gradlew clean runClient），跑完可能就好了（如果cmd运行没问题的话）
 @Mod(Spellweaver.MODID)
@@ -43,8 +45,10 @@ public class Spellweaver {
         ModBlockEntities.register(modEventBus);
         ModActivities.register(modEventBus);
         ModSensors.register(modEventBus);
+        ModParticle.register(modEventBus);
 
         ModCreativeTable.register(modEventBus);
+        ModLootPoolEntries.register(modEventBus);
 
         context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
 

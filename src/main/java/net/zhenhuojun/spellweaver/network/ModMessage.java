@@ -292,6 +292,18 @@ public class ModMessage {
                 .consumerMainThread(SummonMagicStarC2SPacket::handle)
                 .add();
 
+        net.messageBuilder(MagicPageC2SPacket.class,id(),NetworkDirection.PLAY_TO_SERVER)
+                .decoder(MagicPageC2SPacket::new)
+                .encoder(MagicPageC2SPacket::toByte)
+                .consumerMainThread(MagicPageC2SPacket::handle)
+                .add();
+
+        net.messageBuilder(ClientLanguageC2SPacket.class,id(),NetworkDirection.PLAY_TO_SERVER)
+                .decoder(ClientLanguageC2SPacket::new)
+                .encoder(ClientLanguageC2SPacket::toByte)
+                .consumerMainThread(ClientLanguageC2SPacket::handle)
+                .add();
+
     }
 
     public static <MSG> void sendToServer(MSG message) {

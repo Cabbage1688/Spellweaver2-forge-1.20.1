@@ -1,0 +1,17 @@
+{
+  "name": "Regeneration",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:mob_effect",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "Regeneration",
+      "images": ["spellweaver:textures/guidebook/health_recover.png"],
+      "text": "$(l)double$() level, $(l)Entity$() target, $(l)double$() duration -> Regeneration -> $(l)Entity$() target<br>This rune sequence is order-sensitive"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Applies Regeneration effect to the entity.<br>Mana cost: duration * (level + 1)^2"
+    }
+  ]
+}

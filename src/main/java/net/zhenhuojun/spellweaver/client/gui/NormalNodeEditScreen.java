@@ -484,12 +484,14 @@ public class NormalNodeEditScreen extends Screen {
 
 
         //测试逻辑
-       /* if (currentPath.size()> 2){
+        /*if (currentPath.size()> 2){
            List<HexPoint> normalizedPath = normalizePath(currentPath);
             System.out.println("[DEBUG]:player's path"+pathToString(normalizedPath));
        }
 
-        */
+         */
+
+
 
 
 

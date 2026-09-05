@@ -49,6 +49,17 @@ public class ManaUtil {
         return mana.get();
     }
 
+    public static double getMaxMana(ServerPlayer player){
+        AtomicDouble mana = new AtomicDouble();
+        mana.set(0d);
+        if(player!=null){
+            player.getCapability(PlayerManaProvider.PLAYER_MANA).ifPresent(playerMana -> {
+                mana.set(playerMana.getMaxMana());
+            });
+        }
+        return mana.get();
+    }
+
     public static int CheckLevel(ServerPlayer player){
         AtomicInteger level = new AtomicInteger();
         level.set(0);

@@ -1,0 +1,6 @@
+{
+  "name": "PotionEffects",
+  "description": "PotionEffect-related Runes<br><br>Note: The entry lists the order in which parameters are read, but the stack follows LIFO (last-in-first-out). Therefore, your input order must be the reverse of the entry order.",
+  "icon": "minecraft:glass_bottle",
+  "sortnum": 2
+}

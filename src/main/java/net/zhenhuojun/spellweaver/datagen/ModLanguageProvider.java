@@ -211,5 +211,11 @@ public class ModLanguageProvider extends LanguageProvider {
 
         this.add("message.spellweaver.dim_not_work","DimManaPearl could not help you now.");
 
+        this.add("gui.overwrite","Overwrite");
+        this.add("gui.new","As new spell");
+
+        this.add(ModItems.MAGIC_PAGE.get(), "MagicPaper");
+
+
     }
 }

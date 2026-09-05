@@ -1,0 +1,17 @@
+{
+  "name": "Water Breathing",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:mob_effect",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "Water Breathing",
+      "images": ["spellweaver:textures/guidebook/breath_under_water.png"],
+      "text": "$(l)double$() level, $(l)Entity$() target, $(l)double$() duration -> Water Breathing -> $(l)Entity$() target<br>This rune sequence is order-sensitive"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Applies Water Breathing effect to the entity.<br>Mana cost: duration * (level + 1)^2"
+    }
+  ]
+}

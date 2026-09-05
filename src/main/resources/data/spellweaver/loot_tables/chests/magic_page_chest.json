@@ -1,0 +1,51 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "spellweaver:magic_page",
+          "weight": 1,
+          "spells": [
+            {
+              "name_zh": "冰风暴",
+              "name_en": "Ice Storm",
+              "note_zh": "可沿视线方向发射大量飞弹，飞弹会对命中的敌人造成冻结",
+              "note_en": "Fires a large number of missiles along the line of sight, which freeze enemies upon impact.",
+              "spellContent": "SPELLWEAVER_SPELL:H4sIAAAAAAAA/3WSTWsTQRiA301CzKYRpHgQT3MWK6j/QEQQ1Eu9ici6mWYHZj+6H5V6EkyTKNUkpFGMWoIt1Eo/os2hSTb0ojevgj9gZzZ7ysE/4GxCpYjCwMy8zztfzztZgAykDNPFsM2q+/zL0WirFPaP+Kseq9VZtc46Rba5FZWr0cY683tjf3U6CPwW2++x+jA43A1bRd5cDfr96EmbV2qsNAgHjRvExg5SEFXsAkaGpz/ENjIXkE4ch9AYUdMoIFfDiBIDx8ghBc29iB5pRNXQgo3xY4ywgXUisj3LNBDRLUV1L2XhtIMXPWyo+IFh5rEMZ1SN0LyNjTtieos4bhYApCTMqJ4tou5domMROfu/TOHAXbYwpA3T1hUqg+xYmNKYZwQ/D9IVkC7HLRcOiqxWEXKEE0jMTeKJub+BHLWq/F2fNzuQHpU/8UodZsO3h7Gy9zXeLo+GO/zFB5DuQW4aYHvrwbARbyazUoetPA27bcEmfeBvsr2DCeOd7r/ZfchFu2v8oDktz59TcyfrCdJVkC5AOtr+zJ5/hONXp6hpWpCEWXMJ29RU8rc96hKLEmyflJM5lj75Moowek5cNdp4yVvdsV+5qWI07wp/Y//ZDCRIXqxNrS3/+P5r/tpOI/fz65tvi69lOKV4rmbaTuxVguR1vAS/ATTIy6KFAgAA",
+              "authors": ["Cabbage1688"]
+            },{
+              "name_zh": "连锁破坏",
+              "name_en": "Chain Destruction",
+              "note_zh": "连锁破坏最多16个同种方块",
+              "note_en": "Destroys up to 16 identical blocks in a chain.",
+              "spellContent": "SPELLWEAVER_SPELL:H4sIAAAAAAAA/4WQMUsDMRiGv5717LUKxV0I+Ae85ehe3awgOAqS3kUbTJMzlxOKi4JQFUUHUZBWHETBycHBlkLxv5hWp/4DNfUodBHH5ON73+d7sgAZSHOhCKx+dG8/Lw/6dy+6ed5r7Ov7G9d7f33SF6f9x7PeVUs3r9EiiZQUtQjFIVICuR6iAeGK+pihMhP+doQoRxj5FUx5FmYishMT7pMNLgLiQN6vUBZIwlfMc5lGKgsAliFQtZCAzYWsYuaAE4WEseE8Y+aTYLkLMJ0Q6OfDfrtrfjxIuWAnzDABOT+WJlet0SoxO/k/ulL/dFlg605L19tgJyJgtJBmQoSmaFbsEskEDkoxUzRklMjx3Mzo4l+v2MDMj3sddI6KQzWJyNhXVPBB5zgHFg1MTLoRfi+dsNLXw/re2+ZcfeDAFI5VRchoSJeCXBGXy3iLuF6hAD9FnXXfvQEAAA==",
+              "authors": ["Cabbage1688"]
+            },
+            {
+              "name_zh": "魔力不息",
+              "name_en": "Mana Recovery",
+              "note_zh": "每隔一秒检测一次魔力，如果小于1500则消耗末位快捷栏中的魔力供体恢复施法者魔力，单次最高225",
+              "note_en": "Check mana every second; if under 1500, consume the mana donor from the last hotbar slot to restore the caster's mana (max 225 per use).",
+              "spellContent": "SPELLWEAVER_SPELL:H4sIAAAAAAAA/4VSS2sTURQ+Y0LMJIoi7tzcnS0UaQqVgC6EunBhXIh7mczcdobOzB3v3LF2I1M1GNQY1MRHG8QXVoyhgqhBEv0B/RmduUlW/gPrvR0b3RR35/2d7zsnB5CFtEsYVlS+UR+tNqJuOFh/yF+H/PNdYfMPL0edRnxn7WfvXvz2Bn/eij/Wo2/3C7PT03H1Gf9SHYZPeKsd9WvxjzavfeUv6lG3M1i9lbRF39ei/iO+8ip+U+OP+/xTcxhWktRUXGuK8bwVjtpPZ2Zm0ZyJ9UXkaK6G8FVMl5GPdeIap5A1jwLXwBRJ1Ckkgn7gYMRMnFQbxCUUzVPi7MRszWfIJKysUeTbhCFGEMU+IzTp0UUe0+N+0jzhaNeQhPcEQODjyRM5OOjjKwF2dXzZJQZW4bBuWrZBsXtBuOctn+UAQElBXg+oiLJLloO3t7d/7VGZEhqzZQ9DRuzpaLYKqu9h25b5rMinITO8/Z5XH8ChRPhEoDjsQVpSBuU07LXEf0ZnxqNTguPYUYpwgK/35dV6zUHjHWTiSmV4sw8KZH2TBLZxlghblfpbzCLuGOdvCAT/JU2Y7oLkL8CO7halZRzGnk2IJ6qPEHFVm2hGKbCZ5dkWpv8yyO6KvvOSmph47M8PdWt8ZWOiJK91UbyE/I3JPOyzDKldqrNZuL5Y2mqfqee3vHObKuzXAmYS6kv+CuTntHJZW8CFk8Ui/AbPD5Zl8AIAAA==",
+              "authors": ["Cabbage1688"]
+            },
+            {
+              "name_zh": "耕种",
+              "name_en": "Cultivate",
+              "note_zh": "站在5*5耕地中心并在首位快捷栏放置需要种植的种子，可耕种并收获",
+              "note_en": "Stand in the center of a 5×5 farm plot, place the required seeds in slot 0, and it will automatically cultivate and harvest.",
+              "spellContent": "SPELLWEAVER_SPELL:H4sIAAAAAAAA/+VVz08TQRR+pXVpSzHGxIunSeNJ0ABJ/wNPRk0M3s1kd0g3me7W2WkJByNoE2q0tJAWEUvkgLSRVDyYAqHIwX/BxH+A2W1PnL05u4JSW6xyMjHZ7K/35r3v+/bbN2GAIAQMkxP44my8FOVq7GqsOV0S5fcH2zWx/0Ts1OXL1vriwV5O7G/YuS17NW8XPzp771rl6eb6jFPJ2Ws5Zzkjb0StcNh4LvKbsoL7uFO3i/Xm3NY4x4aGdAPxOEEqMThhyJxAGMU+vYihCcwSKElNPizPWCVeFiMPUjojGrII0Sx3rSUz0Mgw8kpxNKlTinCKmwnMdRVTOoXUFOV6GnPi5cQxSxOLXw/DoCWLEUMl9w1TIyG4oMZ1qjFi3JGPt3SLhwHgnNSBTyUJKIbJEpiGIGQlCaVuPCjjl6Hv2hj4xrxLxNnNiEJWFOZbs3lQmrNv7ew8RJqZ5YPtZ2KlYK/Ogm8I+qMWx4xHISJqS+JxVeSXTub7RiBiV/ZcZRslp1iF89EkM9O6Rti4JPvrMn9Uj3pruhYLOeXGcecRCXLUS23D6SGalPqwjtIwoKaYVITf0xPEVeMUlfw9VAqf4Nzc3BX5xaMOEow8PArtgQ6ISpTKCmdG6OuBcPBngzYciljLiWy98xu0Z9kLNels8I0eMfpD+MegAtQ0k9ADotJNJ7fj0FHgN6U7dAqcUaeQR7CLi051u/w3FKf4ulXa/zu6/lOc/R+ZcqCHKRVn9YNYyf/LtrtopgmjJtZuu1M4SXXCThIPHs9gb7/BUq1L3zeJw0b2x9w+bDwdgD5dc237deFN5tXazZW5uw8rV/yPPoegX077uMksF6sP/DdIGr4BMdEt2L8GAAA=",
+              "authors": ["Cabbage1688"]
+            }
+          ]
+        },
+        {
+          "type": "minecraft:empty",
+          "weight": 3
+        }
+      ]
+    }
+  ]
+}

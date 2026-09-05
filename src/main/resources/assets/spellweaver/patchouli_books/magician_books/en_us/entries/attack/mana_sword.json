@@ -12,6 +12,10 @@
     {
       "type": "patchouli:text",
       "text": "<br>Mana cost 25 on summon, requires 1 mana per second to maintain form.<br>Disappears immediately when thrown from inventory.<br><br>On hit, executes the rune fragments in the register as a new spell, pushing the hit entity onto the new spell stack before execution"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Hold right-click to charge (max 3s). Base cost: 23; each charging second costs 1% of max mana. Release to fire a sword wave – size and pierce count depend on charge time, damage depends on mana spent."
     }
   ]
 }

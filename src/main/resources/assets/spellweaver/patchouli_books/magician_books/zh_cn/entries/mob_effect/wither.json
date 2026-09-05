@@ -1,0 +1,17 @@
+{
+  "name": "凋零",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:mob_effect",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "凋零",
+      "images": ["spellweaver:textures/guidebook/wither.png"],
+      "text": "$(l)double$() level,$(l)Entity$() target,$(l)double$() duration->凋零->$(l)Entity$() target<br>该符文顺序敏感"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "为实体施加凋零效果<br>魔力消耗：duration*(level+1)^2"
+    }
+  ]
+}

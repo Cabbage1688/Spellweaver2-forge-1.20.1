@@ -1,0 +1,17 @@
+{
+  "name": "发光",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:mob_effect",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "发光",
+      "images": ["spellweaver:textures/guidebook/glow.png"],
+      "text": "$(l)double$() level,$(l)Entity$() target,$(l)double$() duration->发光->$(l)Entity$() target<br>该符文顺序敏感"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "为实体施加发光效果<br>魔力消耗：duration*(level+1)^2<br><br>处于发光状态下的敌人，即使被障碍物遮挡也能看见。<br>\"$(6)有框你不打？$()\""
+    }
+  ]
+}

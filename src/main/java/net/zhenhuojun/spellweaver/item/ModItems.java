@@ -70,6 +70,8 @@ public class ModItems {
     //魔法师之镜
     public static final RegistryObject<Item> MAGICIAN_MIRROR =ITEMS.register("magician_mirror",()->new Item(new Item.Properties().stacksTo(1)));
 
+    public static final RegistryObject<Item> MAGIC_PAGE =ITEMS.register("magic_page",()->new MagicPage(new Item.Properties().stacksTo(1)));
+
     public static final RegistryObject<Item> MAGIC_STAR_ITEM =
             ITEMS.register("magic_star", () -> new MagicStarItem(new Item.Properties().stacksTo(1)));
 

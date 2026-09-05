@@ -85,6 +85,18 @@ public class PlayerLongTermVariablesData {
             }
         }
     }
+
+    public boolean storeVariable(String key, Object value) {
+        boolean supported = value instanceof EntityType<?>
+                || value instanceof Vec3
+                || value instanceof UUID
+                || value instanceof Double;
+        if (supported) {
+            persistentVariables.put(key, value);
+            return true;
+        }
+        return false;
+    }
     public CompoundTag serialize(){
         return saveNBT(new CompoundTag());
     }

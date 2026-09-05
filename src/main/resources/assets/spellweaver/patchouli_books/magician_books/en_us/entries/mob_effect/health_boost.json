@@ -1,0 +1,17 @@
+{
+  "name": "Health Boost",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:mob_effect",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "Health Boost",
+      "images": ["spellweaver:textures/guidebook/health_boost.png"],
+      "text": "$(l)double$() level, $(l)Entity$() target, $(l)double$() duration -> Health Boost -> $(l)Entity$() target<br>This rune sequence is order-sensitive"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Applies Health Boost effect to the entity.<br>Mana cost: duration * (level + 1) * 5"
+    }
+  ]
+}

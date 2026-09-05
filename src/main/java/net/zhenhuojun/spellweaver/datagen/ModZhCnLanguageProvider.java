@@ -210,5 +210,10 @@ public class ModZhCnLanguageProvider extends LanguageProvider {
 
         this.add("message.spellweaver.dim_not_work","黯淡的魔珠已无法为你提供帮助");
 
+        this.add("gui.overwrite","覆盖");
+        this.add("gui.new","作为新法术");
+
+        this.add(ModItems.MAGIC_PAGE.get(), "魔法书页");
+
     }
 }

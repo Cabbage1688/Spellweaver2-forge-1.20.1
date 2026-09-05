@@ -1,0 +1,17 @@
+{
+  "name": "生命恢复",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:mob_effect",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "生命恢复",
+      "images": ["spellweaver:textures/guidebook/health_recover.png"],
+      "text": "$(l)double$() level,$(l)Entity$() target,$(l)double$() duration->生命恢复->$(l)Entity$() target<br>该符文顺序敏感"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "为实体施加生命恢复效果<br>魔力消耗：duration*(level+1)^2"
+    }
+  ]
+}

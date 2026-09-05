@@ -1,4 +1,4 @@
-// 1.20.1	2026-08-16T20:40:05.4735419	Item Models: spellweaver
+// 1.20.1	2026-08-23T18:33:09.9470144	Item Models: spellweaver
 f329b88ab5cdd8b0f8cd8e5ff2d88b1bf1ab2200 assets/spellweaver/models/item/diamond_scroll.json
 d6fc708d4cf1082fcf9118eec1f0fb6a820e4a69 assets/spellweaver/models/item/dim_mana_pearl.json
 8c8dc7643af74a93c21001481300d2e9138fa31d assets/spellweaver/models/item/erasing_knife.json
@@ -6,6 +6,7 @@ d6fc708d4cf1082fcf9118eec1f0fb6a820e4a69 assets/spellweaver/models/item/dim_mana
 dd045b3d514e06ef6310da04d078a4dc8a60b39a assets/spellweaver/models/item/inscription_table.json
 084008037e5784d9352efb1451257fde4b5cbd5c assets/spellweaver/models/item/lazuli_scroll.json
 7f1b841a690273f0df1d16a519564261aee4350f assets/spellweaver/models/item/magician_mirror.json
+a62c1475139845d2ac8326abec8896b4714be41f assets/spellweaver/models/item/magic_page.json
 a7fc3a4e61f2970203f7221abfa2ae5e484ee0a7 assets/spellweaver/models/item/magic_star.json
 a0fc8e48bf3c1195c68f7dfd6fde20b410c81924 assets/spellweaver/models/item/mana_bottle.json
 aa4b5e1eb92151ba66ba4c096eb0ce4c7e004eeb assets/spellweaver/models/item/mana_bow.json

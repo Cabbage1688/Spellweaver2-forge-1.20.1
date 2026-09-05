@@ -17,6 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.network.ModMessage;
 import net.zhenhuojun.spellweaver.network.packet.ManaBallEffectS2CPacket;
@@ -149,6 +150,11 @@ public class ManaBall extends AbstractHurtingProjectile {
             }
         }
         return false;
+    }
+
+    @Override//不再减速
+    protected float getInertia() {
+        return 1F;
     }
     //保存自定义实体的数据到游戏世界文件
     /*public void addAdditionalSaveData(CompoundTag compound) {

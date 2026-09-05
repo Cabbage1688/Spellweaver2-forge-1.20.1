@@ -554,7 +554,14 @@ public class SpellExecutorManager {
             if (value != null && varName != null) {
                 context.player.getCapability(PlayerLongTermVariablesProvider.PLAYER_LONG_TERM_VARIABLES).ifPresent(playerLongTermVariablesData -> {
                     playerLongTermVariablesData.getPersistentVariables().put(varName,value);
-                    context.player.sendSystemMessage(Component.literal("持久变量"+varName+"="+value+"已存储"));
+                    //客户端同步
+                    ModMessage.sendToPlayer(new PlayerVariableS2CPacket(playerLongTermVariablesData.serialize()), (ServerPlayer) context.player);
+                       // context.player.sendSystemMessage(Component.literal("持久变量"+varName+"="+value+"已存储"));
+                    if (playerLongTermVariablesData.storeVariable(varName, value)) {
+                        context.player.sendSystemMessage(Component.literal("持久变量 " + varName + " = " + value + " 已存储"));
+                    } else {
+                        context.player.sendSystemMessage(Component.literal("不支持存储类型: " + value.getClass().getSimpleName()));
+                    }
                 });
             }
         });
@@ -965,7 +972,7 @@ public class SpellExecutorManager {
                                     );
                                     context.level.addFreshEntity(itemEntity);
                                 }
-                                if(context.level.random.nextFloat()<=chance*10){
+                                if(context.level.random.nextFloat()<=chance*100){
                                     ItemStack pearl = new ItemStack(ModItems.DIM_MANA_PEARL.get());
                                     ItemEntity itemEntity = new ItemEntity(
                                             context.level,
@@ -1556,6 +1563,8 @@ public class SpellExecutorManager {
                       } else {
                           amount = 0;
                       }
+                  }else {
+                      amount = 0;
                   }
               } else if (source instanceof Vec3 vec3) {
                   BlockEntity blockEntity=context.level.getBlockEntity(BlockPos.containing(vec3));
@@ -1565,6 +1574,8 @@ public class SpellExecutorManager {
                   } else if (blockEntity instanceof SpellMachineBlockEntity entity) {
                       amount=Math.min(amount,entity.getMana());
                       entity.setMana(entity.getMana()-amount);
+                  }else {
+                      amount=0;
                   }
               } else if (source instanceof Player player) {
                   if(player==context.player){
@@ -1766,6 +1777,7 @@ public class SpellExecutorManager {
                     }
                 }
             }
+            context.push(entity);
         });
 
         executors.put("魔法护盾",context -> {
@@ -1839,7 +1851,6 @@ public class SpellExecutorManager {
               cultivate(slotReference,vec3,context);
           }
         });
-        //TODO
         executors.put("幽焰",context -> {
            if(context.isTop(Vec3.class)){
                Vec3 vec3=context.pop(Vec3.class);
@@ -1855,6 +1866,109 @@ public class SpellExecutorManager {
                    entity.getPersistentData().putInt(MagicSoulFireBlock.SOUL_BURN_TAG, 15);
                }
            }
+        });
+
+        executors.put("迅捷", context -> {
+            double level = context.pop(Double.class);
+            Entity target = context.pop(Entity.class);
+            double time = context.pop(Double.class);
+            exertMobEffect(MobEffects.MOVEMENT_SPEED, time, Math.min((int) level, 256), target, context, true);
+        });
+        executors.put("缓慢", context -> {
+            double level = context.pop(Double.class);
+            Entity target = context.pop(Entity.class);
+            double time = context.pop(Double.class);
+            exertMobEffect(MobEffects.MOVEMENT_SLOWDOWN, time, Math.min((int) level, 256), target, context, true);
+        });
+        executors.put("急迫", context -> {
+            double level = context.pop(Double.class);
+            Entity target = context.pop(Entity.class);
+            double time = context.pop(Double.class);
+            exertMobEffect(MobEffects.DIG_SPEED, time, Math.min((int) level, 256), target, context, true);
+        });
+        executors.put("力量", context -> {
+            double level = context.pop(Double.class);
+            Entity target = context.pop(Entity.class);
+            double time = context.pop(Double.class);
+            exertMobEffect(MobEffects.DAMAGE_BOOST, time, Math.min((int) level, 256), target, context, true);
+        });
+        executors.put("跳跃提升", context -> {
+            double level = context.pop(Double.class);
+            Entity target = context.pop(Entity.class);
+            double time = context.pop(Double.class);
+            exertMobEffect(MobEffects.JUMP, time, Math.min((int) level, 256), target, context, true);
+        });
+        executors.put("生命恢复", context -> {
+            double level = context.pop(Double.class);
+            Entity target = context.pop(Entity.class);
+            double time = context.pop(Double.class);
+            exertMobEffect(MobEffects.REGENERATION, time, Math.min((int) level, 256), target, context, true);
+        });
+        executors.put("抗火", context -> {
+            double level = context.pop(Double.class);
+            Entity target = context.pop(Entity.class);
+            double time = context.pop(Double.class);
+            exertMobEffect(MobEffects.FIRE_RESISTANCE, time, Math.min((int) level, 256), target, context, true);
+        });
+        executors.put("水下呼吸", context -> {
+            double level = context.pop(Double.class);
+            Entity target = context.pop(Entity.class);
+            double time = context.pop(Double.class);
+            exertMobEffect(MobEffects.WATER_BREATHING, time, Math.min((int) level, 256), target, context, true);
+        });
+        executors.put("隐身", context -> {
+            double level = context.pop(Double.class);
+            Entity target = context.pop(Entity.class);
+            double time = context.pop(Double.class);
+            exertMobEffect(MobEffects.INVISIBILITY, time, Math.min((int) level, 256), target, context, true);
+        });
+        executors.put("夜视", context -> {
+            double level = context.pop(Double.class);
+            Entity target = context.pop(Entity.class);
+            double time = context.pop(Double.class);
+            exertMobEffect(MobEffects.NIGHT_VISION, time, Math.min((int) level, 256), target, context, true);
+        });
+        executors.put("剧毒", context -> {
+            double level = context.pop(Double.class);
+            Entity target = context.pop(Entity.class);
+            double time = context.pop(Double.class);
+            exertMobEffect(MobEffects.POISON, time, Math.min((int) level, 256), target, context, true);
+        });
+        executors.put("虚弱", context -> {
+            double level = context.pop(Double.class);
+            Entity target = context.pop(Entity.class);
+            double time = context.pop(Double.class);
+            exertMobEffect(MobEffects.WEAKNESS, time, Math.min((int) level, 256), target, context, true);
+        });
+        executors.put("凋零", context -> {
+            double level = context.pop(Double.class);
+            Entity target = context.pop(Entity.class);
+            double time = context.pop(Double.class);
+            exertMobEffect(MobEffects.WITHER, time, Math.min((int) level, 256), target, context, true);
+        });
+        executors.put("生命提升", context -> {
+            double level = context.pop(Double.class);
+            Entity target = context.pop(Entity.class);
+            double time = context.pop(Double.class);
+            exertMobEffect(MobEffects.HEALTH_BOOST, time, Math.min((int) level, 256), target, context, false);
+        });
+        executors.put("伤害吸收", context -> {
+            double level = context.pop(Double.class);
+            Entity target = context.pop(Entity.class);
+            double time = context.pop(Double.class);
+            exertMobEffect(MobEffects.ABSORPTION, time, Math.min((int) level, 256), target, context, false);
+        });
+        executors.put("漂浮", context -> {
+            double level = context.pop(Double.class);
+            Entity target = context.pop(Entity.class);
+            double time = context.pop(Double.class);
+            exertMobEffect(MobEffects.LEVITATION, time, Math.min((int) level, 256), target, context, true);
+        });
+        executors.put("发光", context -> {
+            double level = context.pop(Double.class);
+            Entity target = context.pop(Entity.class);
+            double time = context.pop(Double.class);
+            exertMobEffect(MobEffects.GLOWING, time, Math.min((int) level, 256), target, context, true);
         });
     }
     //这些方法传入的context仅用把于信息传递到魔力消耗方法
@@ -2036,7 +2150,7 @@ public class SpellExecutorManager {
         if (Config.elementUseLinearMana) {
             manaCost = Config.elementLinearManaBase + Config.elementLinearManaPerLevel * attackLevel;
         } else {
-            // 原版指数公式（黑箱）
+            // 原版指数公式
             manaCost = Math.pow(24 + attackLevel, 1 + attackLevel / 10.0);
         }
         if(!level.isClientSide) {
@@ -2275,6 +2389,22 @@ public class SpellExecutorManager {
             }
         }
     }
+
+    public void exertMobEffect(MobEffect effect, double time,int amplifier, Entity entity, SpellContext context,boolean flag) {
+        double manaCost=flag?time*Math.pow(amplifier+1,2):time * (amplifier + 1) * 5;
+        if (!context.level.isClientSide) {
+            if (context.player != null && entity instanceof LivingEntity living) {
+                if (ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)) {
+                    int duration = (int) (20 * time);
+                    MobEffectInstance instance = new MobEffectInstance(effect, duration, amplifier);
+                    living.addEffect(instance);
+                }
+            }
+        }
+        context.push(effect);
+    }
+
+
 
     private boolean isScroll(ItemStack stack) {
         return stack.is(ModItems.SCROLL.get()) ||

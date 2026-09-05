@@ -1,7 +1,7 @@
 {
   "name": "Slow Fall",
   "icon": "minecraft:writable_book",
-  "category": "spellweaver:tool",
+  "category": "spellweaver:mob_effect",
   "pages": [
     {
       "type": "patchouli:image",

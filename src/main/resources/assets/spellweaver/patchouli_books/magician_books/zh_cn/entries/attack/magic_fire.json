@@ -8,11 +8,11 @@
       "type": "patchouli:image",
       "title": "幽焰",
       "images": ["spellweaver:textures/guidebook/magic_fire.png"],
-      "text": "$(l)[Vec3]->幽焰$()<br>"
+      "text": "$(l)[Vec3]/[Entity]->幽焰$()<br>"
     },
     {
       "type": "patchouli:text",
-      "text": "消耗栈顶Vec3,在指定坐标召唤出幽蓝的火焰，对接触到的生物每秒造成16%最大生命的伤害，即使离开火源也会继续灼烧5秒<br><br>魔力消耗：10000"
+      "text": "栈顶若为Vec3：消耗栈顶Vec3,在指定坐标召唤出幽蓝的火焰，对接触到的生物每秒造成20%最大生命的伤害，即使离开火源也会继续灼烧5秒<br><br>若为Entity:消耗栈顶Entity,直接使用幽焰对其灼烧，持续三秒<br><br>魔力消耗：10000"
     }
   ]
 }

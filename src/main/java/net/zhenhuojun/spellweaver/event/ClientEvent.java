@@ -15,6 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -33,10 +34,12 @@ import net.zhenhuojun.spellweaver.client.render.impl.*;
 import net.zhenhuojun.spellweaver.entity.ModEntities;
 import net.zhenhuojun.spellweaver.entity.impl.ManaArrow;
 import net.zhenhuojun.spellweaver.entity.model.MagicStarModel;
+import net.zhenhuojun.spellweaver.entity.model.ManaSlash;
 import net.zhenhuojun.spellweaver.item.ModItems;
 import net.zhenhuojun.spellweaver.key.KeyBinding;
 import net.zhenhuojun.spellweaver.network.ModMessage;
 import net.zhenhuojun.spellweaver.network.packet.CancelAllSpellsC2SPacket;
+import net.zhenhuojun.spellweaver.network.packet.ClientLanguageC2SPacket;
 import net.zhenhuojun.spellweaver.network.packet.OverloadDataC2SPacket;
 import net.zhenhuojun.spellweaver.network.packet.SpellCastingC2SPacket;
 
@@ -45,6 +48,14 @@ import static net.zhenhuojun.spellweaver.key.KeyBinding.*;
 public class ClientEvent {
     @Mod.EventBusSubscriber(modid = Spellweaver.MODID, value = Dist.CLIENT)
     public static class ClientForgeEvents {
+        @SubscribeEvent
+        public static void onPlayerJoinWorld(EntityJoinLevelEvent event) {
+            if (event.getLevel().isClientSide() && event.getEntity() == Minecraft.getInstance().player) {
+                String language = Minecraft.getInstance().getLanguageManager().getSelected();
+                ModMessage.sendToServer(new ClientLanguageC2SPacket(language));
+            }
+        }
+
         @SubscribeEvent//此处为按键的逻辑，当某个按键被按下则触发对应的逻辑
         public static void onKeyInput(InputEvent.Key event) {
             if(KeyBinding.TEST_KEY.consumeClick()){
@@ -178,12 +189,24 @@ public class ClientEvent {
                     ManaPedestalRenderer::new
             );
 
+            event.registerEntityRenderer(
+                    ModEntities.MANA_SLASH.get(),
+                    ManaSlashRenderer::new
+            );
+
+            event.registerEntityRenderer(ModEntities.MANA_SLASH_MEDIUM.get(), ManaSlashRenderer::new);
+            event.registerEntityRenderer(ModEntities.MANA_SLASH_LARGE.get(), ManaSlashRenderer::new);
+
         }
 
         @SubscribeEvent
         public static void onRegisterLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
             // 魔法之星模型层注册
             event.registerLayerDefinition(MagicStarModel.LAYER_LOCATION, MagicStarModel::createBodyLayer);
+
+            // 魔法剑气模型层注册
+            event.registerLayerDefinition(ManaSlash.LAYER_LOCATION, ManaSlash::createBodyLayer);
+
         }
 
         @SubscribeEvent

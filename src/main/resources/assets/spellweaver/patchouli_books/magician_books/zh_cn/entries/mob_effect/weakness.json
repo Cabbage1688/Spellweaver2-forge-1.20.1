@@ -1,0 +1,17 @@
+{
+  "name": "虚弱",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:mob_effect",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "虚弱",
+      "images": ["spellweaver:textures/guidebook/weakness.png"],
+      "text": "$(l)double$() level,$(l)Entity$() target,$(l)double$() duration->虚弱->$(l)Entity$() target<br>该符文顺序敏感"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "为实体施加虚弱效果<br>魔力消耗：duration*(level+1)^2"
+    }
+  ]
+}

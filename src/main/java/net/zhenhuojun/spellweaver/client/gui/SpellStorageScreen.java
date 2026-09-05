@@ -17,7 +17,6 @@ import net.minecraft.world.entity.player.Player;
 import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.capability.impl.spell_storage.PlayerSpellStorage;
 import net.zhenhuojun.spellweaver.capability.impl.spell_storage.StoredSpell;
-import net.zhenhuojun.spellweaver.capability.provider.mana.PlayerSpellStorageProvider;
 import net.zhenhuojun.spellweaver.client.gui.util.ClientPlayerStorageData;
 import net.zhenhuojun.spellweaver.network.ModMessage;
 import net.zhenhuojun.spellweaver.network.packet.*;
@@ -902,6 +901,8 @@ public class SpellStorageScreen extends Screen {
         String exportString = generateExportString(spell);
         //  复制到剪贴板
         Minecraft.getInstance().keyboardHandler.setClipboard(exportString);
+        //书页包，如果手上有纸则同步生成书页，2026.8.23添加
+        ModMessage.sendToServer(new MagicPageC2SPacket(spell.getNote(),spell.getAuthors(),exportString,spell.getName()));
         // 通知玩家
         player.displayClientMessage(
                 Component.translatable("gui.spellweaver.export.success", spell.getName(), author), false);

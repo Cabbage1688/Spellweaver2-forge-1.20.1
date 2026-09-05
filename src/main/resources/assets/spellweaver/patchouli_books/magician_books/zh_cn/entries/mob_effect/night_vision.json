@@ -1,0 +1,17 @@
+{
+  "name": "夜视",
+  "icon": "minecraft:writable_book",
+  "category": "spellweaver:mob_effect",
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "title": "夜视",
+      "images": ["spellweaver:textures/guidebook/night_vision.png"],
+      "text": "$(l)double$() level,$(l)Entity$() target,$(l)double$() duration->夜视->$(l)Entity$() target<br>该符文顺序敏感"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "为实体施加夜视效果<br>魔力消耗：duration*(level+1)^2"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "魔法书页",
+  "icon": "spellweaver:magic_page",
+  "category": "spellweaver:item",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "spellweaver:magic_page",
+      "title": "魔法书页",
+      "text": "一张记载着法术的纸，看上去像是某本魔法书上散落的书页。<br>右键以将书页中的法术导入法术库"
+    },{
+      "type": "patchouli:text",
+      "text": "$(l)生成魔法书页$()<br>你可以通过手持纸时导出法术来生成魔法书页。<br><br>$(l)法术投稿$()<br>如果你对自己的法术质量有信心并且希望记载它的书页以战利品形式出现在宝箱中，可以在curseforge/MC百科页面发表评论，或者直接私信联系我"
+    }
+  ]
+}

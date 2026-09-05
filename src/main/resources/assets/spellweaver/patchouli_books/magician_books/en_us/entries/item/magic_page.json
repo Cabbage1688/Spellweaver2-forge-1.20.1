@@ -1,0 +1,17 @@
+{
+  "name": "Magic Page",
+  "icon": "spellweaver:magic_page",
+  "category": "spellweaver:item",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "spellweaver:magic_page",
+      "title": "Magic Page",
+      "text": "A piece of paper inscribed with a spell, resembling a loose page torn from a spellbook.<br>Right-click to import the spell from this page into your spell library."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Generating a Magic Page$()<br>You can generate a magic page by exporting a spell while holding a piece of paper.<br><br>$(l)Spell Submission$()<br>If you are confident in the quality of your spell and would like its page to appear as loot in chests, you can leave a comment on the CurseForge or MC百科 (mcmod.cn) page, or send me a private message directly."
+    }
+  ]
+}

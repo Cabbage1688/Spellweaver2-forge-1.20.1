@@ -15,7 +15,7 @@ import java.util.Map;
  * 跟随主人行为（仅在无攻击目标时运行）：
  * - 距离<8格：不动（但保持悬停高度）
  * - 8~16格：常速靠近
- * - 16~32格：双倍速靠近
+ * - 16~32格：三倍速靠近
  * - >32格：直接传送
  * - 主人脚踩地面/游泳于液面时，倾向于在2格高位置飞行，避免频繁降落
  */
@@ -24,6 +24,8 @@ public class FollowOwnerBehavior extends Behavior<MagicStarEntity> {
     private static final double DOUBLE_SPEED_DISTANCE = 16.0;
     private static final double TELEPORT_DISTANCE = 32.0;
     private static final double HOVER_HEIGHT = 2.0;
+    public static final float WALK_SPEED=2.0f;
+    public static final float RUN_SPEED=6.0f;
 
     public FollowOwnerBehavior() {
         super(Map.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_ABSENT));
@@ -58,18 +60,18 @@ public class FollowOwnerBehavior extends Behavior<MagicStarEntity> {
             );
             entity.teleportTo(owner.getX() + offset.x, targetY, owner.getZ() + offset.z);
         } else if (distSqr >= DOUBLE_SPEED_DISTANCE * DOUBLE_SPEED_DISTANCE) {
-            // 双倍速
+            // 三倍速
             Vec3 target = new Vec3(owner.getX(), targetY, owner.getZ());
-            entity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(target, 2.0F, 1));
+            entity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(target, RUN_SPEED, 1));
         } else if (distSqr >= FOLLOW_DISTANCE * FOLLOW_DISTANCE) {
             // 常速
             Vec3 target = new Vec3(owner.getX(), targetY, owner.getZ());
-            entity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(target, 1.0F, 1));
+            entity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(target, WALK_SPEED, 1));
         } else {
             // 8格内：需要悬停时仍设置目标以保持高度，否则不动
             if (shouldHover) {
                 Vec3 target = new Vec3(owner.getX(), targetY, owner.getZ());
-                entity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(target, 1.0F, 1));
+                entity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(target, WALK_SPEED, 1));
             } else {
                 entity.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
             }
