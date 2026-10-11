@@ -1,0 +1,14 @@
+{
+  "type": "spellweaver:pearl_loot",
+  "item": "spellweaver:dim_mana_pearl",
+  "chance": 0.5,
+  "conditions": [
+    {
+      "condition": "minecraft:any_of",
+      "terms": [
+        { "condition": "forge:loot_table_id", "loot_table_id": "minecraft:blocks/lapis_ore" },
+        { "condition": "forge:loot_table_id", "loot_table_id": "minecraft:blocks/deepslate_lapis_ore" }
+      ]
+    }
+  ]
+}

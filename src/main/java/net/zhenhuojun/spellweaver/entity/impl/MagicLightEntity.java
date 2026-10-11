@@ -1,11 +1,15 @@
 package net.zhenhuojun.spellweaver.entity.impl;
 
+import com.lowdragmc.photon.client.fx.EntityEffect;
+import com.lowdragmc.photon.client.fx.FX;
+import com.lowdragmc.photon.client.fx.FXHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
@@ -13,6 +17,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.zhenhuojun.spellweaver.Spellweaver;
 import org.jetbrains.annotations.NotNull;
 
 //魔法光源
@@ -20,6 +25,9 @@ public class MagicLightEntity extends Entity
 {
     private int particleCooldown = 0;
     private BlockPos lightPos; // 记录光源方块的位置
+
+    private EntityEffect photonEffect;
+    private boolean effectStarted = false;
 
     public MagicLightEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
@@ -42,28 +50,42 @@ public class MagicLightEntity extends Entity
         if (lightPos == null) {
             lightPos = this.blockPosition();
         }
-
-        // 产生粒子效果
-        /*if (this.particleCooldown <= 0) {
-            this.spawnParticles();
-            this.particleCooldown = 10 + this.random.nextInt(10); // 随机间隔
-        } else {
-            this.particleCooldown--;
-        }
-
-         */
-
-        if(!this.level().isClientSide){
+        /*if(!this.level().isClientSide){
             ((ServerLevel) this.level()).sendParticles(ParticleTypes.INSTANT_EFFECT,this.getX(),
                     this.getY()+0.1,this.getZ(),2,0,0,0,0);
         }
 
-        // 轻微浮动效果，这个要改不然一直往上飘
-        //this.setDeltaMovement(this.getDeltaMovement().add(0, 0.001, 0));
-        //this.move(MoverType.SELF, this.getDeltaMovement());
+         */
 
-        // 缓慢减速
-        // this.setDeltaMovement(this.getDeltaMovement().scale(0.95));
+        if (this.level().isClientSide && !effectStarted) {
+            startPhotonEffect();
+        }
+
+    }
+
+
+    private void startPhotonEffect() {
+        FX fx = FXHelper.getFX(ResourceLocation.fromNamespaceAndPath("spellweaver","test_light3"));
+        if (fx != null) {
+            photonEffect = new EntityEffect(fx, this.level(), this, EntityEffect.AutoRotate.NONE);
+            photonEffect.setOffset(0, 0.25, 0);
+            photonEffect.setDelay(0);
+            photonEffect.setForcedDeath(false);
+            photonEffect.setAllowMulti(false);
+            photonEffect.start();
+            effectStarted = true;
+        } else {
+            //System.err.println("Photon FX not found: spellweaver:test_light");
+            Spellweaver.getLOGGER().error("[Spellweaver]Photon FX not found: spellweaver:test_light");
+        }
+    }
+
+    @Override
+    public void remove(RemovalReason reason) {
+        if (photonEffect != null) {
+            photonEffect.setForcedDeath(true);
+        }
+        super.remove(reason);
     }
 
     // 移除光源方块的方法

@@ -42,6 +42,7 @@ public class ModZhCnLanguageProvider extends LanguageProvider {
         this.add("gui.rename_spell.title","重命名");
         this.add("gui.name","法术名称");
         this.add("gui.confirm","确认");
+        this.add("gui.cancel","取消");
         this.add("gui.select_slot.title","法术绑定界面");
         this.add("gui.select_slot.prompt","将法术绑定到槽位，就可以使用快捷键施法了。按键与槽位的对应可在按键绑定中查看");
 
@@ -90,6 +91,14 @@ public class ModZhCnLanguageProvider extends LanguageProvider {
         this.add("gui.spellweaver.spell_loop_count", "法术循环次数");
         this.add("gui.spellweaver.wait_count", "等待次数");
         this.add("gui.spellweaver.spell_wait_count", "法术等待次数");
+        this.add("gui.spellweaver.spell_entity_settings", "法术实体设置");
+        this.add("gui.spellweaver.spell_entity_trigger_mode", "触发模式");
+        this.add("gui.spellweaver.spell_entity_mode_delay", "延时");
+        this.add("gui.spellweaver.spell_entity_mode_hit", "命中");
+        this.add("gui.spellweaver.spell_entity_delay_ticks", "延时（tick数）");
+        this.add("gui.spellweaver.spell_entity_after_trigger", "触发后运动");
+        this.add("gui.spellweaver.spell_entity_move_stop", "原地停止");
+        this.add("gui.spellweaver.spell_entity_move_fly", "继续飞行");
         this.add("gui.spellweaver.rune_editor", "符文编辑");
         this.add("gui.spellweaver.copy", "复制");
         this.add("gui.spellweaver.copy_fragment", "法术片段已复制！");
@@ -159,17 +168,27 @@ public class ModZhCnLanguageProvider extends LanguageProvider {
         this.add("gui.spellweaver.add_loop_node","添加循环节点");
         this.add("gui.spellweaver.add_condition_node", "添加条件节点");
         this.add( "gui.spellweaver.add_wait_node", "添加等待节点");
+        this.add("gui.spellweaver.add_spell_entity_node", "添加法术实体节点");
 
         this.add("hud.spellweaver.mana","魔力值:%d");
 
         this.add("message.spellweaver.stack_empty_pop", "栈为空，无法弹出元素");
         this.add("message.spellweaver.type_mismatch", "类型不匹配。期望 {0} 但得到 {1}");
 
+        this.add("message.spellweaver.spell_entity_need_mana_and_pos", "法术实体节点需要栈上同时提供法力值与坐标");
+        this.add("message.spellweaver.spell_entity_mana_positive", "法术实体的法力值必须大于0");
+        this.add("message.spellweaver.spell_entity_param_error", "§c法术实体参数错误: %s");
+
         this.add("gui.spellweaver.mana_level","魔力等级：%d");
         this.add("gui.spellweaver.mana_exp","距离下一等级所需要的经验：%d");
 
         this.add("gui.edit","编辑法术");
         this.add("gui.spell_bound","绑定法术 [%s] 到 [%d] 槽位");
+        this.add("gui.spellweaver.edit_hub","编辑");
+        this.add("gui.spellweaver.search","搜索");
+        this.add("gui.spellweaver.set_overload","设置超载");
+        this.add("gui.spellweaver.overload_input_hint","1=跟随超载能力，0=固定1倍，N=固定N倍");
+        this.add("gui.spellweaver.overload_current_cap","当前上限：%s");
 
         // ===== 魔法之星 =====
         this.add("gui.spellweaver.magic_star.title", "魔法之星控制");
@@ -214,6 +233,8 @@ public class ModZhCnLanguageProvider extends LanguageProvider {
         this.add("gui.new","作为新法术");
 
         this.add(ModItems.MAGIC_PAGE.get(), "魔法书页");
+
+
 
     }
 }

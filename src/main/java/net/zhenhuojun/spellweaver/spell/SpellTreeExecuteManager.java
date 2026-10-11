@@ -24,11 +24,11 @@ public class SpellTreeExecuteManager {
     public void addSpellTree(SequenceNode sequenceNode){
         activeSpellTree.put(sequenceNode.getUuid(), sequenceNode);
     }
-    //TODO下次更新出一个取消正在运行的法术的功能
+    //给法术上一个取消标记
     public void cancelSpellTree(UUID uuid){
         SequenceNode sequenceNode=activeSpellTree.get(uuid);
-        if(sequenceNode!=null){
-            activeSpellTree.remove(uuid);
+        if(sequenceNode!=null&&sequenceNode.getContext()!=null){
+            sequenceNode.getContext().cancelled=true;
         }
     }
     public void cancelAllSpellsForPlayer(Player player) {
@@ -50,6 +50,19 @@ public class SpellTreeExecuteManager {
         while (iterator.hasNext()) {
             Map.Entry<UUID,SequenceNode> entry=iterator.next();
             SequenceNode sequenceNode=entry.getValue();
+            //检查标记并移除有标记的法术
+            SpellContext context=sequenceNode.getContext();
+            if(context!=null&&context.cancelled){
+                iterator.remove();
+                Spellweaver.getLOGGER().debug("[SPELLWEAVER:SpellExecuteManager/tick方法]法术树{}已被外部取消，移除",sequenceNode.getUuid());
+                continue;
+            }
+            //法术实体以任何原因被移除时，其运行中的子法术树一并终止。
+            if(context!=null&&context.spellEntity!=null&&context.spellEntity.isRemoved()){
+                iterator.remove();
+                Spellweaver.getLOGGER().debug("[SPELLWEAVER:SpellExecuteManager/tick方法]法术实体已消散，终止其子法术树{}",sequenceNode.getUuid());
+                continue;
+            }
             Spellweaver.getLOGGER().debug("[SPELLWEAVER:SpellExecuteManager/tick方法]超载倍数{}",sequenceNode.getOverloadMultiplier());
             if(sequenceNode.getOverloadMultiplier()<=1){
                 switch (sequenceNode.getState()){

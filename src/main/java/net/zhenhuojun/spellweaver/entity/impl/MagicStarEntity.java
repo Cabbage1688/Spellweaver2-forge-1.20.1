@@ -324,14 +324,18 @@ public class MagicStarEntity extends PathfinderMob {
         context.magicStarEntity=this;
         context.castByMagicStar=true;
         node.setContext(context);
-        // 应用主人的超载倍数
+        // 库存法术超载解析（node是全新副本）：1=跟随主人超载能力，0=固定1倍，>1=固定N倍（钳制到主人上限）
         owner.getCapability(PlayerManaOverloadProvider.PLAYER_MANA_OVERLOAD).ifPresent(cap -> {
-            if (cap.isEnabled()) {
-                node.setOverloadMultiplier(cap.getCurrentMultiplier());
-            } else {
+            int stored = node.getOverloadMultiplier();
+            if (stored == 1) {
+                node.setOverloadMultiplier(cap.isEnabled() ? cap.getCurrentMultiplier() : 1);
+            } else if (stored == 0) {
                 node.setOverloadMultiplier(1);
+            } else {
+                node.setOverloadMultiplier(Math.min(stored, cap.getMaxMultiplier()));
             }
         });
+        context.rootNode = node;//供法术实体节点继承已解析的超载倍数
         // 根据列表类型自动压入额外数据
         if (listType == 3) {
             // 日常法术：压入施法时所处的坐标

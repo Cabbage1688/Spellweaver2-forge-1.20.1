@@ -14,6 +14,7 @@ import net.minecraft.world.phys.Vec3;
 import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.capability.impl.mana.ManaSource;
 import net.zhenhuojun.spellweaver.entity.impl.MagicStarEntity;
+import net.zhenhuojun.spellweaver.entity.impl.SpellEntity;
 import net.zhenhuojun.spellweaver.spell.util.SlotReference;
 import net.zhenhuojun.spellweaver.spell.node.NodeResult;
 import net.zhenhuojun.spellweaver.spell.node.SequenceNode;
@@ -39,9 +40,15 @@ public class SpellContext {
 
     public int jumpTarget=-1;//用于跳转
 
-    public Entity entity;
+    public Entity entity;//这个时魔法飞弹命中的实体缓存
+    public SpellEntity spellEntity;
+    //正在运行的根法术树：法术实体节点继承父法术超载倍数时读取
+    @Nullable
+    public SequenceNode rootNode;
     //是否展示法术报错，当副手装备魔法师之镜时展示
     public boolean showErrorMessages = false;
+    //取消标记：法术实体discard时置为true，法术管理器在下一tick清理，避免迭代中途修改Map
+    public boolean cancelled = false;
 
     @Nullable
     private Consumer<NodeResult> onComplete;

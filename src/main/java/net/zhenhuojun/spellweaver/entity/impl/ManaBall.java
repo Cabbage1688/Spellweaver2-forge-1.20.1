@@ -1,9 +1,13 @@
 package net.zhenhuojun.spellweaver.entity.impl;
 
+import com.lowdragmc.photon.client.fx.EntityEffect;
+import com.lowdragmc.photon.client.fx.FX;
+import com.lowdragmc.photon.client.fx.FXHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -19,10 +23,13 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.zhenhuojun.spellweaver.Spellweaver;
+import net.zhenhuojun.spellweaver.entity.ModEntities;
 import net.zhenhuojun.spellweaver.network.ModMessage;
 import net.zhenhuojun.spellweaver.network.packet.ManaBallEffectS2CPacket;
+import net.zhenhuojun.spellweaver.network.packet.PhotonEffectS2CPacket;
 import net.zhenhuojun.spellweaver.spell.RuneRegister;
 import net.zhenhuojun.spellweaver.spell.SpellContext;
+import net.zhenhuojun.spellweaver.spell.util.EffectType;
 import net.zhenhuojun.spellweaver.spell.util.RunesExecuteMethod;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,7 +47,7 @@ public class ManaBall extends AbstractHurtingProjectile {
     private Entity entity;
     private SpellContext previousContext;
 
-
+    /// 上次的测试后我发现photon的特效其实是能跟住快速飞行的实体的，那要么是这个类的问题要么是我那个特效没写好
     public ManaBall(EntityType<? extends AbstractHurtingProjectile> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
@@ -79,7 +86,14 @@ public class ManaBall extends AbstractHurtingProjectile {
                 if(this.previousContext==null) return;
                 //执行回调
                 RunesExecuteMethod.simpleSpellLogic(runeRegister.getSpellList(),level(),player,result.getLocation(),entity,previousContext);
-                ModMessage.sendToClients(new ManaBallEffectS2CPacket(this.xo,this.yo,this.zo,0xE9FAFF));
+                //ModMessage.sendToClients(new ManaBallEffectS2CPacket(this.xo,this.yo,this.zo,0xE9FAFF));
+                //ModMessage.sendToClients(new PhotonEffectS2CPacket(ResourceLocation.fromNamespaceAndPath("spellweaver","mana_ball"),
+                       // this.level(), BlockPos.containing(this.xo,this.yo,this.zo), EffectType.NORMAL_BLOCK_EFFECT));
+                PhotonEffectEntity effectEntity=new PhotonEffectEntity(ModEntities.PHOTON_EFFECT_ENTITY.get(),this.level(),20,null);
+                effectEntity.setPos(this.xo,this.yo,this.zo);
+                this.level().addFreshEntity(effectEntity);
+                ModMessage.sendToClients(new PhotonEffectS2CPacket(ResourceLocation.fromNamespaceAndPath("spellweaver","mana_ball"),
+                        this.level(), effectEntity, EffectType.NORMAL_ENTITY_EFFECT));
             }
             this.discard();
         }

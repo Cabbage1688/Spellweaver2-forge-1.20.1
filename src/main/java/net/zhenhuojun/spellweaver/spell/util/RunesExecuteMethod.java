@@ -29,44 +29,40 @@ import java.util.function.Consumer;
 
 public class RunesExecuteMethod {
 
+    //库存法术超载解析：1=跟随超载能力，0=固定1倍，>1=固定N倍
+    private static void resolveOverload(SequenceNode sequenceNode, Player player) {
+        player.getCapability(PlayerManaOverloadProvider.PLAYER_MANA_OVERLOAD).ifPresent(cap -> {
+            int stored = sequenceNode.getOverloadMultiplier();
+            if (stored == 1) {
+                sequenceNode.setOverloadMultiplier(cap.isEnabled() ? cap.getCurrentMultiplier() : 1);
+            } else if (stored == 0) {
+                sequenceNode.setOverloadMultiplier(1);
+            } else {
+                sequenceNode.setOverloadMultiplier(Math.min(stored, cap.getMaxMultiplier()));
+            }
+        });
+    }
+
     //context直接交给SequenceNode存储，每次修改后都同步修改
+    /// 这个是玩家的，快捷键释放库存法术和普通释放
     public static void spellLogic(SequenceNode sequenceNode, Level level, Player player){
         SpellContext context=new SpellContext(level,player);
         context.showErrorMessages = player.getOffhandItem().is(ModItems.MAGICIAN_MIRROR.get()) || player.getMainHandItem().is(ModItems.MAGICIAN_MIRROR.get());
         sequenceNode.setContext(context);
-        player.getCapability(PlayerManaOverloadProvider.PLAYER_MANA_OVERLOAD).ifPresent(cap -> {
-            Spellweaver.getLOGGER().debug("[SPELLWEAVER:RunesExecuteMethod/spellLogic方法]魔力超载能力获取");
-            if (cap.isEnabled()) {
-                sequenceNode.setOverloadMultiplier(cap.getCurrentMultiplier());
-                Spellweaver.getLOGGER().debug("[SPELLWEAVER:RunesExecuteMethod/spellLogic方法]超载倍数想要设置为{}",cap.getCurrentMultiplier());
-                Spellweaver.getLOGGER().debug("[SPELLWEAVER:RunesExecuteMethod/spellLogic方法]超载倍数设置为{}",sequenceNode.getOverloadMultiplier());
-            } else {
-                sequenceNode.setOverloadMultiplier(1);
-                Spellweaver.getLOGGER().debug("[SPELLWEAVER:RunesExecuteMethod/spellLogic方法]超载倍数想要设置为{}",1);
-                Spellweaver.getLOGGER().debug("[SPELLWEAVER:RunesExecuteMethod/spellLogic方法]超载倍数设置为{}",sequenceNode.getOverloadMultiplier());
-            }
-        });
+        resolveOverload(sequenceNode, player);
+        context.rootNode = sequenceNode;//供法术实体节点继承已解析的超载倍数
         player.getCapability(PlayerManaProvider.PLAYER_MANA).ifPresent(cap->Spellweaver.getLOGGER().debug("[SPELLWEAVER:RunesExecuteMethod/spellLogic方法]魔力值能力获取"));
         SpellTreeExecuteManager.getInstance().addSpellTree(sequenceNode);
         Spellweaver.getLOGGER().debug("[Spellweaver:RuneExecuteMethod/spellLogic]法术树已推入法术管理器，法术树：{}",sequenceNode.serializeNBT());
     }
     //这个是非玩家专用的执行方法，或者干脆可以说是法术执行方法改进版？
+    /// 卷轴和法杖用的它
     public static void spellLogic(SequenceNode sequenceNode, Level level, Player player,ManaSource manaSource){
         SpellContext context=new SpellContext(level,player, manaSource);
         context.showErrorMessages = player.getOffhandItem().is(ModItems.MAGICIAN_MIRROR.get()) || player.getMainHandItem().is(ModItems.MAGICIAN_MIRROR.get());
         sequenceNode.setContext(context);
-        player.getCapability(PlayerManaOverloadProvider.PLAYER_MANA_OVERLOAD).ifPresent(cap -> {
-            Spellweaver.getLOGGER().debug("[SPELLWEAVER:RunesExecuteMethod/新spellLogic方法]魔力超载能力获取");
-            if (cap.isEnabled()) {
-                sequenceNode.setOverloadMultiplier(cap.getCurrentMultiplier());
-                Spellweaver.getLOGGER().debug("[SPELLWEAVER:RunesExecuteMethod/新spellLogic方法]超载倍数想要设置为{}",cap.getCurrentMultiplier());
-                Spellweaver.getLOGGER().debug("[SPELLWEAVER:RunesExecuteMethod/新spellLogic方法]超载倍数设置为{}",sequenceNode.getOverloadMultiplier());
-            } else {
-                sequenceNode.setOverloadMultiplier(1);
-                Spellweaver.getLOGGER().debug("[SPELLWEAVER:RunesExecuteMethod/新spellLogic方法]超载倍数想要设置为{}",1);
-                Spellweaver.getLOGGER().debug("[SPELLWEAVER:RunesExecuteMethod/新spellLogic方法]超载倍数设置为{}",sequenceNode.getOverloadMultiplier());
-            }
-        });
+        resolveOverload(sequenceNode, player);
+        context.rootNode = sequenceNode;//供法术实体节点继承已解析的超载倍数
 
         player.getCapability(PlayerManaProvider.PLAYER_MANA).ifPresent(cap->Spellweaver.getLOGGER().debug("[SPELLWEAVER:RunesExecuteMethod/spellLogic方法]魔力值能力获取"));
         SpellTreeExecuteManager.getInstance().addSpellTree(sequenceNode);

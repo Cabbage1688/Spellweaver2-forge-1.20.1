@@ -166,6 +166,17 @@ public class LoopNode implements Node{
                         }
                     }
                 }
+                case SPELL_ENTITY -> {
+                    if(node instanceof SpellEntityNode spellEntityNode){
+                        if(spellEntityNode.execute(getContext())==NodeResult.SUCCESS){
+                            indexAdd();
+                            return NodeResult.RUNNING;
+                        }else{
+                            Spellweaver.getLOGGER().debug("[Spellweaver:LoopNode/executeChildrenNodeList方法]spell_entity节点执行结果异常");
+                            return NodeResult.FAULT;
+                        }
+                    }
+                }
                 //意外情况处理
                 default -> {
                     Spellweaver.getLOGGER().debug("[Spellweaver:LoopNode/executeChildrenNodeList方法]loop节点列表中存在未知类型节点");

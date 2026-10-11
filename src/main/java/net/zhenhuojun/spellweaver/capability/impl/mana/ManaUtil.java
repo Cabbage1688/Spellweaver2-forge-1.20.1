@@ -15,6 +15,7 @@ import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.block.custom.ManaPedestalBlockEntity;
 import net.zhenhuojun.spellweaver.block.custom.SpellMachineBlockEntity;
 import net.zhenhuojun.spellweaver.capability.provider.mana.PlayerManaProvider;
+import net.zhenhuojun.spellweaver.entity.impl.SpellEntity;
 import net.zhenhuojun.spellweaver.item.ModItems;
 import net.zhenhuojun.spellweaver.network.ModMessage;
 import net.zhenhuojun.spellweaver.network.packet.ManaChangeS2CPacket;
@@ -249,6 +250,15 @@ public class ManaUtil {
                         player.sendSystemMessage(Component.translatable("message.spellweaver.bottle_empty").withStyle(ChatFormatting.RED));
                     }
                     return false;
+                }
+                case SPELL_ENTITY -> {
+                    SpellEntity spellEntity=context.spellEntity;
+                    if(spellEntity==null) return false;
+                    if(!spellEntity.costMana(sub)){
+                        if (context.showErrorMessages) {
+                            player.sendSystemMessage(Component.translatable("message.spellweaver.not_enough_mana_machine").withStyle(ChatFormatting.RED));
+                        }
+                    }else return true;
                 }
             }
         }

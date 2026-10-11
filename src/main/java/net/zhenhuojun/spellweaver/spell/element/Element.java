@@ -4,6 +4,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -23,11 +24,9 @@ import net.minecraft.world.phys.Vec3;
 import net.zhenhuojun.spellweaver.Spellweaver;
 import net.zhenhuojun.spellweaver.entity.impl.FrozenIceEntity;
 import net.zhenhuojun.spellweaver.network.ModMessage;
-import net.zhenhuojun.spellweaver.network.packet.ManaBallEffectS2CPacket;
-import net.zhenhuojun.spellweaver.network.packet.ReactionEffectS2CPacket;
-import net.zhenhuojun.spellweaver.network.packet.SpreadReactionS2CPacket;
-import net.zhenhuojun.spellweaver.network.packet.VoidErosionS2CPacket;
+import net.zhenhuojun.spellweaver.network.packet.*;
 import net.minecraft.world.entity.player.Player;
+import net.zhenhuojun.spellweaver.spell.util.EffectType;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -117,9 +116,12 @@ public class Element {
             entity.invulnerableTime = 0;
             entity.hurtTime = 0; //重置 hurt 动画计时
             Vec3 center = entity.getBoundingBox().getCenter();
-            ModMessage.sendToClients(new ReactionEffectS2CPacket(center,  ReactionEffectS2CPacket.ReactionType.CONDUCT));
+            //ModMessage.sendToClients(new ReactionEffectS2CPacket(center,  ReactionEffectS2CPacket.ReactionType.CONDUCT));
+            //2026.9.22更新感电特效
+            ModMessage.sendToClients(new PhotonEffectS2CPacket(ResourceLocation.
+                    fromNamespaceAndPath("spellweaver","electricity"),entity.level(),entity, EffectType.NORMAL_ENTITY_EFFECT));
 
-            float damage = 10.0f; // 可调整
+            float damage = 10.0f;
             entity.hurt(entity.damageSources().magic(),damage);
             elementStack.remove(elementStack.size() - 1); // 移除栈顶雷
 
@@ -378,7 +380,9 @@ public class Element {
                // serverLevel.sendParticles(ParticleTypes.PORTAL,entity.getX(),entity.getY()+1,
                        // entity.getZ(),400,0.2,0.3,0.2,0.05);
 
-                ModMessage.sendToClients(new VoidErosionS2CPacket(entity.position()));
+                //ModMessage.sendToClients(new VoidErosionS2CPacket(entity.position()));
+                ModMessage.sendToClients(new PhotonEffectS2CPacket(ResourceLocation.
+                        fromNamespaceAndPath("spellweaver","space"),entity.level(),entity, EffectType.NORMAL_ENTITY_EFFECT));
                 Spellweaver.getLOGGER().debug("[Spellweaver:Element/handleReaction]粒子包发送");
             }
             return false;

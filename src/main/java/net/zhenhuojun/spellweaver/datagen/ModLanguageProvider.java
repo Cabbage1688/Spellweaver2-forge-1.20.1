@@ -42,6 +42,7 @@ public class ModLanguageProvider extends LanguageProvider {
         this.add("gui.rename_spell.title","RenameScreen");
         this.add("gui.name","SpellName");
         this.add("gui.confirm","Confirm");
+        this.add("gui.cancel","Cancel");
         this.add("gui.select_slot.title","SpellBindingScreen");
         this.add("gui.select_slot.prompt", "Bind spells to slots and use hotkeys to cast. Map keys in Controls settings.");
 
@@ -91,6 +92,14 @@ public class ModLanguageProvider extends LanguageProvider {
         this.add("gui.spellweaver.spell_loop_count", "Spell Loop Count");
         this.add("gui.spellweaver.wait_count", "Wait Count");
         this.add("gui.spellweaver.spell_wait_count", "Spell Wait Count");
+        this.add("gui.spellweaver.spell_entity_settings", "Spell Entity Settings");
+        this.add("gui.spellweaver.spell_entity_trigger_mode", "Trigger Mode");
+        this.add("gui.spellweaver.spell_entity_mode_delay", "Delay");
+        this.add("gui.spellweaver.spell_entity_mode_hit", "On Hit");
+        this.add("gui.spellweaver.spell_entity_delay_ticks", "Delay (ticks)");
+        this.add("gui.spellweaver.spell_entity_after_trigger", "Movement After Trigger");
+        this.add("gui.spellweaver.spell_entity_move_stop", "Stop in Place");
+        this.add("gui.spellweaver.spell_entity_move_fly", "Keep Flying");
         this.add("gui.spellweaver.rune_editor", "Rune Editor");
         this.add("gui.spellweaver.copy", "Copy");
         this.add("gui.spellweaver.copy_fragment", "Spell fragment copied!");
@@ -157,6 +166,7 @@ public class ModLanguageProvider extends LanguageProvider {
         this.add("gui.spellweaver.add_loop_node","Add Loop Node");
         this.add("gui.spellweaver.add_condition_node", "Add Condition Node");
         this.add( "gui.spellweaver.add_wait_node", "Add Wait Node");
+        this.add("gui.spellweaver.add_spell_entity_node", "Add Spell Entity Node");
 
         this.add("message.spellweaver.rune_param_error", "§cParam Error [%s]: %s");
         this.add("message.spellweaver.unknown_rune", "§6Unknown Rune: %s");
@@ -166,11 +176,20 @@ public class ModLanguageProvider extends LanguageProvider {
         this.add("message.spellweaver.stack_empty_pop", "Stack is empty, cannot pop element");
         this.add("message.spellweaver.type_mismatch", "Type mismatch. Expected {0} but got {1}");
 
+        this.add("message.spellweaver.spell_entity_need_mana_and_pos", "The spell entity node needs a mana value and a coordinate on the stack");
+        this.add("message.spellweaver.spell_entity_mana_positive", "Spell entity mana must be greater than 0");
+        this.add("message.spellweaver.spell_entity_param_error", "§cSpell Entity Param Error: %s");
+
         this.add("gui.spellweaver.mana_level", "Mana Level:%d");
         this.add("gui.spellweaver.mana_exp", "Experience to next level:%d");
 
         this.add("gui.edit","Edit Spell");
         this.add("gui.spell_bound","Bound spell [%s] to slot [%d]");
+        this.add("gui.spellweaver.edit_hub","Edit");
+        this.add("gui.spellweaver.search","Search");
+        this.add("gui.spellweaver.set_overload","Set Overload");
+        this.add("gui.spellweaver.overload_input_hint","1=Follow overload capability, 0=Fixed at 1x, N=Fixed at Nx");
+        this.add("gui.spellweaver.overload_current_cap","Current cap: %s");
 
         // ===== Magic Star =====
         this.add("gui.spellweaver.magic_star.title", "Magic Star Control");
@@ -215,6 +234,8 @@ public class ModLanguageProvider extends LanguageProvider {
         this.add("gui.new","As new spell");
 
         this.add(ModItems.MAGIC_PAGE.get(), "MagicPaper");
+
+
 
 
     }

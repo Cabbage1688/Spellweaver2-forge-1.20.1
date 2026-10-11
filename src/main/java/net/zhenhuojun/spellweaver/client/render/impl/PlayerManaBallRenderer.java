@@ -15,7 +15,6 @@ import org.joml.Matrix4f;
 
 public class PlayerManaBallRenderer extends EntityRenderer<ManaBall> {
 
-    // 使用龙息弹的材质
     private static final ResourceLocation DRAGON_FIREBALL_TEXTURE =
            // new ResourceLocation("textures/entity/enderdragon/dragon_fireball.png");
     //ResourceLocation.fromNamespaceAndPath("minecraft","textures/entity/enderdragon/dragon_fireball.png");

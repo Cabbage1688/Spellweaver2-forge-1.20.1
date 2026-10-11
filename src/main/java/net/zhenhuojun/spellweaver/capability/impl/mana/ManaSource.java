@@ -7,5 +7,6 @@ public enum ManaSource {
     STICK,        //法杖
     MACHINE  ,     //机器
     PEDESTAL,     //基座
-    MANA_BOTTLE   //魔力瓶
+    MANA_BOTTLE,   //魔力瓶
+    SPELL_ENTITY   //法术实体
 }

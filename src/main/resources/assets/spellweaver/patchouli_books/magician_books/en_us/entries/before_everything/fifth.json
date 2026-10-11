@@ -1,0 +1,24 @@
+{
+  "name": "Chapter 5: Non-Basic Nodes",
+  "icon": "minecraft:firework_rocket",
+  "category": "spellweaver:before_everything",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Spell Entity Node$()<br><br>Spells in previous chapters are all cast from the player himself — where you stand and where you look is where the spell starts. But sometimes you want a spell to \"fly out on its own\" and execute only at the moment it hits something far away. The $(9)Spell Entity Node$() was born for this.<br><br>It is a $(l)container node$() that can hold an entire sub-spell tree inside. When executed, it pops $(l)a coordinate$() and $(l)a number$() off the stack (in either order), spawns a \"spell entity\" at the coordinate, and injects the given amount of mana into it.<br><br>This entity triggers according to your settings, and executes its inner sub-spell tree once triggered. The mana source of the sub-spell is the entity itself — it consumes the entity's mana, not yours."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Configuration Screen$()<br><br>Middle-click the spell entity node to open its configuration screen, which offers two settings:<br><br>$(l)Trigger Mode:$()<br>·$(9)Delay$(): the entity keeps flying after spawning and triggers when the countdown ends. Enter the waiting tick count in the input box (1 second = 20 ticks).<br>·$(9)Hit$(): the entity keeps flying until it hits an entity or a block.<br><br>$(l)Movement After Trigger:$()<br>·$(9)Stop in Place$(): the entity stays fixed at the trigger point, acting as a stationary casting source.<br>·$(9)Keep Flying$(): the entity keeps its original speed and keeps moving after triggering.<br><br>Tip: the entity's flight speed is set by external runes (such as $(9)Drive$()); the spell entity node itself does not grant an initial velocity."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)How It Works$()<br><br>$(9)Mana Flow:$()<br>·When the node executes, it charges the given amount of mana from the $(l)current mana source$() (you  / scroll / machine, etc.).<br>·The spawned entity carries this mana.<br>·Once triggered, the inner sub-spell consumes $(l)the entity's mana$(), not yours.<br>·When the entity runs out of mana or the sub-spell finishes, the entity dissipates automatically.<br><br>$(9)Dissipation and Termination:$()<br>·When the entity dissipates for any reason, any sub-spell still running inside it is terminated along with it.<br>·You can also press the default $(9)I$() key to terminate all spells, including the sub-spells inside spell entities."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(9)Nesting:$()<br>·A spell entity's inner sub-tree can contain another spell entity node — the inner entity's mana is drawn from the outer entity's mana, supporting multiple levels of nesting.<br><br>$(l)Go design your own long-range spells!$()"
+    }
+  ]
+}

@@ -15,6 +15,7 @@ public class NodeRegistry {
         register("loop", LoopNode::new);
         register("condition", ConditionNode::new);
         register("wait",WaitNode::new);
+        register("spell_entity", SpellEntityNode::new);
     }
 
     private static void register(String type, Supplier<Node> factory) {

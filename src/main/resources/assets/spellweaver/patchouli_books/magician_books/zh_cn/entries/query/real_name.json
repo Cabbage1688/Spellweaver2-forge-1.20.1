@@ -12,6 +12,10 @@
     {
       "type": "patchouli:text",
       "text": "反之亦然：<br>uuid -> 真名 -> entity<br>将 UUID 转换为同一世界中对应的实体（若存在）。<br><br>注意：实体必须仍然存在于世界中，否则压入空值。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "vec3 -> 真名 -> string<br>获取坐标处方块的名称，以字符串形式压入栈"
     }
   ]
 }

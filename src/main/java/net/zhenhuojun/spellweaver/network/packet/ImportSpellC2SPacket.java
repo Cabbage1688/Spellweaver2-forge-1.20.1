@@ -69,6 +69,8 @@ public class ImportSpellC2SPacket {
                 player.getCapability(PlayerSpellStorageProvider.PLAYER_SPELL_STORAGE).ifPresent(storage -> {
                     SequenceNode sequenceNode = new SequenceNode();
                     sequenceNode.deserializeNBT(spellTag);
+                    // 导入的法术超载设置重置为1（跟随本机超载能力），不沿用外来文件里的值
+                    sequenceNode.setOverloadMultiplier(1);
 
                     if (existingId != null) {
                         // 覆盖已有法术

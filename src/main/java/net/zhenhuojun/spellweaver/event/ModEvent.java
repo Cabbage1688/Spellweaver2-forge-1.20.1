@@ -787,8 +787,9 @@ public class ModEvent {
             BlockPos pos=event.getPos();
             if(brokenBlock.equals(Blocks.LAPIS_ORE)||brokenBlock.equals(Blocks.DEEPSLATE_LAPIS_ORE)){
                 Level level=event.getPlayer().level();
-                final float chance=0.005f;
-                //2026.5.26更新，如果玩家没有获得过魔珠，则必定获取
+                //2026.5.26更新，如果玩家没有获得过魔珠，则必定获取。
+                //概率掉落（魔珠0.5%、黯淡魔珠50%）已迁移到 Global Loot Modifier，
+                //由 data/spellweaver/loot_modifiers/*.json 数据驱动，此处只保留"首次必掉"。
                 if(!event.getPlayer().getPersistentData().getCompound(Player.PERSISTED_NBT_TAG).getBoolean(MOON_KEY)){
                     event.getPlayer().getPersistentData().getCompound(Player.PERSISTED_NBT_TAG).putBoolean(MOON_KEY,true);
                     ItemEntity itemEntity=new ItemEntity( level,
@@ -796,23 +797,6 @@ public class ModEvent {
                             pos.getY() + 0.5,
                             pos.getZ() + 0.5,
                             new ItemStack(ModItems.MANA_PEARL.get()));
-                    level.addFreshEntity(itemEntity);
-                    return;
-                }
-                if(level.random.nextFloat()<chance){
-                    ItemEntity itemEntity=new ItemEntity( level,
-                            pos.getX() + 0.5,
-                            pos.getY() + 0.5,
-                            pos.getZ() + 0.5,
-                            new ItemStack(ModItems.MANA_PEARL.get()));
-                    level.addFreshEntity(itemEntity);
-                }
-                if(level.random.nextFloat()<chance*100){
-                    ItemEntity itemEntity=new ItemEntity( level,
-                            pos.getX() + 0.5,
-                            pos.getY() + 0.5,
-                            pos.getZ() + 0.5,
-                            new ItemStack(ModItems.DIM_MANA_PEARL.get()));
                     level.addFreshEntity(itemEntity);
                 }
             }

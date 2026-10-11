@@ -49,6 +49,7 @@ public class Spellweaver {
 
         ModCreativeTable.register(modEventBus);
         ModLootPoolEntries.register(modEventBus);
+        net.zhenhuojun.spellweaver.loot.ModLootModifiers.register(modEventBus);
 
         context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
 

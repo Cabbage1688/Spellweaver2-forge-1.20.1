@@ -157,6 +157,9 @@ repositories {
     // }
     //帕秋莉手册
     maven { url 'https://maven.blamejared.com' }
+
+    //Photon和LDLib 的仓库
+    maven { url = "https://maven.firstdarkdev.xyz/snapshots" }
 }
 
 dependencies {
@@ -186,6 +189,10 @@ dependencies {
     runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:1.20.1-84.1-FORGE")
     //2026.6.11配置mixin
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    // Photon 前置
+    implementation fg.deobf("com.lowdragmc.photon:photon-forge-1.20.1:1.1.16") { transitive = false }
+    // LDLib 前置
+    implementation fg.deobf("com.lowdragmc.ldlib:ldlib-forge-1.20.1:1.0.52") { transitive = false }
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

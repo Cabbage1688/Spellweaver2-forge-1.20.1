@@ -38,40 +38,36 @@ public class SpellStorageScreen extends Screen {
     private final Player player;
     //PlayerSpellStorage spellStorage;
     private int leftPos, topPos;//界面定位
-    //private SpellList spellList;
     private EditBox searchBox;
-    private Button castButton, renameButton, deleteButton;
-    private Button Up,Down;
+    private Button castButton, deleteButton;
     private Button backButton;
     private Button editButton;
     //2025.5.24
     private Button exportButton;
     private Button importButton;
-    private Button editNoteButton;
 
-    private Button WriteScroll;
     private StoredSpell selectedSpell;
 
 
     private List<StoredSpell> displayedSpells = new ArrayList<>();
     private List<StoredSpell> preSpellList=new ArrayList<>();
 
-    private int selectedIndex = -1;  // 用于跟踪选中项
+    private int selectedIndex = -1;  // 用于跟踪选中项（基于 displayedSpells 的索引）
 
-    private int page;
+    // 滑块式列表
+    private static final int VISIBLE_ENTRIES = 6; // 列表可见条目数
+    private static final int ENTRY_HEIGHT = 20;   // 单条高度
+    private int scrollOffset = 0;                 // 当前滚动偏移（条目）
+    // 搜索防抖
+    private String pendingSearch = null;          // 待应用的搜索文本
+    private long searchSetTime = 0;               // 上次输入时间戳（毫秒）
+    private static final long SEARCH_DEBOUNCE_MS = 300;
 
     private final SpellWeavingScreen parentScreen;
 
     public SpellStorageScreen(Player player,SpellWeavingScreen parentScreen) {
         super(Component.translatable("gui.spellweaver.spell_storage.title"));
         this.player = player;
-        //2026.2.7为适应新版本打的补丁,客户端调用这玩意不会炸吧卧槽
-         //player.getCapability(PlayerSpellStorageProvider.PLAYER_SPELL_STORAGE).ifPresent(playerSpellStorage->{
-            // this.spellStorage=playerSpellStorage;
-        // });
-
-        //2025.11.9
-        this.page=1;
         this.parentScreen=parentScreen;
     }
 
@@ -81,33 +77,20 @@ public class SpellStorageScreen extends Screen {
         this.leftPos = (this.width - GUI_WIDTH) / 2;
         this.topPos = (this.height - GUI_HEIGHT) / 2;
 
-
-        // 法术列表组件
-        // this.spellList = new SpellList(minecraft, GUI_WIDTH - 24, GUI_HEIGHT - 60,
-        //        topPos + 20, topPos + GUI_HEIGHT - 40);
-        // this.addWidget(spellList);
-
-        //创建搜索框（`EditBox`），并设置响应器（输入时刷新法术列表）。
-        /*this.searchBox = new EditBox(this.font, leftPos + 82, topPos + 6, 86, 12,
-                Component.translatable("gui.search"));
-        this.searchBox.setResponder(text -> refreshSpells());
+        // 列表右上角搜索框：为空显示全部，输入后防抖刷新过滤
+        this.searchBox = new EditBox(this.font, leftPos + GUI_WIDTH - 8 - 70, topPos + 6, 70, 12,
+                Component.translatable("gui.spellweaver.search"));
+        //this.searchBox.setHint(Component.translatable("gui.spellweaver.search"));
+        this.searchBox.setResponder(text -> {
+            pendingSearch = text;
+            searchSetTime = System.currentTimeMillis();
+        });
         this.addRenderableWidget(searchBox);
-
-         */
 
         // 操作按钮,按下调用castSelectedSpell()
         this.castButton = this.addRenderableWidget(
                 Button.builder(Component.translatable("gui.cast"), button -> castSelectedSpell())
-                        //.pos(leftPos + 8, topPos + GUI_HEIGHT - 28)
                         .pos(leftPos + 173, topPos + GUI_HEIGHT - 28)
-                        .size(50, 20)
-                        .build()
-        );
-        //重命名按钮
-        this.renameButton = this.addRenderableWidget(
-                Button.builder(Component.translatable("gui.rename"), button -> renameSelectedSpell())
-                        //.pos(leftPos + 63, topPos + GUI_HEIGHT - 28)
-                        .pos(leftPos +145, topPos + GUI_HEIGHT +2)
                         .size(50, 20)
                         .build()
         );
@@ -118,40 +101,20 @@ public class SpellStorageScreen extends Screen {
                         .size(50, 20)
                         .build()
         );
-        //这个和释放交换位置
-        this.Up= this.addRenderableWidget(
-                Button.builder(Component.literal("➡"), button -> {
-                            upPage();
-                            refreshSpells();
-                        })
-                        //.pos(leftPos + 173, topPos + GUI_HEIGHT - 28)
-                        .pos(leftPos + 8, topPos + GUI_HEIGHT - 28)
-                        .size(50, 20)
-                        .build()
-        );
-
-        this.Down= this.addRenderableWidget(
-                Button.builder(Component.literal("⬅"), button -> {
-                            downPage();
-                            refreshSpells();
-                        })
-                        .pos(leftPos -47, topPos + GUI_HEIGHT - 28)
-                        .size(50, 20)
-                        .build()
-        );
+        // 返回按钮
         this.backButton=this.addRenderableWidget(
                 Button.builder(Component.translatable("gui.spellweaver.return"), button -> {
                             Minecraft.getInstance().setScreen(parentScreen);
                         })
-                       // .pos(leftPos +63, topPos + GUI_HEIGHT +12)
-                        .pos(leftPos -19, topPos + GUI_HEIGHT +2)
+                        .pos(leftPos + 63, topPos + GUI_HEIGHT + 2+5)
                         .size(50, 20)
                         .build()
         );
+        // 编辑入口
         this.editButton=this.addRenderableWidget(
-                Button.builder(Component.translatable("gui.edit"), button -> {
+                Button.builder(Component.translatable("gui.spellweaver.edit_hub"), button -> {
                             if (selectedSpell != null) {
-                                Minecraft.getInstance().setScreen(new SpellEditScreen(selectedSpell, this));
+                                Minecraft.getInstance().setScreen(new EditHubScreen(selectedSpell, this));
                             }
                 })
                         .pos(leftPos + 63, topPos + GUI_HEIGHT - 28)
@@ -160,36 +123,25 @@ public class SpellStorageScreen extends Screen {
         );
 
 
-        // 导出按钮
+        // 导出按钮（与编辑按钮同一行）
         this.exportButton = this.addRenderableWidget(
                 Button.builder(Component.translatable("gui.spellweaver.export"), button -> {
                             if (selectedSpell != null) {
                                 openAuthorSignScreen();
                             }
                         })
-                        .pos(leftPos +145+30+30, topPos + GUI_HEIGHT + 2)
+                        .pos(leftPos + 8, topPos + GUI_HEIGHT - 28)
                         .size(50, 20)
                         .build()
         );
 
-        // 导入按钮
+        // 导入按钮（与编辑按钮同一行）
         this.importButton = this.addRenderableWidget(
                 Button.builder(Component.translatable("gui.spellweaver.import"), button -> {
                             openImportScreen();
                         })
-                        .pos(leftPos - 47-35, topPos + GUI_HEIGHT + 2)
+                        .pos(leftPos - 47, topPos + GUI_HEIGHT - 28)
                         .size(50, 20)
-                        .build()
-        );
-
-        this.editNoteButton = this.addRenderableWidget(
-                Button.builder(Component.translatable("gui.spellweaver.edit_note"), button -> {
-                            if (selectedSpell != null) {
-                                openNoteEditScreen();
-                            }
-                        })
-                        .pos(leftPos + 63-5, topPos + GUI_HEIGHT - 28+60-5-5)
-                        .size(60, 20)
                         .build()
         );
 
@@ -197,123 +149,106 @@ public class SpellStorageScreen extends Screen {
         preSpellList.addAll(ClientPlayerStorageData.getPlayerSpellStorage().getAllSpells());
         refreshSpells();
     }
-    //根据搜索框内容过滤并显示法术列表。
-    /*public void refreshSpells() {
-        displayedSpells.clear(); //清空当前显示列表`displayedSpells`。
-        // String searchText = searchBox.getValue().toLowerCase();// 获取搜索文本（转换为小写）
-
-        for (StoredSpell spell : ClientPlayerStorageData.getPlayerSpellStorage().getAllSpells()) {//遍历玩家存储的所有法术，将名称匹配的法术加入显示列表
-            //if (searchText.isEmpty() || spell.getName().toLowerCase().contains(searchText)) {
-            //Spellweaver.getLOGGER().debug("[Spellweaver:SpellStorageScreen/refreshSpells()]展示前检查" +
-                   // "ClientPlayerStorageData.getPlayerSpellStorage(){}",ClientPlayerStorageData.getPlayerSpellStorage().serialize());
-            //内容太多了刷屏，就不展示前检查了
-            displayedSpells.add(spell);
-            // }
-        }
-        if (preSpellList.size() > 6) {
-
-            int pageSize = 6; // 每页显示6个
-            int startIndex = (this.page - 1) * pageSize;
-            int endIndex = Math.min(preSpellList.size(), startIndex + pageSize);
-
-            displayedSpells = new ArrayList<>(preSpellList.subList(startIndex, endIndex));
-        } else {
-            // 如果法术数量不超过6个，直接显示全部
-            displayedSpells = new ArrayList<>(preSpellList);
-        }
-
-        // 重置选择状态,调整选中索引（如果超出范围则重置为-1）
-        if (selectedIndex >= displayedSpells.size()) {
-            selectedIndex = -1;
-        }
-        updateButtonStates();//更新按钮状态（根据是否有选中项启用/禁用按钮）
-    }
-     */
-    // 现在始终从 ClientPlayerStorageData 获取最新数据源，避免数据混乱
+    // 现在始终从 ClientPlayerStorageData 获取最新数据源，避免数据混乱。
+    // 搜索过滤：displayedSpells 只保留名称包含搜索文本的法术（空则全部）。
+    // 列表为滑块式，displayedSpells 始终是过滤后的全量列表，渲染时按 scrollOffset 取可见窗口。
     public void refreshSpells() {
-        //从缓存取出所有法术
         PlayerSpellStorage storage = ClientPlayerStorageData.getPlayerSpellStorage();
         List<StoredSpell> allSpells = new ArrayList<>(storage.getAllSpells());
-        //是否裁剪列表
-        if (allSpells.size() > 6) {
-            int pageSize = 6;
-            int startIndex = (this.page - 1) * pageSize;
-            int endIndex = Math.min(allSpells.size(), startIndex + pageSize);
-            displayedSpells = new ArrayList<>(allSpells.subList(startIndex, endIndex));
-        } else {
-            displayedSpells = new ArrayList<>(allSpells);
+
+        // 搜索过滤（当前生效的搜索文本用 searchBox 的值，空则不过滤）
+        String searchText = searchBox == null ? "" : searchBox.getValue().trim().toLowerCase();
+        displayedSpells.clear();
+        for (StoredSpell spell : allSpells) {
+            if (searchText.isEmpty() || spell.getName().toLowerCase().contains(searchText)) {
+                displayedSpells.add(spell);
+            }
         }
-        //我觉得当前版本可以踢掉预处理列表了，但我懒得改，凑合用吧
+
         this.preSpellList = allSpells;
+
+        // 选中索引基于 displayedSpells，越界则清空
         if (selectedIndex >= displayedSpells.size()) {
             selectedIndex = -1;
             selectedSpell = null;
-        } else if (selectedIndex >= 0 && displayedSpells.size() > 0) {
+        } else if (selectedIndex >= 0 && !displayedSpells.isEmpty()) {
             selectedSpell = displayedSpells.get(selectedIndex);
         }
+        clampScroll();
         updateButtonStates();
     }
-    private void upPage(){
-        if((this.page+1)*6-7<preSpellList.size())
-            this.page++;
-    }
-    private void downPage(){
-        if(this.page>1){
-            page--;
-        }
+
+    private void clampScroll() {
+        if (scrollOffset < 0) scrollOffset = 0;
+        int max = Math.max(0, displayedSpells.size() - VISIBLE_ENTRIES);
+        if (scrollOffset > max) scrollOffset = max;
     }
 
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(guiGraphics);
+        // 搜索防抖：有未应用的输入且已超过防抖间隔，则应用并刷新列表
+        if (pendingSearch != null && System.currentTimeMillis() - searchSetTime >= SEARCH_DEBOUNCE_MS) {
+            pendingSearch = null;
+            selectedIndex = -1;
+            selectedSpell = null;
+            refreshSpells();
+        }
 
-        // 绘制背景
-        //guiGraphics.blit(TEXTURE, leftPos, topPos, 0, 0, GUI_WIDTH, GUI_HEIGHT);
+        this.renderBackground(guiGraphics);
 
         // 绘制标题和标签
         guiGraphics.drawCenteredString(this.font, this.title,
-                this.width / 2, topPos + 5, 0xFFFFFF);
-        //guiGraphics.drawString(this.font, Component.translatable("gui.search"),
-        // leftPos + 8, topPos + 8, 0x404040, false);
+                this.width / 2-4, topPos + 5, 0xFFFFFF);
 
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
 
         // 绘制法术列表
         int startY = topPos + 20;
-        int entryHeight = 20;
+        int listLeft = leftPos + 8;
+        int listRight = leftPos + GUI_WIDTH - 8;
 
-        for (int i = 0; i < displayedSpells.size(); i++) {//遍历`displayedSpells`，计算每个条目的位置。
-            StoredSpell spell = displayedSpells.get(i);
-            int yPos = startY + i * entryHeight;
+        for (int i = 0; i < VISIBLE_ENTRIES; i++) {
+            int idx = scrollOffset + i;
+            if (idx >= displayedSpells.size()) break;
+            StoredSpell spell = displayedSpells.get(idx);
+            int yPos = startY + i * ENTRY_HEIGHT;
 
-            // 为选中的条目绘制半透明背景（通过`selectedIndex`判断）
-            if (i == selectedIndex) {
-                guiGraphics.fill(leftPos + 8, yPos, leftPos + GUI_WIDTH - 8, yPos + entryHeight, 0x30FFFFFF);
+            // 选中条目半透明背景
+            if (idx == selectedIndex) {
+                guiGraphics.fill(listLeft, yPos, listRight, yPos + ENTRY_HEIGHT, 0x30FFFFFF);
             }
 
-            // 绘制法术名称
+            // 法术名称：从列表最左边开始
             guiGraphics.drawString(font, Component.literal(spell.getName()),
-                    leftPos + 60, yPos + 4, 0xFFFFFF, false);
+                    listLeft + 6, yPos + 4, 0xFFFFFF, false);
 
-        }
-
-
-        // 在法术旁显示绑定键位(新增功能）
-        for (int i = 0; i < displayedSpells.size(); i++) {
-            StoredSpell spell = displayedSpells.get(i);
-            int yPos = startY + i * entryHeight;
-
-            // 检查法术是否绑定
+            // 绑定键位
             Optional<Integer> boundSlot = ClientPlayerStorageData.getPlayerSpellStorage().findBoundSlot(spell.getId());
             if (boundSlot.isPresent()) {
                 String keyText = "[" + (boundSlot.get() + 1) + "]";
                 guiGraphics.drawString(font, keyText,
-                        leftPos + GUI_WIDTH - 20, yPos + 6,
-                        0x00FF00, false);
+                        listRight - 14, yPos + 6, 0x00FF00, false);
+            }
+
+            // 独立超载设置：非1（非跟随）时在绑定数字左侧固定位置红字显示
+            int overload = spell.getSequenceNode().getOverloadMultiplier();
+            if (overload != 1) {
+                guiGraphics.drawString(font, "{"+String.valueOf(overload)+"}",
+                        listRight - 14 - font.width("[0]") - 6, yPos + 6, 0xFFFF5555, false);
             }
         }
-        Font font= Minecraft.getInstance().font;
+
+        // 滚动条
+        int total = displayedSpells.size();
+        if (total > VISIBLE_ENTRIES) {
+            int trackHeight = VISIBLE_ENTRIES * ENTRY_HEIGHT;
+            int thumbHeight = Math.max(15, trackHeight * VISIBLE_ENTRIES / total);
+            int thumbY = startY + (trackHeight - thumbHeight) * scrollOffset / Math.max(1, total - VISIBLE_ENTRIES);
+            int barX = listLeft;
+            guiGraphics.fill(barX, startY, barX + 3, startY + trackHeight, 0x40FFFFFF);
+            guiGraphics.fill(barX, thumbY, barX + 3, thumbY + thumbHeight, 0xFFAAAAAA);
+        }
         MutableComponent text= Component.translatable("message.spellweaver.spell_inventory", preSpellList.size(), 27);
         int color=0xFFFFFF;
         MutableComponent text2=Component.translatable("message.spellweaver.binding_tip");
@@ -395,27 +330,24 @@ public class SpellStorageScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        //Magic.getLOGGER().debug("[MAGIC_DEBUG]SpellStorageScreen's mouseClicked() is used");
-        // 检查是否点击了法术列表区域
+        // 检查是否点击了法术列表区域（可见窗口范围）
         int startY = topPos + 20;
-        int endY = topPos + GUI_HEIGHT - 20;
-        int entryHeight = 20;
+        int listBottom = startY + VISIBLE_ENTRIES * ENTRY_HEIGHT;
 
         if (mouseX >= leftPos + 8 && mouseX <= leftPos + GUI_WIDTH - 8 &&
-                mouseY >= startY && mouseY <= endY) {
+                mouseY >= startY && mouseY <= listBottom) {
 
-            // 计算点击的条目索引
-            int index = (int) ((mouseY - startY) / entryHeight);
+            // 可见行号 + 滚动偏移 = 实际条目索引
+            int visibleRow = (int) ((mouseY - startY) / ENTRY_HEIGHT);
+            int index = scrollOffset + visibleRow;
 
             if (index >= 0 && index < displayedSpells.size()) {
                 selectedIndex = index;
-                //同步更新 selectedSpell
                 selectedSpell = displayedSpells.get(selectedIndex);
-                // 右键绑定法术（新增功能）
+                // 右键绑定法术
                 if (button == 1 ) {
-                    //Magic.getLOGGER().debug("[MAGIC_DEBUG] Player pressed the right mouse button ");
                     StoredSpell spell = displayedSpells.get(selectedIndex);
-                    openSlotSelectionMenu(mouseX, mouseY, spell);//打开绑定界面
+                    openSlotSelectionMenu(mouseX, mouseY, spell);
                     return true;
                 }
                 updateButtonStates();
@@ -423,6 +355,21 @@ public class SpellStorageScreen extends Screen {
             }
         }
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        // 只在列表区域滚动才翻页，避免误触
+        int startY = topPos + 20;
+        int listBottom = startY + VISIBLE_ENTRIES * ENTRY_HEIGHT;
+        if (mouseX >= leftPos + 8 && mouseX <= leftPos + GUI_WIDTH - 8 &&
+                mouseY >= startY && mouseY <= listBottom) {
+            if (delta > 0) scrollOffset--;
+            else scrollOffset++;
+            clampScroll();
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, delta);
     }
 
 
@@ -448,16 +395,11 @@ public class SpellStorageScreen extends Screen {
     private void updateButtonStates() {
         boolean hasSelection = selectedSpell != null;
         castButton.active = hasSelection;
-        renameButton.active = hasSelection;
         deleteButton.active = hasSelection;
-        //2025.11.9新增
-        Up.active=true;
-        Down.active=true;
         backButton.active=true;
-        //2026.5.24新增
         exportButton.active = hasSelection;
         importButton.active = ClientPlayerStorageData.getPlayerSpellStorage().getSpells().size() < 27;
-        editNoteButton.active = hasSelection;
+        editButton.active = hasSelection;
     }
 
 
@@ -477,23 +419,16 @@ public class SpellStorageScreen extends Screen {
         if (selectedIndex >= 0 && selectedIndex < displayedSpells.size()) {
             StoredSpell spell = displayedSpells.get(selectedIndex);
 
-            // 预测性更新：立即移除本地副本
-            displayedSpells.remove(selectedIndex);
-            preSpellList.remove(selectedIndex);
+            // 预测性更新：本地两个列表都按 id 移除（displayedSpells 可能因搜索过滤与 preSpellList 索引不一致）
+            displayedSpells.removeIf(s -> s.getId().equals(spell.getId()));
+            preSpellList.removeIf(s -> s.getId().equals(spell.getId()));
             selectedIndex = -1;
-            updateButtonStates();
+            selectedSpell = null;
             ClientPlayerStorageData.getPlayerSpellStorage().removeSpell(spell.getId());
+            clampScroll();
+            updateButtonStates();
 
             ModMessage.sendToServer(new DeleteSpellC2SPacket(spell.getId()));
-
-
-        }
-    }
-
-    private void renameSelectedSpell() {
-        if (selectedIndex >= 0 && selectedIndex < displayedSpells.size()) {
-            StoredSpell spell = displayedSpells.get(selectedIndex);
-            minecraft.setScreen(new RenameSpellScreen(this, spell));
         }
     }
 
@@ -509,12 +444,12 @@ public class SpellStorageScreen extends Screen {
 // 法术重命名界面
 
     class RenameSpellScreen extends Screen {
-        private final SpellStorageScreen parent;
+        private final Screen parent;  // 返回目标：可能是法术库或编辑中心界面
         private final StoredSpell spell;
         private EditBox nameField;//文本输入框
         private Button confirmButton;//确认按钮
 
-        public RenameSpellScreen(SpellStorageScreen parent, StoredSpell spell) {
+        public RenameSpellScreen(Screen parent, StoredSpell spell) {
             super(Component.translatable("gui.rename_spell.title"));
             this.parent = parent;
             this.spell = spell;
@@ -548,22 +483,19 @@ public class SpellStorageScreen extends Screen {
 
         private void confirmRename() {
             String newName = nameField.getValue().trim();
-            if (!newName.isEmpty() && selectedIndex >= 0) {
-                StoredSpell spell = parent.displayedSpells.get(parent.selectedIndex);
-
-                // 预测性更新：立即显示新名称
+            if (!newName.isEmpty()) {
+                // 直接用构造传入的 spell，而不是按 parent.selectedIndex 取（从编辑中心跳转时索引可能不对应）
                 String originalName = spell.getName();
                 spell.rename(newName);
-                parent.refreshSpells();
-
-                spell.rename(newName);
-
-                // 发送重命名请求
-              //  PacketDistributor.SERVER.noArg().send((new RenameSpellPacket(spell.getId(),newName,originalName)));
-                ModMessage.sendToServer(new RenameSpellC2SPacket(spell.getId(),newName,originalName));
-
+                SpellStorageScreen.this.refreshSpells();
+                ModMessage.sendToServer(new RenameSpellC2SPacket(spell.getId(), newName, originalName));
             }
             minecraft.setScreen(parent);
+        }
+
+        @Override
+        public void onClose() {
+            Minecraft.getInstance().setScreen(parent);
         }
 
         @Override
@@ -983,11 +915,11 @@ public class SpellStorageScreen extends Screen {
     }
 
     class NoteEditScreen extends Screen {
-        private final SpellStorageScreen parent;
+        private final Screen parent;  // 返回目标：可能是法术库或编辑中心界面
         private final StoredSpell spell;
         private EditBox noteField;
 
-        public NoteEditScreen(SpellStorageScreen parent, StoredSpell spell) {
+        public NoteEditScreen(Screen parent, StoredSpell spell) {
             super(Component.translatable("gui.spellweaver.edit_note"));
             this.parent = parent;
             this.spell = spell;
@@ -1011,7 +943,7 @@ public class SpellStorageScreen extends Screen {
                 storage.getSpell(spell.getId()).ifPresent(s -> s.setNote(newNote));
                 ModMessage.sendToServer(new UpdateSpellNoteC2SPacket(spell.getId(), newNote));
                 Spellweaver.getLOGGER().debug("[Spellweaver/SpellStorageScreen/NoteEditScreen]备注信息已同步服务端");
-                parent.refreshSpells();
+                SpellStorageScreen.this.refreshSpells();
                 this.onClose();
             }).pos(centerX - 50, centerY + 30).size(100, 20).build());
             this.addRenderableWidget(Button.builder(Component.translatable("gui.cancel"), btn -> this.onClose())

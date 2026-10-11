@@ -42,6 +42,7 @@ public class SpellWeavingScreen extends Screen {
     private static final ResourceLocation LOOP_TEXTURE = fromNamespaceAndPath(Spellweaver.MODID, "textures/gui/loop_node.png");
     private static final ResourceLocation WAIT_TEXTURE = fromNamespaceAndPath(Spellweaver.MODID, "textures/gui/wait_node.png");
     private static final ResourceLocation CONDITION_TEXTURE=fromNamespaceAndPath(Spellweaver.MODID,"textures/gui/condition_node.png");
+    private static final ResourceLocation SPELL_ENTITY_TEXTURE=fromNamespaceAndPath(Spellweaver.MODID,"textures/gui/spell_entity_node.png");
 
     public static final ResourceLocation STARS=fromNamespaceAndPath("minecraft","textures/entity/end_portal.png");
     public static final ResourceLocation MANA_TOP=fromNamespaceAndPath(Spellweaver.MODID,"textures/hud/mana_top.png");
@@ -139,6 +140,9 @@ public class SpellWeavingScreen extends Screen {
         } else if (centerNode instanceof ConditionNode) {
             ((ConditionNode) centerNode).killChildren();;
             refreshChildButtonsWithoutRefreshingSelectedChildIndex();
+        } else if (centerNode instanceof SpellEntityNode spellEntityNode) {
+            spellEntityNode.killChildren();
+            refreshChildButtonsWithoutRefreshingSelectedChildIndex();
         }
     }
 
@@ -187,7 +191,7 @@ public class SpellWeavingScreen extends Screen {
                 updateMenuOptions();
             } else {
                 // 点击子节点，切换当前节点
-                if (node instanceof SequenceNode || node instanceof LoopNode||node instanceof ConditionNode) {
+                if (node instanceof SequenceNode || node instanceof LoopNode||node instanceof ConditionNode||node instanceof SpellEntityNode) {
                     currentNode = node;
                     //2026.1.25将节点压入历史栈
                     push(node);
@@ -216,6 +220,10 @@ public class SpellWeavingScreen extends Screen {
                     Minecraft minecraft = Minecraft.getInstance();
                     ConditionEditScreen conditionEditScreen=new ConditionEditScreen(screen,(ConditionNode)currentNode);
                     minecraft.setScreen(conditionEditScreen);
+                }else if(currentNode instanceof SpellEntityNode){
+                    Minecraft minecraft = Minecraft.getInstance();
+                    SpellEntityScreen spellEntityScreen=new SpellEntityScreen(screen,(SpellEntityNode)currentNode);
+                    minecraft.setScreen(spellEntityScreen);
                 }
             }
         }
@@ -266,6 +274,8 @@ public class SpellWeavingScreen extends Screen {
                     ((LoopNode) currentNode).getChildrenNodeList().remove(target);
                 } else if (currentNode instanceof ConditionNode) {
                     ((ConditionNode) currentNode).getChildrenNodeList().remove(target);
+                } else if (currentNode instanceof SpellEntityNode spellEntityNode) {
+                    spellEntityNode.getChildrenNodeList().remove(target);
                 }
                 //refreshChildButtons();
                 refreshChildButtonsAfterKill();
@@ -299,7 +309,7 @@ public class SpellWeavingScreen extends Screen {
                         Spellweaver.getLOGGER().debug("[Spellweaver/SpellWeavingScreen/stickButton]是完整法术");
                         Minecraft.getInstance().player.sendSystemMessage(Component.translatable("gui.spellweaver.paste_full"));
                         /// 不是完整法术，将法术片段作为节点存储于可包含子节点的节点
-                    } else if (currentNode instanceof SequenceNode||currentNode instanceof ConditionNode||currentNode instanceof LoopNode) {
+                    } else if (currentNode instanceof SequenceNode||currentNode instanceof ConditionNode||currentNode instanceof LoopNode||currentNode instanceof SpellEntityNode) {
                         //复制的法术片段类型
                         String type=playerData.getCopyTag().getString("type");
                         CompoundTag tag=playerData.getCopyTag();
@@ -361,6 +371,11 @@ public class SpellWeavingScreen extends Screen {
                                     addNodeToCurrent(node);
                                    // ((LoopNode) currentNode).addChildren(node);
                                 }
+                            }
+                            case "spell_entity"->{
+                                SpellEntityNode node=new SpellEntityNode();
+                                node.deserializeNBT(tag);
+                                addNodeToCurrent(node);
                             }
                         }
                         Minecraft.getInstance().player.sendSystemMessage(Component.translatable("gui.spellweaver.paste_fragment"));
@@ -436,6 +451,8 @@ public class SpellWeavingScreen extends Screen {
         } else if (currentNode instanceof ConditionNode) {
             ConditionNode conditionNode=(ConditionNode) currentNode;
             createChildButtons(conditionNode.getChildrenNodeList());
+        } else if (currentNode instanceof SpellEntityNode spellEntityNode) {
+            createChildButtons(spellEntityNode.getChildrenNodeList());
         }
         selectedChildIndex=childButtons.size()-1;
     }
@@ -457,6 +474,8 @@ public class SpellWeavingScreen extends Screen {
         } else if (currentNode instanceof ConditionNode) {
             ConditionNode conditionNode=(ConditionNode) currentNode;
             createChildButtons(conditionNode.getChildrenNodeList());
+        } else if (currentNode instanceof SpellEntityNode spellEntityNode) {
+            createChildButtons(spellEntityNode.getChildrenNodeList());
         }
     }
 
@@ -503,8 +522,8 @@ public class SpellWeavingScreen extends Screen {
     private void updateMenuOptions() {
         menuOptions.clear();
 
-        // 只有Sequence和Loop节点还有Condition可以添加子节点
-        if (currentNode instanceof SequenceNode || currentNode instanceof LoopNode||currentNode instanceof ConditionNode) {
+        // 只有Sequence和Loop节点还有Condition和法术实体节点可以添加子节点
+        if (currentNode instanceof SequenceNode || currentNode instanceof LoopNode||currentNode instanceof ConditionNode||currentNode instanceof SpellEntityNode) {
            // menuOptions.add(new MenuOption("添加普通节点", () -> {
             menuOptions.add(new MenuOption("gui.spellweaver.add_normal_node", () -> {
                 addNodeToCurrent(new NormalNode());
@@ -522,6 +541,10 @@ public class SpellWeavingScreen extends Screen {
             }));
             menuOptions.add(new MenuOption("gui.spellweaver.add_condition_node", () -> {
                 addNodeToCurrent(new ConditionNode());
+                showMenu = false;
+            }));
+            menuOptions.add(new MenuOption("gui.spellweaver.add_spell_entity_node", () -> {
+                addNodeToCurrent(new SpellEntityNode());
                 showMenu = false;
             }));
         }
@@ -549,6 +572,13 @@ public class SpellWeavingScreen extends Screen {
                 selectedChildIndex++;
             } else {
                 ((ConditionNode) currentNode).addChildren(node);
+            }
+        } else if (currentNode instanceof SpellEntityNode spellEntityNode) {
+            if (selectedChildIndex >= -1 && selectedChildIndex < spellEntityNode.getChildrenNodeList().size()) {
+                spellEntityNode.getChildrenNodeList().add(selectedChildIndex + 1, node);
+                selectedChildIndex++;
+            } else {
+                spellEntityNode.addChildren(node);
             }
         }
         refreshChildButtonsWithoutRefreshingSelectedChildIndex();
@@ -602,6 +632,8 @@ public class SpellWeavingScreen extends Screen {
             pGuiGraphics.drawString(font,""+waitNode.getWaitingTime(),width / 2 - CENTER_SIZE / 2+60,width / 2 - CENTER_SIZE / 2-24,0xFFFFFF);
         } else if (currentNode instanceof ConditionNode conditionNode) {
             renderNode(pGuiGraphics,centerButton,CONDITION_TEXTURE);
+        } else if (currentNode instanceof SpellEntityNode spellEntityNode) {
+            renderNode(pGuiGraphics,centerButton,SPELL_ENTITY_TEXTURE);
         }
 
 
@@ -712,6 +744,8 @@ public class SpellWeavingScreen extends Screen {
             return SEQUENCE_TEXTURE;
         } else if (node instanceof ConditionNode) {
             return CONDITION_TEXTURE;
+        } else if (node instanceof SpellEntityNode) {
+            return SPELL_ENTITY_TEXTURE;
         }
         return SEQUENCE_TEXTURE; // 默认
     }
@@ -752,6 +786,22 @@ public class SpellWeavingScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+        if (showMenu) {
+            for (int i = 0; i < menuOptions.size(); i++) {
+                MenuOption option = menuOptions.get(i);
+                int menuWidth = 100;
+                int menuX = this.menuX - menuWidth / 2;
+                int optionY = menuY + 5 + i * 20;
+                if (pMouseX >= menuX && pMouseX <= menuX + menuWidth &&
+                        pMouseY >= optionY && pMouseY <= optionY + 20) {
+                    option.action.run();
+                    return true;
+                }
+            }
+            showMenu = false;
+            return true;
+        }
+
         // 检查是否点击了魔法之星召唤图标（左键）
         if (pButton == 0 && isMouseOverManaTop2(pMouseX, pMouseY)) {
             summonMagicStar();
@@ -790,25 +840,6 @@ public class SpellWeavingScreen extends Screen {
             }
         }
 
-        // 检查是否点击了菜单选项
-        if (showMenu) {
-            for (int i = 0; i < menuOptions.size(); i++) {
-                MenuOption option = menuOptions.get(i);
-                int menuWidth = 100;
-                int menuHeight = menuOptions.size() * 20 + 5;
-                int menuX = this.menuX - menuWidth / 2;
-                int optionY = menuY + 5 + i * 20;
-
-                if (pMouseX >= menuX && pMouseX <= menuX + menuWidth &&
-                        pMouseY >= optionY && pMouseY <= optionY + 20) {
-                    option.action.run();
-                    return true;
-                }
-            }
-        }
-
-        // 点击其他地方隐藏菜单
-        showMenu = false;
         return super.mouseClicked(pMouseX, pMouseY, pButton);
     }
 

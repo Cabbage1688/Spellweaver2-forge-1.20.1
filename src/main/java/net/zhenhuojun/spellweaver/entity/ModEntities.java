@@ -103,6 +103,25 @@ public class ModEntities {
                             .build("mana_slash_large")
             );
 
+    public static final RegistryObject<EntityType<PhotonEffectEntity>> PHOTON_EFFECT_ENTITY=
+            ENTITY_DEFERRED_REGISTER.register("photon_effect_entity",
+                    () -> EntityType.Builder.<PhotonEffectEntity>of(PhotonEffectEntity::new, MobCategory.MISC)
+                            .sized(1.0f, 1.0f)
+                            .clientTrackingRange(10)
+                            .updateInterval(1)
+                            .build("photon_effect_entity")
+            );
+
+    public static final RegistryObject<EntityType<SpellEntity>> SPELL_ENTITY=
+            ENTITY_DEFERRED_REGISTER.register("spell_entity",
+                    ()->EntityType.Builder.<SpellEntity>of(SpellEntity::new,MobCategory.MISC)
+                            .sized(1,1)
+                            .clientTrackingRange(10)
+                            .updateInterval(1)
+                            .build("spell_entity")
+            );
+
+
 
 
 

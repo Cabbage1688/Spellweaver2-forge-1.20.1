@@ -197,6 +197,9 @@ public class ClientEvent {
             event.registerEntityRenderer(ModEntities.MANA_SLASH_MEDIUM.get(), ManaSlashRenderer::new);
             event.registerEntityRenderer(ModEntities.MANA_SLASH_LARGE.get(), ManaSlashRenderer::new);
 
+            event.registerEntityRenderer(ModEntities.PHOTON_EFFECT_ENTITY.get(), PhotonEffectEntityRenderer::new);
+            event.registerEntityRenderer(ModEntities.SPELL_ENTITY.get(), SpellEntityRenderer::new);
+
         }
 
         @SubscribeEvent

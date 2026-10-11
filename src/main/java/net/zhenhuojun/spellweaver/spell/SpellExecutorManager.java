@@ -1,11 +1,17 @@
 package net.zhenhuojun.spellweaver.spell;
 
 //import com.ibm.icu.impl.Pair;
+import com.lowdragmc.photon.client.fx.BlockEffect;
+import com.lowdragmc.photon.client.fx.EntityEffect;
+import com.lowdragmc.photon.client.fx.FX;
+import com.lowdragmc.photon.client.fx.FXHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -53,6 +59,8 @@ import net.zhenhuojun.spellweaver.capability.provider.mana.PlayerManaProvider;
 import net.zhenhuojun.spellweaver.damage_type.ModDamageTypes;
 import net.zhenhuojun.spellweaver.entity.ModEntities;
 import net.zhenhuojun.spellweaver.entity.impl.ManaBall;
+import net.zhenhuojun.spellweaver.entity.impl.PhotonEffectEntity;
+import net.zhenhuojun.spellweaver.entity.impl.SpellEntity;
 import net.zhenhuojun.spellweaver.entity.util.MagicLightUtils;
 import net.zhenhuojun.spellweaver.item.ModItems;
 import net.zhenhuojun.spellweaver.item.Util;
@@ -62,10 +70,13 @@ import net.zhenhuojun.spellweaver.network.ModMessage;
 import net.zhenhuojun.spellweaver.network.packet.*;
 import net.zhenhuojun.spellweaver.spell.element.Element;
 import net.zhenhuojun.spellweaver.spell.element.ElementType;
+import net.zhenhuojun.spellweaver.spell.util.EffectType;
 import net.zhenhuojun.spellweaver.spell.util.RelativeCoordinate;
 import net.zhenhuojun.spellweaver.spell.util.SlotReference;
 import net.zhenhuojun.spellweaver.spell.util.VanillaBeneficialEffects;
 import org.apache.commons.lang3.tuple.Pair;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -104,6 +115,8 @@ public class SpellExecutorManager {
         executors.put("自我", context -> {
             if(context.castByMagicStar){
                 context.push(context.magicStarEntity);
+            }else if(context.spellEntity!=null){
+                context.push(context.spellEntity);
             }else {
                 context.push(context.player);
             }
@@ -177,13 +190,15 @@ public class SpellExecutorManager {
                 context.push((double)(((LivingEntity) entity).getHealth()));
             }
         });
-        //弹出实体，检测其是否为玩家，如果是则检测魔力，将魔力数值压入栈
+        //弹出实体，玩家则检测其魔力，法术实体则检测其剩余法力预算，将数值压入栈
         executors.put("检测魔力值",context -> {
             Entity entity= context.pop(Entity.class);
             if(entity instanceof ServerPlayer player){
                 player.getCapability(PlayerManaProvider.PLAYER_MANA).ifPresent(playerMana -> {
                     context.push(playerMana.getMana());
                 });
+            } else if (entity instanceof SpellEntity spellEntity) {
+                context.push(spellEntity.getMana());
             }
         });
         //弹出实体，压入其速度向量
@@ -254,7 +269,8 @@ public class SpellExecutorManager {
             Double a = context.pop(Double.class);
             Double b = context.pop(Double.class);
             context.push(b < a);
-        });//加
+        });
+        //加
         executors.put("+",context -> {
             if(context.isTop(Double.class)){
                 double a=context.pop(Double.class);
@@ -501,11 +517,12 @@ public class SpellExecutorManager {
             // 构造 AABB 并获取实体（根据 filterType 过滤）
             AABB aabb = new AABB(vec1, vec2);
             List<Entity> entities = context.level.getEntities((Entity) null, aabb,
-                    entity -> filterType == null || entity.getType() == filterType
+                    entity -> (filterType == null || entity.getType() == filterType)&&entity!=context.player
             );
 
             if (!entities.isEmpty()) {
                 context.push(entities);
+                ModMessage.sendToClients(new GetEntitiesPhotonEffectS2CPacket(context.level, entities));
                 Spellweaver.getLOGGER().debug("[Spellweaver:SpellExecutorManager/initExecutors]获取实体数目{}", entities.size());
             }
         });
@@ -590,6 +607,17 @@ public class SpellExecutorManager {
                     UUID uuid=context.pop(UUID.class);
                     context.push(serverLevel.getEntity(uuid));
                 }
+            }else if(context.isTop(Vec3.class)){
+                Vec3 vec3=context.pop(Vec3.class);
+                BlockState state=context.level.getBlockState(BlockPos.containing(vec3));
+                //context.push(state.getBlock().getName().getString());
+                ResourceLocation id = net.minecraftforge.registries.ForgeRegistries.BLOCKS.getKey(state.getBlock());
+                String shortName = "error";
+                if (id != null) {
+                    shortName = id.getPath();
+                }
+                context.push(shortName);
+                Spellweaver.getLOGGER().debug("[Spellweaver/SpellExecutors/真名]方块名称{}", shortName);
             }
         });
 
@@ -941,11 +969,20 @@ public class SpellExecutorManager {
                         if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)){
                             context.level.destroyBlock(pos,true,context.player);
                                //给所有玩家发送特效包
-                            if(context.level instanceof ServerLevel){
-                                   ((ServerLevel) context.level).sendParticles(ParticleTypes.INSTANT_EFFECT,pos.getX()+0.5,
-                                           pos.getY()+0.5,pos.getZ()+0.5,15,0,0,0,0.03);
+                            /*if(context.level instanceof ServerLevel){
+                                   //((ServerLevel) context.level).sendParticles(ParticleTypes.INSTANT_EFFECT,pos.getX()+0.5,
+                                           //pos.getY()+0.5,pos.getZ()+0.5,15,0,0,0,0.03);
+                                FX fx = FXHelper.getFX(ResourceLocation.fromNamespaceAndPath("spellweaver","test_break3"));
+                                if(fx!=null){
+                                    BlockEffect photonEffect=new BlockEffect(fx,context.level,pos);
+                                    photonEffect.start();
+                                }
 
                             }
+
+                             */
+                            ModMessage.sendToClients(new PhotonEffectS2CPacket(ResourceLocation.fromNamespaceAndPath("spellweaver","test_break3"),
+                                    context.level,pos, EffectType.NORMAL_BLOCK_EFFECT));
                             //这里单独处理法术方块，因为监听不了2026.7.11
                             if (context.level instanceof ServerLevel serverLevel) {
                                 SpellBlockStorage storage = SpellBlockStorage.get(serverLevel);
@@ -960,28 +997,9 @@ public class SpellExecutorManager {
                                 }
                             }
 
-                            //destroy没法监听只能这里补个逻辑了
-                            if (state.getBlock() == Blocks.LAPIS_ORE || state.getBlock() == Blocks.DEEPSLATE_LAPIS_ORE) {
-                                final float chance=0.005f;
-                                if(context.level.random.nextFloat()<=chance){
-                                    ItemStack pearl = new ItemStack(ModItems.MANA_PEARL.get());
-                                    ItemEntity itemEntity = new ItemEntity(
-                                            context.level,
-                                            pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
-                                            pearl
-                                    );
-                                    context.level.addFreshEntity(itemEntity);
-                                }
-                                if(context.level.random.nextFloat()<=chance*100){
-                                    ItemStack pearl = new ItemStack(ModItems.DIM_MANA_PEARL.get());
-                                    ItemEntity itemEntity = new ItemEntity(
-                                            context.level,
-                                            pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
-                                            pearl
-                                    );
-                                    context.level.addFreshEntity(itemEntity);
-                                }
-                            }
+                            //青金石矿的魔珠/黯淡魔珠概率掉落已迁移到 Global Loot Modifier
+                            //（destroyBlock 走同一 loot table，由 data/spellweaver/loot_modifiers/*.json 驱动），
+                            //此处不再手动生成，避免与 GLM 重复掉落。
                         }
                     }
                 }
@@ -1015,10 +1033,19 @@ public class SpellExecutorManager {
                 if (context.player != null) {
                     if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)){
                         context.level.setBlock(pos,waterState, Block.UPDATE_ALL);
-                        if(context.level instanceof ServerLevel){
-                            ((ServerLevel) context.level).sendParticles(ParticleTypes.INSTANT_EFFECT,pos.getX()+0.5,
-                                    pos.getY()+0.5,pos.getZ()+0.5,15,0,0,0,0.03);
+                        /*if(context.level instanceof ServerLevel){
+                            //((ServerLevel) context.level).sendParticles(ParticleTypes.INSTANT_EFFECT,pos.getX()+0.5,
+                                    //pos.getY()+0.5,pos.getZ()+0.5,15,0,0,0,0.03);
+                            FX fx = FXHelper.getFX(ResourceLocation.fromNamespaceAndPath("spellweaver","water"));
+                            if(fx!=null){
+                                BlockEffect photonEffect=new BlockEffect(fx,context.level,pos);
+                                photonEffect.start();
+                            }
                         }
+
+                         */
+                        ModMessage.sendToClients(new PhotonEffectS2CPacket(ResourceLocation.fromNamespaceAndPath("spellweaver","water"),
+                                context.level,pos, EffectType.NORMAL_BLOCK_EFFECT));
                     }
                 }
             }
@@ -1221,10 +1248,26 @@ public class SpellExecutorManager {
                         if((state.isAir()||state.canBeReplaced())){
                             BlockState Dirt = Blocks.DIRT.defaultBlockState();
                             context.level.setBlock(blockPos, Dirt, 3);
-                            if(context.level instanceof ServerLevel){
-                                ((ServerLevel) context.level).sendParticles(ParticleTypes.INSTANT_EFFECT,blockPos.getX()+0.5,
-                                        blockPos.getY()+0.5,blockPos.getZ()+0.5,15,0,0,0,0.03);
+                            /*if(context.level instanceof ServerLevel){
+                                //((ServerLevel) context.level).sendParticles(ParticleTypes.INSTANT_EFFECT,blockPos.getX()+0.5,
+                                      //  blockPos.getY()+0.5,blockPos.getZ()+0.5,15,0,0,0,0.03);
+                                FX fx = FXHelper.getFX(ResourceLocation.fromNamespaceAndPath("spellweaver","block"));
+                                if(fx!=null){
+                                    BlockEffect photonEffect=new BlockEffect(fx,context.level,blockPos);
+                                    photonEffect.start();
+                                }
                             }
+                             */
+                            /// 不知道为什么这样有bug，之前明明没有的，就今天2026.9.30
+                            //ModMessage.sendToClients(new PhotonEffectS2CPacket(ResourceLocation.fromNamespaceAndPath("spellweaver","block"),
+                                   // context.level,blockPos, EffectType.NORMAL_BLOCK_EFFECT));
+
+                            PhotonEffectEntity effectEntity=new PhotonEffectEntity(ModEntities.PHOTON_EFFECT_ENTITY.get(),context.level,20,null);
+                            effectEntity.setPos(blockPos.getCenter().add(new Vec3(0,-0.5,0)));
+                            context.level.addFreshEntity(effectEntity);
+                            ModMessage.sendToClients(new PhotonEffectS2CPacket(ResourceLocation.fromNamespaceAndPath("spellweaver","block"),
+                                    context.level, effectEntity, EffectType.NORMAL_ENTITY_EFFECT));
+                            Spellweaver.getLOGGER().debug("[Spellweaver/SpellExecutor/泥土]已发送特效包");
                         }
                     }
                 }
@@ -1242,10 +1285,22 @@ public class SpellExecutorManager {
                         if((state.isAir()||state.canBeReplaced())){
                             BlockState snow = Blocks.POWDER_SNOW.defaultBlockState();
                             context.level.setBlock(blockPos, snow, 3);
-                            if(context.level instanceof ServerLevel){
-                                ((ServerLevel) context.level).sendParticles(ParticleTypes.INSTANT_EFFECT,blockPos.getX()+0.5,
-                                        blockPos.getY()+0.5,blockPos.getZ()+0.5,15,0,0,0,0.03);
+                            /*if(context.level instanceof ServerLevel){
+                                //((ServerLevel) context.level).sendParticles(ParticleTypes.INSTANT_EFFECT,blockPos.getX()+0.5,
+                                       // blockPos.getY()+0.5,blockPos.getZ()+0.5,15,0,0,0,0.03);
+                                FX fx = FXHelper.getFX(ResourceLocation.fromNamespaceAndPath("spellweaver","block"));
+                                if(fx!=null){
+                                    BlockEffect photonEffect=new BlockEffect(fx,context.level,blockPos);
+                                    photonEffect.start();
+                                }
                             }
+
+                             */
+                            PhotonEffectEntity effectEntity=new PhotonEffectEntity(ModEntities.PHOTON_EFFECT_ENTITY.get(),context.level,20,null);
+                            effectEntity.setPos(blockPos.getCenter().add(new Vec3(0,-0.5,0)));
+                            context.level.addFreshEntity(effectEntity);
+                            ModMessage.sendToClients(new PhotonEffectS2CPacket(ResourceLocation.fromNamespaceAndPath("spellweaver","block"),
+                                    context.level, effectEntity, EffectType.NORMAL_ENTITY_EFFECT));
                         }
                     }
                 }
@@ -1263,10 +1318,22 @@ public class SpellExecutorManager {
                         if((state.isAir()||state.canBeReplaced())){
                             BlockState dripstone = Blocks.SAND.defaultBlockState();
                             context.level.setBlock(blockPos, dripstone, 3);
-                            if(context.level instanceof ServerLevel){
-                                ((ServerLevel) context.level).sendParticles(ParticleTypes.INSTANT_EFFECT,blockPos.getX()+0.5,
-                                        blockPos.getY()+0.5,blockPos.getZ()+0.5,15,0,0,0,0.03);
+                            /*if(context.level instanceof ServerLevel){
+                                //((ServerLevel) context.level).sendParticles(ParticleTypes.INSTANT_EFFECT,blockPos.getX()+0.5,
+                                       // blockPos.getY()+0.5,blockPos.getZ()+0.5,15,0,0,0,0.03);
+                                FX fx = FXHelper.getFX(ResourceLocation.fromNamespaceAndPath("spellweaver","block"));
+                                if(fx!=null){
+                                    BlockEffect photonEffect=new BlockEffect(fx,context.level,blockPos);
+                                    photonEffect.start();
+                                }
                             }
+
+                             */
+                            PhotonEffectEntity effectEntity=new PhotonEffectEntity(ModEntities.PHOTON_EFFECT_ENTITY.get(),context.level,20,null);
+                            effectEntity.setPos(blockPos.getCenter().add(new Vec3(0,-0.5,0)));
+                            context.level.addFreshEntity(effectEntity);
+                            ModMessage.sendToClients(new PhotonEffectS2CPacket(ResourceLocation.fromNamespaceAndPath("spellweaver","block"),
+                                    context.level, effectEntity, EffectType.NORMAL_ENTITY_EFFECT));
                         }
                     }
                 }
@@ -1285,10 +1352,20 @@ public class SpellExecutorManager {
                     if(ManaUtil.subManaAndAddExpAndSendPacket(manaCost, context)){
                         if ((blockState.isAir() || blockState.canBeReplaced())) {
                             context.level.setBlock(pos,lavaState,Block.UPDATE_ALL);
-                            if(context.level instanceof ServerLevel){
-                                ((ServerLevel) context.level).sendParticles(ParticleTypes.INSTANT_EFFECT,pos.getX()+0.5,
-                                        pos.getY()+0.5,pos.getZ()+0.5,15,0,0,0,0.03);
+                            /*if(context.level instanceof ServerLevel){
+                                //((ServerLevel) context.level).sendParticles(ParticleTypes.INSTANT_EFFECT,pos.getX()+0.5,
+                                      //  pos.getY()+0.5,pos.getZ()+0.5,15,0,0,0,0.03);
+
+                                FX fx = FXHelper.getFX(ResourceLocation.fromNamespaceAndPath("spellweaver","magma"));
+                                if(fx!=null){
+                                    BlockEffect photonEffect=new BlockEffect(fx,context.level,pos);
+                                    photonEffect.start();
+                                }
                             }
+
+                             */
+                            ModMessage.sendToClients(new PhotonEffectS2CPacket(ResourceLocation.fromNamespaceAndPath("spellweaver","magma"),
+                                    context.level,pos, EffectType.NORMAL_BLOCK_EFFECT));
                         }
                     }
                 }
@@ -1525,6 +1602,8 @@ public class SpellExecutorManager {
                       BlockState blockstate = BaseFireBlock.getState(level, pos);
                       level.setBlock(pos, blockstate, 11);
                       level.gameEvent(context.player, GameEvent.BLOCK_PLACE, pos);
+                      ModMessage.sendToClients(new PhotonEffectS2CPacket(ResourceLocation.fromNamespaceAndPath("spellweaver","ignite"),
+                              context.level,pos, EffectType.NORMAL_BLOCK_EFFECT));
                   }
                }
            }
@@ -1588,6 +1667,9 @@ public class SpellExecutorManager {
               }
               if(target instanceof Player player) {
                   ManaUtil.addManaAndSendPacket(amount, (ServerPlayer) player);
+                  ModMessage.sendToClients(new PhotonEffectS2CPacket(ResourceLocation.fromNamespaceAndPath("spellweaver","charge2"),
+                          context.level,player, EffectType.CHARGE));
+                  Spellweaver.getLOGGER().debug("[Spellweaver/SpellExecutorManager/充能]已发送充能特效包");
               } else if (target instanceof Vec3 vec3) {
                   BlockEntity blockEntity=context.level.getBlockEntity(BlockPos.containing(vec3));
                   if(blockEntity instanceof ManaPedestalBlockEntity entity){
@@ -1639,6 +1721,7 @@ public class SpellExecutorManager {
                     ModMessage.sendToClients(new PurifyEffectS2CPacket(livingEntity.position()));
                 }
             }
+           context.push(livingEntity);
         });
 
         executors.put("修复",context -> {
@@ -1992,9 +2075,42 @@ public class SpellExecutorManager {
                     Spellweaver.getLOGGER().debug("[Spellweaver:SpellExecutorManager/drive方法]为实体{}应用驱动",entity.getDisplayName());
                     entity.hurtMarked = true;
                     if(level instanceof ServerLevel){
-                        ((ServerLevel)level).sendParticles(ParticleTypes.INSTANT_EFFECT,entity.getX(),entity.getY()+1,
-                                entity.getZ(),20,0.2,0.3,0.2,0.05);
+                        //((ServerLevel)level).sendParticles(ParticleTypes.INSTANT_EFFECT,entity.getX(),entity.getY()+1,
+                              //  entity.getZ(),20,0.2,0.3,0.2,0.05);
+
+                         //TODO这里的特效待定，可能不会做了
+                        /*
+                        FX fx = FXHelper.getFX(ResourceLocation.fromNamespaceAndPath("spellweaver","move2"));
+                        if(fx!=null){
+                            //BlockEffect photonEffect=new BlockEffect(fx,context.level,BlockPos.containing(entity.position()));
+                            //photonEffect.start();
+                            EntityEffect effect=new EntityEffect(fx,context.level,entity, EntityEffect.AutoRotate.NONE);
+                            effect.setOffset(0, 1, 0);
+                            effect.start();
+                        }
+
+                         */
                     }
+
+                    /*FX fx = FXHelper.getFX(ResourceLocation.fromNamespaceAndPath("spellweaver", "move"));
+                    if (fx != null) {
+                        if(velocity.lengthSqr() > 1e-6){ // 避免零向量
+                            Vector3f from = new Vector3f(0, 1, 0);
+                            Vector3f to = new Vector3f(
+                                    (float) -velocity.x,
+                                    (float) -velocity.y,
+                                    (float) -velocity.z
+                            ).normalize();
+
+                            Quaternionf rotation = new Quaternionf().rotationTo(from, to);
+                            BlockEffect effect=new BlockEffect(fx,level,BlockPos.containing(entity.position().add(0,0,0)));
+                            effect.setOffset(0, 1, 0);
+                            if (rotation != null) effect.setRotation(rotation);
+                            effect.start();
+                        }
+                    }
+
+                     */
                 }
             }
         }
@@ -2290,6 +2406,9 @@ public class SpellExecutorManager {
                       int originalDamageValue=itemStack.getDamageValue();
                       //不需要检查，forge已经替我做了
                       itemStack.setDamageValue((int) (originalDamageValue-repairAmount));
+                      ModMessage.sendToClients(new PhotonEffectS2CPacket(ResourceLocation.fromNamespaceAndPath("spellweaver","repair2"),
+                              context.level, BlockPos.containing(context.player.position()), EffectType.NORMAL_BLOCK_EFFECT));
+
                   }
                 }
             }
@@ -2329,6 +2448,11 @@ public class SpellExecutorManager {
                             if (!player.isCreative()) {
                                 slotReference.extract(1, false);
                             }
+                            PhotonEffectEntity effectEntity=new PhotonEffectEntity(ModEntities.PHOTON_EFFECT_ENTITY.get(),context.level,20,null);
+                            effectEntity.setPos(pos.getCenter().add(new Vec3(0,-0.5,0)));
+                            context.level.addFreshEntity(effectEntity);
+                            ModMessage.sendToClients(new PhotonEffectS2CPacket(ResourceLocation.fromNamespaceAndPath("spellweaver","block"),
+                                    context.level, effectEntity, EffectType.NORMAL_ENTITY_EFFECT));
                         }
                     }
                 }
@@ -2401,7 +2525,7 @@ public class SpellExecutorManager {
                 }
             }
         }
-        context.push(effect);
+        context.push(entity);
     }
 
 

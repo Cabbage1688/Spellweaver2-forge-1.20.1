@@ -7,7 +7,11 @@
     {
       "type": "patchouli:text",
       "text": "$(l)Spell Overload$()<br><br>By default, spells execute one leaf node per tick (one rune sequence in normal node, one frame of countdown in wait node, one iteration in loop node, etc.). $(9)Spell Overload$() allows you to run spells at accelerated speed.<br><br>Overload multiplier is tied to your $(l)Mana Level$():<br>·Mana Level < 10: Max multiplier $(9)1x$()<br>·Mana Level ≥ 10: Max multiplier = $(9)2 + 2×(Mana Level - 10) / 5$()<br><br>When Mana Level ≥ 10 and not in overload state, use up/down arrow keys to adjust multiplier, press M to toggle spell overload."
-    },{
+    },
+    { "type" : "patchouli:text" ,
+      "text" : "You can also set an individual overload multiplier for spells in your spell library. Setting an overload multiplier n greater than 1 makes the spell run at $(9)n times$() speed, capped at your overload limit; setting it to $(9)0$() makes the spell run at 1x speed — it will not multiply even if you have overload enabled; setting it to $(9)1$() makes the spell follow your overload multiplier, which is also the default. A spell with an overload multiplier set also takes effect when copy-pasted onto a SpellStick or Scroll, or added to a Magic Star's spell list."
+    },
+    {
       "type": "patchouli:text",
       "text": "$(l)Elemental Reaction Quick Reference$()<br><br>$(9)Electrocute$(): Lightning + Water → Lightning damage +50%<br>$(9)Conduction$(): Water + Lightning → Instant 10 magic damage<br>$(9)Overload$(): Lightning + Fire / Fire + Lightning → Explosion without block damage<br>$(9)Freeze$(): Ice + Water / Water + Ice → Stun for seconds (continuous freezing causes resistance accumulation, reducing freeze time)<br>$(9)Neutralize$(): Fire + Water / Water + Fire → Water/Fire damage -30%<br>$(9)Cancel$(): Fire + Ice / Ice + Fire → Ice/Fire damage -30%<br>$(9)Combust$(): Fire + Wind → Fire damage +30%, ignites target<br>$(9)Spread(Fire)$(): Wind + Fire → 3-block range fire damage with fire attachment"
     },{

@@ -2,7 +2,7 @@
   "name": "最后",
   "icon": "minecraft:writable_book",
   "category": "spellweaver:before_everything",
-  "sortnum": 5,
+  "sortnum": 6,
   "pages": [
     {
       "type": "patchouli:image",

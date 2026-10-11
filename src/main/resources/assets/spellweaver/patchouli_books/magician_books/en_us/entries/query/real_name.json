@@ -12,6 +12,10 @@
     {
       "type": "patchouli:text",
       "text": "And vice versa:<br>uuid -> Real Name -> entity<br>Converts UUID to corresponding entity in the same world (if exists).<br><br>Note: Entity must still exist in the world, otherwise null is pushed."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "vec3 -> Real Name -> string<br>Get the name of the block at the coordinate, and push it onto the stack as a string."
     }
   ]
 }

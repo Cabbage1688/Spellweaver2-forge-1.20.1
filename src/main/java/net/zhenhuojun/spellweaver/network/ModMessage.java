@@ -74,6 +74,12 @@ public class ModMessage {
                 .consumerMainThread(RenameSpellC2SPacket::handle)
                 .add();
 
+        net.messageBuilder(SetSpellOverloadC2SPacket.class,id(),NetworkDirection.PLAY_TO_SERVER)
+                .decoder(SetSpellOverloadC2SPacket::new)
+                .encoder(SetSpellOverloadC2SPacket::toByte)
+                .consumerMainThread(SetSpellOverloadC2SPacket::handle)
+                .add();
+
         net.messageBuilder(CastSpellBySlotC2SPacket.class,id(),NetworkDirection.PLAY_TO_SERVER)
                 .decoder(CastSpellBySlotC2SPacket::new)
                 .encoder(CastSpellBySlotC2SPacket::toByte)
@@ -302,6 +308,18 @@ public class ModMessage {
                 .decoder(ClientLanguageC2SPacket::new)
                 .encoder(ClientLanguageC2SPacket::toByte)
                 .consumerMainThread(ClientLanguageC2SPacket::handle)
+                .add();
+
+        net.messageBuilder(PhotonEffectS2CPacket.class,id(),NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(PhotonEffectS2CPacket::new)
+                .encoder(PhotonEffectS2CPacket::toByte)
+                .consumerMainThread(PhotonEffectS2CPacket::handle)
+                .add();
+
+        net.messageBuilder(GetEntitiesPhotonEffectS2CPacket.class,id(),NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(GetEntitiesPhotonEffectS2CPacket::new)
+                .encoder(GetEntitiesPhotonEffectS2CPacket::toBytes)
+                .consumerMainThread(GetEntitiesPhotonEffectS2CPacket::handle)
                 .add();
 
     }
